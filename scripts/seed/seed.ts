@@ -30,7 +30,7 @@ export class SeedState {
 
 export class Seed<IModel> {
     private model: Model<IModel & mongoose.Document>;
-    private insertManyFn: (beforeEachItems: any[], index: number, seedState: SeedState, preSeedResponse: any[]) => IModel;
+    private iteratorFn: (beforeEachItems: any[], index: number, seedState: SeedState, preSeedResponse: any[]) => IModel;
     private options: SeedOptions = {
         clearBeforeSeed: true,
         documentCount: 1,
@@ -50,6 +50,16 @@ export class Seed<IModel> {
         this.updateOptions(options);
     }
 
+    private prepareDocumentSeed(documentIndex: number, seedState: SeedState, preSeedResponse: any[]): Promise<any> {
+        return Bluebird.mapSeries(
+            this.beforeEachBatch,
+            (beforeEachItem) => beforeEachItem)
+            .then((beforeEachItems: any[]) => {
+                const template = this.iteratorFn(beforeEachItems, documentIndex, seedState, preSeedResponse);
+                return this.model.create(template);
+            });
+    }
+
     private preSeedExec(seedState: SeedState): Promise<any> {
         return Bluebird.mapSeries(this.preSeedBatch, (preSeedItem) => {
         });
@@ -59,15 +69,7 @@ export class Seed<IModel> {
         let seriesIndex = 0;
         const seedBatch = [];
         while (seriesIndex < this.options.documentCount) {
-            seedBatch.push(
-                Bluebird.mapSeries(
-                    this.beforeEachBatch,
-                    (beforeEachItem) => beforeEachItem)
-                    .then((beforeEachItems: any[]) => {
-                        const template = this.insertManyFn(beforeEachItems, seriesIndex, seedState, preSeedResponse, );
-                        return this.model.create(template);
-                    })
-            );
+            seedBatch.push(this.prepareDocumentSeed(seriesIndex, seedState, preSeedResponse));
             seriesIndex += 1;
         }
         return Promise.all(seedBatch);
@@ -79,7 +81,7 @@ export class Seed<IModel> {
     }
 
     seed(seedState: SeedState): Promise<any> {
-        if (!this.insertManyFn) {
+        if (!this.iteratorFn) {
             logWithColor("Seed Error", "Please set a seed insertion function!", false, chalk.red);
             return Promise.reject();
         }
@@ -90,13 +92,13 @@ export class Seed<IModel> {
     }
 
     insertMany(
-        insertManyFn: (beforeEachItem: any[], index: number, seedState: SeedState, preSeedResponse: any[]) => IModel,
+        iteratorFn: (beforeEachItem: any[], index: number, seedState: SeedState, preSeedResponse: any[]) => IModel,
         documentCount?: number | undefined
     ): Seed<IModel> {
         if (documentCount) {
             this.updateOptions({ documentCount });
         }
-        this.insertManyFn = insertManyFn;
+        this.iteratorFn = iteratorFn;
         return this;
     }
 
