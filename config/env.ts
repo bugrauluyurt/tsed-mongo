@@ -1,11 +1,10 @@
-/*eslint-disable */
 const paths = require("./paths");
 const fs = require("fs");
 
-exports.isDev = () => process.env.NODE_ENV === "development";
-exports.isProd = () => process.env.NODE_ENV === "production";
+export const isDev = () => process.env.NODE_ENV === "development";
+export const isProd = () => process.env.NODE_ENV === "production";
 
-exports.registerDotEnvFiles = () => {
+export const registerDotEnvFiles = () => {
     const dotenvFiles = [].filter(Boolean);
 
     if (this.isProd()) {
