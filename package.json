@@ -46,6 +46,7 @@
     "moment": "^2.24.0",
     "mongoose": "5.7.11",
     "morgan": "^1.9.1",
+    "passport": "^0.4.1",
     "rotating-file-stream": "^2.0.1",
     "serve-static": "^1.13.1",
     "ts-httpexceptions": "^4.1.0"
