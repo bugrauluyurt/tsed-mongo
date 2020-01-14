@@ -1,5 +1,5 @@
 import { AfterRoutesInit, BeforeRoutesInit, Configuration, ExpressApplication, Inject, Service } from "@tsed/common";
-import * as Passport from "passport";
+import * as Passport from "passport/lib";
 import { Strategy as LocalStrategy } from "passport-local";
 import { BadRequest, NotFound } from "ts-httpexceptions";
 import { UsersService } from "../users/UsersService";
@@ -17,13 +17,8 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
         Passport.deserializeUser(this.deserialize.bind(this));
     }
 
-    /**
-     *
-     * @param user
-     * @param done
-     */
-    static serialize(user, done) {
-        done(null, user._id);
+    static serialize(user: User, done) {
+        done(null, { _id: user._id, name: user.name, email: user.email, roles: user.roles });
     }
 
     $beforeRoutesInit() {
@@ -39,11 +34,6 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
         this.initializeLogin();
     }
 
-    /**
-     *
-     * @param id
-     * @param done
-     */
     public deserialize(id, done) {
         done(null, this.usersService.findById(id));
     }

@@ -1,9 +1,9 @@
 import * as faker from "faker";
 import * as bcrypt from "bcrypt";
 import { Seed, SeedState } from "./seed";
-import { IUser } from "../../src/interfaces/User";
+import { IUser } from "../../src/models/users/User.interface";
 import * as mongoose from "mongoose";
-import { UserSchemaDefinition } from "../../src/models/users/User";
+import { UserRole, UserSchemaDefinition } from "../../src/models/users/User";
 
 const defaultPassword = "12345";
 const userSchema = new mongoose.Schema(UserSchemaDefinition);
@@ -27,5 +27,6 @@ module.exports = (new Seed<IUser>(user, "Users", {documentCount: 50}))
             password: hashedPassword,
             phone: userCard.phone,
             address: `${userCard.address.street} ${userCard.address.suite} ${userCard.address.city} ${userCard.address.zipcode}`,
+            roles: [UserRole.BASIC]
         } as IUser;
     });

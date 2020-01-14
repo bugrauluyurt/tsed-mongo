@@ -1,6 +1,12 @@
-import { Model, ObjectID, Unique } from "@tsed/mongoose";
-import { IgnoreProperty, MaxLength, MinLength, Property, Required } from "@tsed/common";
+import { Model, ObjectID, PreHook, Unique } from "@tsed/mongoose";
+import { IgnoreProperty, MaxLength, MinLength, Property, Required, Enum } from "@tsed/common";
+import * as _ from "lodash";
 import { Description } from "@tsed/swagger";
+
+export enum UserRole {
+    ADMIN = "admin",
+    BASIC = "basic",
+}
 
 @Model()
 export class User {
@@ -29,6 +35,18 @@ export class User {
     @Property()
     @Description("Address")
     address: string;
+
+    @Property()
+    @Description("Role")
+    roles: UserRole[];
+
+    @PreHook("save")
+    static preSave(user: User, next) {
+        if (_.isEmpty(user.roles)) {
+            user.roles = [UserRole.BASIC];
+        }
+        next();
+    }
 }
 
 // [SEED] Schema Definition
@@ -38,5 +56,6 @@ export const UserSchemaDefinition = {
     password: String,
     phone: String,
     address: String,
+    roles: Array,
 };
 
