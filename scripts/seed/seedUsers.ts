@@ -1,12 +1,15 @@
-import userModel from "../../src/models/users/user.model";
-import IUser from "../../src/models/users/user.interface";
 import * as faker from "faker";
 import * as bcrypt from "bcrypt";
 import { Seed, SeedState } from "./seed";
+import { IUser } from "../../src/interfaces/User";
+import * as mongoose from "mongoose";
+import { UserSchemaDefinition } from "../../src/models/users/User";
 
 const defaultPassword = "12345";
+const userSchema = new mongoose.Schema(UserSchemaDefinition);
+const user = mongoose.model<IUser & mongoose.Document>("User", userSchema);
 
-module.exports = (new Seed<IUser>(userModel, "Users", {documentCount: 50}))
+module.exports = (new Seed<IUser>(user, "Users", {documentCount: 50}))
     .beforeEach([bcrypt.hash(defaultPassword, 10)])
     .insertMany((
         beforeEachResponse: string[],

@@ -6,10 +6,9 @@ import * as path from "path";
 import { getSettings } from "../config/settings";
 
 const rootDir = path.resolve(__dirname);
-registerDotEnvFiles();
 const { server: serverSettings } = getSettings(rootDir);
-
 registerDotEnvFiles();
+
 @ServerSettings(serverSettings)
 export class Server extends ServerLoader {
   $beforeRoutesInit(): void | Promise<any> {
