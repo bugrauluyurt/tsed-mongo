@@ -10,7 +10,9 @@ const userSchema = new mongoose.Schema(UserSchemaDefinition);
 const userModel = mongoose.model<IUser & mongoose.Document>("User", userSchema);
 
 module.exports = (new Seed<IUser>(userModel, "Users", {documentCount: 50}))
-    .beforeEach([() => bcrypt.hash(defaultPassword, 10)])
+    .beforeEach([
+        () => bcrypt.hash(defaultPassword, 10),
+    ])
     .insertMany((
         beforeEachResponse: string[],
         index: number,

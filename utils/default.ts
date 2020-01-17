@@ -1,6 +1,7 @@
 import * as chalk from "chalk";
 import * as moment from "moment";
 import { Chalk } from "chalk";
+const LOG_BLACK_LIST = ["secret"];
 
 const getCircularReplacer = () => {
     const seen = new WeakSet();
@@ -14,8 +15,6 @@ const getCircularReplacer = () => {
         return value;
     };
 };
-
-const LOG_BLACK_LIST = ["secret"];
 
 export const firstLetterUpperCase = (str: string): string => {
     const firstLetter = str.substring(0, 1).toUpperCase();
@@ -32,7 +31,7 @@ export const logObject = (obj: object, fixCyclicReferences: boolean = false): vo
         if (settingValue.length > 1000) {
             settingValue = "[Long string]";
         }
-        if (LOG_BLACK_LIST.indexOf(settingValue.toString().toLowerCase()) !== -1) {
+        if (LOG_BLACK_LIST.indexOf(settingKey.toLowerCase()) !== -1) {
             return;
         }
         logWithColor(settingKey, settingValue);
