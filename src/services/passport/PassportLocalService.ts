@@ -4,6 +4,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import { BadRequest, NotFound } from "ts-httpexceptions";
 import { UsersService } from "../users/UsersService";
 import { User } from "../../models/users/User";
+import { logWithColor } from "../../../utils/default";
 
 @Service()
 export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
@@ -30,6 +31,7 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
     }
 
     $afterRoutesInit() {
+        logWithColor("PassportLocalService", "Initialized afterRoutesInit");
         this.initializeSignup();
         this.initializeLogin();
     }

@@ -1,27 +1,49 @@
 import * as fs from "fs";
 import * as path from "path";
 import * as chalk from "chalk";
-import { logWithColor } from "../utils/default";
+import { logObject, logWithColor } from "../utils/default";
+import { getMongoUrl, getSecret } from "./env";
+import { Connection } from "mongoose";
+import { MongoStoreFactory } from "connect-mongo";
+import { getMongoConnectionOptions } from "./connection";
 
 const logSettings = ({ server, morgan }: { [key: string]: any }): void => {
     const boundaryLine = "----------------------------------------";
     console.log(chalk.green(boundaryLine));
-    Object.keys(server).forEach((settingKey: string) => {
-        if (settingKey === "httpsOptions") {
-            return;
-        }
-        const settingValue = server[settingKey];
-        logWithColor(settingKey, settingValue);
-    });
+    logObject(server);
     logWithColor("morgan", morgan);
     console.log(chalk.green(boundaryLine));
 };
 
-export const getSettings = (rootDir: string): { [key: string]: any } => {
+export const getSessionSettings = (MongoStore: MongoStoreFactory, mongooseConnection: Connection): object => {
+    const secret = getSecret();
+    const sessionSettings = {
+        secret,
+        store: new MongoStore({
+            mongooseConnection,
+            secret,
+            touchAfter: 24 * 3600 // time period in seconds
+        }),
+        resave: true, // do not automatically write to the session store
+        saveUninitialized: false,
+        maxAge: 36000,
+        proxy: true, // trust the reverse proxy when setting secure cookies (X-Forwarded-Proto header will be used)
+        cookie: {
+            path: "/",
+            httpOnly: true,
+            secure: true,
+            maxAge: null,
+        }
+    };
+    logObject(sessionSettings, true);
+    return sessionSettings;
+};
+
+export const getServerSettings = (rootDir: string): { [key: string]: any } => {
     const httpsOptions = {
         key: fs.readFileSync(path.resolve(rootDir, "../ssl/key.pem"), "utf-8"),
         cert: fs.readFileSync(path.resolve(rootDir, "../ssl/certificate.pem"), "utf-8"),
-        passphrase: process.env.PASSPHRASE,
+        passphrase: getSecret(),
     };
 
     const settings = {
@@ -31,11 +53,25 @@ export const getSettings = (rootDir: string): { [key: string]: any } => {
             port: process.env.PORT,
             httpsPort: false,
             acceptMimes: ["application/json"],
+            logger: {
+                debug: false,
+                logRequest: true,
+                requestFields: ["reqId", "method", "url", "headers", "query", "params", "duration"],
+            },
             mount: {
                 "/rest": `${rootDir}/controllers/**/**.ts`,
             },
+            componentsScan: [
+                `${rootDir}/services/**/**.ts`,
+                `${rootDir}/middlewares/**/**.ts`
+            ],
             mongoose: {
-                url: process.env.MONGO_URL
+                urls: {
+                    default: {
+                        url: getMongoUrl(),
+                        connectionOptions: getMongoConnectionOptions(),
+                    }
+                },
             },
             passport: {},
             swagger: {
@@ -47,7 +83,8 @@ export const getSettings = (rootDir: string): { [key: string]: any } => {
 
     // On prod env put nginx in front of the server for secure connections. In case of HTTP/2 on app level
     // production env should start a https connection too. However nginx level HTTP/2 support is recommended
-    if (process.env.HTTPS_ENABLED === "1") {
+    // tslint:disable-next-line:triple-equals
+    if (process.env.HTTPS_ENABLED == "1") {
         settings.server.httpsOptions = httpsOptions;
         settings.server.httpsPort = process.env.HTTPS_PORT;
         settings.server.httpPort = false;

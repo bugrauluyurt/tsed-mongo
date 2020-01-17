@@ -1,4 +1,15 @@
-import {BodyParams, Controller, Delete, Get, PathParams, Post, Put, Required, Status} from "@tsed/common";
+import {
+  Authenticated,
+  BodyParams,
+  Controller,
+  Delete,
+  Get,
+  PathParams,
+  Post,
+  Put,
+  Required,
+  Status
+} from "@tsed/common";
 import {Description, Summary} from "@tsed/swagger";
 import {NotFound} from "ts-httpexceptions";
 import {Calendar} from "../../models/calendars/Calendar";
@@ -95,6 +106,7 @@ export class CalendarsCtrl {
    */
   @Get("/")
   @Summary("Return all calendars")
+  @Authenticated()
   @Status(200, {description: "Success", type: Calendar, collectionType: Array})
   async getAllCalendars(): Promise<Calendar[]> {
     return this.calendarsService.query();

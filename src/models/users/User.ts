@@ -1,5 +1,5 @@
 import { Model, ObjectID, PreHook, Unique } from "@tsed/mongoose";
-import { IgnoreProperty, MaxLength, MinLength, Property, Required, Enum } from "@tsed/common";
+import { IgnoreProperty, MaxLength, MinLength, Property, Required } from "@tsed/common";
 import * as _ from "lodash";
 import { Description } from "@tsed/swagger";
 

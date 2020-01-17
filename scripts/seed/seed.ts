@@ -3,6 +3,7 @@ import * as Bluebird from "bluebird";
 import { Model } from "mongoose";
 import * as chalk from "chalk";
 import { logWithColor } from "../../utils/default";
+import * as _ from "lodash";
 
 export interface SeedOptions {
     clearBeforeSeed: boolean;
@@ -37,7 +38,7 @@ export class Seed<IModel> {
     };
     private preSeedBatch: Promise<any>[] = [];
     private postSeedBatch: Promise<any>[] = [];
-    private beforeEachBatch: Array<() => Promise<any>> = [];
+    private beforeEachBatch: Array<() => Promise<any>> |  Array<Promise<any>> = [];
     public name: string;
 
     constructor(
@@ -53,7 +54,7 @@ export class Seed<IModel> {
     private prepareDocumentSeed(documentIndex: number, seedState: SeedState, preSeedResponse: any[]): Promise<any> {
         return Bluebird.mapSeries(
             this.beforeEachBatch,
-            (beforeEachItem) => beforeEachItem)
+            (beforeEachItem) => _.isFunction(beforeEachItem) ? beforeEachItem() : beforeEachItem)
             .then((beforeEachItems: any[]) => {
                 const template = this.iteratorFn(beforeEachItems, documentIndex, seedState, preSeedResponse);
                 return this.model.create(template);
@@ -123,7 +124,7 @@ export class Seed<IModel> {
         return this;
     }
 
-    public beforeEach(beforeEachBatch: Array<() => Promise<any>>): Seed<IModel> {
+    public beforeEach(beforeEachBatch: Array<() => Promise<any>> | Array<Promise<any>>): Seed<IModel> {
         this.beforeEachBatch = beforeEachBatch;
         return this;
     }

@@ -7,10 +7,10 @@ import { UserRole, UserSchemaDefinition } from "../../src/models/users/User";
 
 const defaultPassword = "12345";
 const userSchema = new mongoose.Schema(UserSchemaDefinition);
-const user = mongoose.model<IUser & mongoose.Document>("User", userSchema);
+const userModel = mongoose.model<IUser & mongoose.Document>("User", userSchema);
 
-module.exports = (new Seed<IUser>(user, "Users", {documentCount: 50}))
-    .beforeEach([bcrypt.hash(defaultPassword, 10)])
+module.exports = (new Seed<IUser>(userModel, "Users", {documentCount: 50}))
+    .beforeEach([() => bcrypt.hash(defaultPassword, 10)])
     .insertMany((
         beforeEachResponse: string[],
         index: number,
