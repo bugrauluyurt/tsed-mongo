@@ -4,6 +4,8 @@ import * as Passport from "passport";
 import {BadRequest} from "ts-httpexceptions";
 import { IUser } from "../../models/users/User.interface";
 import { checkEmail } from "../../../utils/checkEmail";
+import * as bcrypt from "bcrypt";
+import { checkPassword } from "../../../utils/checkPassword";
 
 function passportAuthenticate(event: string) {
     return (request: Express.Request, response: Express.Response, next: Express.NextFunction) => {
@@ -23,8 +25,8 @@ function passportAuthenticate(event: string) {
     };
 }
 
-@Controller("/passport")
-export class PassportCtrl {
+@Controller("/auth/local")
+export class AuthLocalCtrl {
     /**
      * Authenticate user with local info (in Database).
      * @param email
@@ -35,19 +37,23 @@ export class PassportCtrl {
     async login(@Required() @BodyParams("email") email: string,
                 @Required() @BodyParams("password") password: string) {
         checkEmail(email);
+        checkPassword(password);
         // DO SOMETHING
     }
 
     /**
      * Try to register new account
+     * @param name
      * @param email
      * @param password
      */
     @Post("/signup")
     @UseAfter(passportAuthenticate("signup"))
-    async signup(@Required() @BodyParams("email") email: string,
+    async signup(@Required() @BodyParams("name") name: string,
+                 @Required() @BodyParams("email") email: string,
                  @Required() @BodyParams("password") password: string) {
         checkEmail(email);
+        checkPassword(password);
         // DO SOMETHING
     }
 

@@ -3,6 +3,8 @@ import { Unauthorized } from "ts-httpexceptions";
 import { $log } from "ts-log-debug";
 import { OverrideProvider } from "@tsed/di";
 
+// @TODO Write a custom middleware to check authentication
+// Things to check are: Session Expiration and Roles
 @OverrideProvider(AuthenticatedMiddleware)
 export class AuthMiddleware {
     constructor() {

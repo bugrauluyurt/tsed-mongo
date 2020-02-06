@@ -5,6 +5,8 @@ import { BadRequest, NotFound } from "ts-httpexceptions";
 import { UsersService } from "../users/UsersService";
 import { User } from "../../models/users/User";
 import { logWithColor } from "../../../utils/default";
+import * as bcrypt from "bcrypt";
+import * as _ from "lodash";
 
 @Service()
 export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
@@ -19,7 +21,7 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
     }
 
     static serialize(user: User, done) {
-        done(null, { _id: user._id, name: user.name, email: user.email, roles: user.roles });
+        done(null, user._id);
     }
 
     $beforeRoutesInit() {
@@ -52,7 +54,7 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
                 usernameField: "email",
                 passwordField: "password",
                 passReqToCallback: true // allows us to pass back the entire request to the callback
-            }, this.verify));
+            }, this.verify.bind(this)));
     }
 
     verify(req, email, password, done) {
@@ -60,6 +62,7 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
         // User.findOne wont fire unless data is sent back
         // process.nextTick(() => {
         this.signup({
+            name: req.body.name,
             email,
             password
         })
@@ -74,18 +77,21 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
      * @returns {Promise<any>}
      */
     async signup(user: Partial<User>) {
-
         const exists = await this.usersService.findByEmail(user.email);
 
         if (exists) {
             throw new BadRequest("Email is already registered");
         }
 
+        const hashedPassword = await bcrypt.hash(user.password, 10);
         // Create new User
-        return await this.usersService.save(<User>{
+        const createdUser = await this.usersService.save(<User>{
+            name: user.name,
             email: user.email,
-            password: user.password,
+            password: hashedPassword,
         });
+        createdUser.password = undefined;
+        return createdUser;
     }
 
     // =========================================================================
@@ -113,12 +119,17 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
      * @param password
      * @returns {Promise<boolean>}
      */
-    async login(email: string, password: string): Promise<User> {
-        const user = await this.usersService.findByCredential(email, password);
-        if (user) {
-            return user;
+    async login(email: string, password: string): Promise<Partial<User>> {
+        const user = await this.usersService.findByEmail(email);
+        const notFoundErr = new NotFound("User not found");
+        if (!user) {
+            throw notFoundErr;
         }
-
-        throw new NotFound("User not found");
+        const doPasswordsMatch = await bcrypt.compare(password, user.password);
+        if (!doPasswordsMatch) {
+            throw notFoundErr;
+        }
+        user.password = undefined;
+        return user;
     }
 }

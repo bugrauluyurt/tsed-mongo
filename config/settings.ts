@@ -6,6 +6,7 @@ import { getMongoUrl, getSecret } from "./env";
 import { Connection } from "mongoose";
 import { MongoStoreFactory } from "connect-mongo";
 import { getMongoConnectionOptions } from "./connection";
+import { User } from "../src/models/users/User";
 
 const logSettings = ({ server, morgan }: { [key: string]: any }): void => {
     const boundaryLine = "----------------------------------------";
@@ -54,7 +55,7 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
             httpsPort: false,
             acceptMimes: ["application/json"],
             logger: {
-                debug: false,
+                debug: false, // change debug to true for extended debugging
                 logRequest: true,
                 requestFields: ["reqId", "method", "url", "headers", "query", "params", "duration"],
             },
@@ -63,7 +64,7 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
             },
             componentsScan: [
                 `${rootDir}/services/**/**.ts`,
-                `${rootDir}/middlewares/**/**.ts`
+                `${rootDir}/middlewares/**/**.ts`,
             ],
             mongoose: {
                 urls: {
@@ -73,7 +74,9 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
                     }
                 },
             },
-            passport: {},
+            passport: {
+                userInfoModel: User
+            },
             swagger: {
                 path: "/api-docs"
             },

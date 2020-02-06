@@ -1,5 +1,7 @@
+import "@tsed/ajv";
 import { GlobalAcceptMimesMiddleware, ServerLoader, ServerSettings } from "@tsed/common";
 import { isProd, registerDotEnvFiles } from "../config/env";
+import "@tsed/passport";
 import "@tsed/mongoose";
 import "@tsed/swagger";
 import * as path from "path";
@@ -25,6 +27,7 @@ export class Server extends ServerLoader {
             mongoose = require("mongoose"),
             session = require("express-session"),
             mongoStore: MongoStoreFactory = require("connect-mongo")(session),
+            cors = require("cors"),
             morgan = require("morgan");
 
         // create a rotating write stream for logging
@@ -41,6 +44,7 @@ export class Server extends ServerLoader {
         this
             .use(morgan("common", {stream: accessLogStream}))
             .use(GlobalAcceptMimesMiddleware)
+            .use(cors())
             .use(cookieParser())
             .use(compress({}))
             .use(methodOverride())

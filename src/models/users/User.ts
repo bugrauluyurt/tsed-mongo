@@ -24,7 +24,6 @@ export class User {
     @Description("Email of the user")
     email: string;
 
-    @IgnoreProperty()
     @Description("Password of the user")
     password: string;
 

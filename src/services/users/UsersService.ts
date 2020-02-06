@@ -47,7 +47,7 @@ export class UsersService {
         return _.get(users, "0");
     }
 
-    async save(user: User): Promise<User> {
+    async save(user: Partial<User>): Promise<User> {
         $log.debug({message: "Validate user", User});
 
         const model = new this.User(user);
