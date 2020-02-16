@@ -1,9 +1,11 @@
-import { Authenticated, BodyParams, Controller, Delete, Get, PathParams, Post, Put, Required, Status } from "@tsed/common";
+import { BodyParams, Controller, Delete, Get, PathParams, Post, Put, Required, Status, UseAuth } from "@tsed/common";
 import { Description, Summary } from "@tsed/swagger";
 import { NotFound } from "ts-httpexceptions";
 import { Calendar } from "../../models/calendars/Calendar";
 import { CalendarsService } from "../../services/calendars/CalendarsService";
 import { EventsCtrl } from "../events/EventsCtrl";
+import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
+import { UserRole } from "../../models/users/User";
 
 /**
  * Add @Controller annotation to declare your class as Router controller.
@@ -15,7 +17,8 @@ import { EventsCtrl } from "../events/EventsCtrl";
  */
 @Controller("/calendars", EventsCtrl)
 export class CalendarsCtrl {
-    constructor(private calendarsService: CalendarsService) {}
+    constructor(private calendarsService: CalendarsService) {
+    }
 
     /**
      *
@@ -24,7 +27,7 @@ export class CalendarsCtrl {
      */
     @Get("/:id")
     @Summary("Return a calendar from his ID")
-    @Status(200, { description: "Success", type: Calendar })
+    @Status(200, {description: "Success", type: Calendar})
     async get(@Required() @PathParams("id") id: string): Promise<Calendar> {
         const calendar = await this.calendarsService.find(id);
 
@@ -42,11 +45,11 @@ export class CalendarsCtrl {
      */
     @Put("/")
     @Summary("Create a new Calendar")
-    @Status(201, { description: "Created", type: Calendar })
+    @Status(201, {description: "Created", type: Calendar})
     save(
         @Description("Calendar model")
         @BodyParams()
-        calendar: Calendar
+            calendar: Calendar
     ) {
         return this.calendarsService.save(calendar);
     }
@@ -59,7 +62,7 @@ export class CalendarsCtrl {
      */
     @Post("/:id")
     @Summary("Update calendar information")
-    @Status(200, { description: "Success", type: Calendar })
+    @Status(200, {description: "Success", type: Calendar})
     async update(
         @PathParams("id") @Required() id: string,
         @BodyParams() calendar: Calendar
@@ -76,14 +79,14 @@ export class CalendarsCtrl {
      */
     @Delete("/:id")
     @Summary("Remove a calendar.")
-    @Status(204, { description: "No content" })
+    @Status(204, {description: "No content"})
     async remove(@PathParams("id") id: string): Promise<void> {
         await this.calendarsService.remove(id);
     }
 
     @Delete("/")
     @Summary("Remove all calendars.")
-    @Status(204, { description: "No content" })
+    @Status(204, {description: "No content"})
     async clear(@PathParams("id") id: string): Promise<void> {
         await this.calendarsService.clear();
     }
@@ -94,7 +97,10 @@ export class CalendarsCtrl {
      */
     @Get("/")
     @Summary("Return all calendars")
-    @Authenticated()
+    @UseAuth(
+        AuthMiddleware,
+        {roles: [UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.SERVER, UserRole.BASIC]}
+    )
     @Status(200, {
         description: "Success",
         type: Calendar,

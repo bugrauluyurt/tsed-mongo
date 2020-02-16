@@ -1,33 +1,34 @@
-import { AuthenticatedMiddleware, EndpointInfo, EndpointMetadata, Next, Req } from "@tsed/common";
-import { OverrideProvider } from "@tsed/di";
-import { Unauthorized } from "ts-httpexceptions";
-import { $log } from "ts-log-debug";
+import {
+    EndpointInfo,
+    Next,
+    Req,
+    Middleware,
+    IMiddleware
+} from "@tsed/common";
+import { User } from "src/models/users/User";
+import { Forbidden, Unauthorized } from "ts-httpexceptions";
 import { createCustomErrorBody } from "../../models/customErrors/CustomErrorBody";
 import { AuthMiddlewareErrorKeys, AuthMiddlewareErrorMessages } from "./errors/AuthMiddlewareErrors";
+import * as _ from "lodash";
 
-// @TODO Write a custom middleware to check authentication
-// Things to check are: Session Expiration and Roles
-@OverrideProvider(AuthenticatedMiddleware)
-export class AuthMiddleware {
-    constructor() {}
+@Middleware()
+export class AuthMiddleware implements IMiddleware {
+    public use(@Req() request: Express.Request, @EndpointInfo() endpoint: EndpointInfo, @Next() next: Express.NextFunction) {
+        const options = endpoint.get(AuthMiddleware) || {};
 
-    use(
-        @EndpointInfo() endpoint: EndpointMetadata,
-        @Req() request: Express.Request,
-        @Next() next: Express.NextFunction,
-    ) {
-        // retrieve Options passed to the Authenticated() decorators.
-        const options = endpoint.store.get(AuthenticatedMiddleware) || {};
-        $log.debug("AuthMiddleware =>", options);
-        $log.debug(
-            "AuthMiddleware isAuthenticated ? =>",
-            request.isAuthenticated()
-        );
-
-        if (!request.isAuthenticated()) {
+        if (!request.isAuthenticated()) { // passport.js method to check auth
             const error = new Unauthorized(AuthMiddlewareErrorMessages[AuthMiddlewareErrorKeys.UNAUTHORIZED]);
             error.body = createCustomErrorBody(AuthMiddlewareErrorKeys.UNAUTHORIZED, AuthMiddlewareErrorMessages);
-            next(error);
+            return next(error);
         }
+
+        const {roles: userRoles}: Partial<User> = request.user;
+        const isRoleAuthenticated = _.some(userRoles, (userRole) => _.includes(options.roles, userRole));
+
+        if (!isRoleAuthenticated) {
+            const forbiddenError = new Forbidden(AuthMiddlewareErrorMessages[AuthMiddlewareErrorKeys.FORBIDDEN]);
+            return next({...forbiddenError, body: createCustomErrorBody(AuthMiddlewareErrorKeys.FORBIDDEN, AuthMiddlewareErrorMessages)});
+        }
+        next();
     }
 }

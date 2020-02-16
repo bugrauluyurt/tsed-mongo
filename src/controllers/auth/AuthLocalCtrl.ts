@@ -1,11 +1,10 @@
-import {BodyParams, Controller, Get, Post, Req, Required, UseAfter} from "@tsed/common";
+import { BodyParams, Controller, Get, Post, Req, Required, UseAfter } from "@tsed/common";
 import * as Express from "express";
 import * as Passport from "passport";
-import {BadRequest} from "ts-httpexceptions";
-import { IUser } from "../../models/users/User.interface";
+import { BadRequest } from "ts-httpexceptions";
 import { checkEmail } from "../../../utils/checkEmail";
-import * as bcrypt from "bcrypt";
 import { checkPassword } from "../../../utils/checkPassword";
+import { IUser } from "../../models/users/User.interface";
 
 function passportAuthenticate(event: string) {
     return (request: Express.Request, response: Express.Response, next: Express.NextFunction) => {

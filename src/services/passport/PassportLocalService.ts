@@ -1,12 +1,11 @@
 import { AfterRoutesInit, BeforeRoutesInit, Configuration, ExpressApplication, Inject, Service } from "@tsed/common";
-import * as Passport from "passport/lib";
-import { Strategy as LocalStrategy } from "passport-local";
-import { BadRequest, NotFound } from "ts-httpexceptions";
-import { UsersService } from "../users/UsersService";
-import { User } from "../../models/users/User";
-import { logWithColor } from "../../../utils/default";
 import * as bcrypt from "bcrypt";
-import * as _ from "lodash";
+import { Strategy as LocalStrategy } from "passport-local";
+import * as Passport from "passport/lib";
+import { BadRequest, NotFound } from "ts-httpexceptions";
+import { logWithColor } from "../../../utils/default";
+import { User } from "../../models/users/User";
+import { UsersService } from "../users/UsersService";
 
 @Service()
 export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
@@ -38,8 +37,11 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
         this.initializeLogin();
     }
 
-    public deserialize(id, done) {
-        done(null, this.usersService.findById(id));
+    public async deserialize(id, done) {
+        const user = await this.usersService.findById(id);
+        // @TODO: user.roles should be stored in memory cache (Redis) so that authentication works fast for each endpoint call
+        // done should be called => done(null, { roles: user.roles });
+        done(null, user);
     }
 
     // =========================================================================
