@@ -1,7 +1,7 @@
+import { MaxLength, MinLength, Property, Required } from "@tsed/common";
 import { Model, ObjectID, PreHook, Unique } from "@tsed/mongoose";
-import { IgnoreProperty, MaxLength, MinLength, Property, Required } from "@tsed/common";
-import * as _ from "lodash";
 import { Description } from "@tsed/swagger";
+import * as _ from "lodash";
 
 export enum UserRole {
     ADMIN = "admin",
