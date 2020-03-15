@@ -3,13 +3,15 @@ import * as bcrypt from "bcrypt";
 import { Seed, SeedState } from "./seed";
 import { IUser } from "../../src/models/users/User.interface";
 import * as mongoose from "mongoose";
-import { UserRole, UserSchemaDefinition } from "../../src/models/users/User";
+import { UserSchemaDefinition } from "../../src/models/users/User";
+import { UserRole } from "../../src/models/users/UserRole";
+import { getRandomUniqueSeedItems } from "./seedUtils";
 
 const defaultPassword = "12345";
 const userSchema = new mongoose.Schema(UserSchemaDefinition);
 const userModel = mongoose.model<IUser & mongoose.Document>("User", userSchema);
 
-module.exports = (new Seed<IUser>(userModel, "Users", {documentCount: 50}))
+module.exports = (new Seed<IUser>(userModel, "Users", {documentCount: 10}))
     .beforeEach([
         () => bcrypt.hash(defaultPassword, 10),
     ])
@@ -23,12 +25,15 @@ module.exports = (new Seed<IUser>(userModel, "Users", {documentCount: 50}))
         // seedState.getState() OR seedState.getCollection(collectionName)
         const [hashedPassword] = beforeEachResponse;
         const userCard = faker.helpers.userCard();
+        const companies = seedState.getCollection("Companies");
+        const randomCompanyIds = getRandomUniqueSeedItems(companies, 1, "Companies");
         return {
             name: userCard.name,
             email: userCard.email,
             password: hashedPassword,
             phone: userCard.phone,
             address: `${userCard.address.street} ${userCard.address.suite} ${userCard.address.city} ${userCard.address.zipcode}`,
+            companies: randomCompanyIds,
             roles: [UserRole.BASIC]
         } as IUser;
     });

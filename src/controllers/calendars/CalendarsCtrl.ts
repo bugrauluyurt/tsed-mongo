@@ -5,7 +5,7 @@ import { Calendar } from "../../models/calendars/Calendar";
 import { CalendarsService } from "../../services/calendars/CalendarsService";
 import { EventsCtrl } from "../events/EventsCtrl";
 import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
-import { UserRole } from "../../models/users/User";
+import { UserRole } from "../../models/users/UserRole";
 
 /**
  * Add @Controller annotation to declare your class as Router controller.

@@ -7,6 +7,7 @@ require("../../config/env").registerDotEnvFiles();
 
 // Put seed files here
 const seeds = [
+    require("./seedCompanies"),
     require("./seedUsers")
 ];
 

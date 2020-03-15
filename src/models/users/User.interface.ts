@@ -1,4 +1,4 @@
-import { UserRole } from "./User";
+import { UserRole } from "./UserRole";
 
 export interface IUser {
     _id?: string;

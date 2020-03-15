@@ -89,7 +89,7 @@ export class Seed<IModel> {
         return Promise.resolve()
             .then(() => this.preSeedExec(seedState))
             .then((preSeedResponse: any[]) => this.seedExec(seedState, preSeedResponse))
-            .then(() => this.postSeedExec(seedState));
+            .then((seededItems) => this.postSeedExec(seedState).then(() => seededItems));
     }
 
     insertMany(
