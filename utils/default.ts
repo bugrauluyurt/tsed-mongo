@@ -45,6 +45,6 @@ export const logWithColor = (key, value, shouldStringify: boolean = true, color:
     const keyLogMessage = colorBold(firstLetterUpperCase(key));
     const valueLogMessage = shouldStringify ? JSON.stringify(value) : value;
 
-    const defaultLogMessage = color(`[${timeStamp}] [INFO ] [ULOG] -`);
+    const defaultLogMessage = color(`[${timeStamp}] [INFO] [ULOG] -`);
     console.log(`${defaultLogMessage} ${keyLogMessage} ${valueLogMessage}`);
 };

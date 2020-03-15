@@ -8,7 +8,8 @@ require("../../config/env").registerDotEnvFiles();
 // Put seed files here
 const seeds = [
     require("./seedCompanies"),
-    require("./seedUsers")
+    require("./seedUsers"),
+    require("./seedTeams"),
 ];
 
 const seedPartials = (partialIndex, seedState: SeedState) => {

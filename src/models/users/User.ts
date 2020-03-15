@@ -5,6 +5,7 @@ import * as _ from "lodash";
 import { UserRole } from "./UserRole";
 import { Company } from "../companies/Company";
 import { Schema } from "mongoose";
+import { CompanyUtils } from "../companies/Company.utils";
 
 @Model()
 export class User {
@@ -35,7 +36,7 @@ export class User {
 
     @Description("Company ids that user belongs to. Populated field")
     @Ref(Company)
-    companies: string[];
+    companies: Ref<Company>[] = [];
 
     @Property()
     @Description("List of user roles")
@@ -60,7 +61,7 @@ export const UserSchemaDefinition = {
     password: String,
     phone: String,
     address: String,
-    companies: [{ type: Schema.Types.ObjectId, ref: "Company" }],
+    companies: [{ type: Schema.Types.ObjectId, ref: CompanyUtils.MODEL_NAME }],
     roles: { type: Array, default: [UserRole.BASIC] },
 };
 

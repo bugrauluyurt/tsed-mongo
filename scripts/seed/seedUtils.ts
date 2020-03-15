@@ -8,7 +8,10 @@ const generateRandomIndex = (length: number) => {
 
 export const getRandomUniqueSeedItems = (
     collection: any[] = [],
+    // Given is the number of items to be returned.
     returnedItemCount: number = 1,
+    // If changeReturnedItemCountEachIteration=true, then function randomly changes the returnedItemCount for each iteration taking the given argument value as max.
+    changeReturnedItemCountEachIteration: boolean = false,
     collectionName?: string,
 ): any[] => {
     const collectionLength = collection.length;
@@ -35,6 +38,10 @@ export const getRandomUniqueSeedItems = (
     };
 
     let requestedItemCount = returnedItemCount;
+    if (changeReturnedItemCountEachIteration) {
+        const countRange = _.range(0, returnedItemCount);
+        requestedItemCount = countRange[generateRandomIndex(countRange.length)];
+    }
     const returnArr = [];
     while (requestedItemCount) {
         const randomUniqueItem = getRandomUniqueItem();

@@ -6,12 +6,14 @@ import * as mongoose from "mongoose";
 import { UserSchemaDefinition } from "../../src/models/users/User";
 import { UserRole } from "../../src/models/users/UserRole";
 import { getRandomUniqueSeedItems } from "./seedUtils";
+import { UserUtils } from "../../src/models/users/User.utils";
+import { CompanyUtils } from "../../src/models/companies/Company.utils";
 
 const defaultPassword = "12345";
 const userSchema = new mongoose.Schema(UserSchemaDefinition);
-const userModel = mongoose.model<IUser & mongoose.Document>("User", userSchema);
+const userModel = mongoose.model<IUser & mongoose.Document>(UserUtils.COLLECTION_NAME, userSchema);
 
-module.exports = (new Seed<IUser>(userModel, "Users", {documentCount: 10}))
+module.exports = (new Seed<IUser>(userModel, UserUtils.COLLECTION_NAME, {documentCount: 20}))
     .beforeEach([
         () => bcrypt.hash(defaultPassword, 10),
     ])
@@ -25,8 +27,8 @@ module.exports = (new Seed<IUser>(userModel, "Users", {documentCount: 10}))
         // seedState.getState() OR seedState.getCollection(collectionName)
         const [hashedPassword] = beforeEachResponse;
         const userCard = faker.helpers.userCard();
-        const companies = seedState.getCollection("Companies");
-        const randomCompanyIds = getRandomUniqueSeedItems(companies, 1, "Companies");
+        const companies = seedState.getCollection(CompanyUtils.COLLECTION_NAME);
+        const randomCompanyIds = getRandomUniqueSeedItems(companies, 1, false, CompanyUtils.COLLECTION_NAME);
         return {
             name: userCard.name,
             email: userCard.email,

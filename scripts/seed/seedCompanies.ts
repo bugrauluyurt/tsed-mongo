@@ -6,9 +6,10 @@ import * as _ from "lodash";
 import { CompanyUtils } from "../../src/models/companies/Company.utils";
 
 const companySchema = new mongoose.Schema(CompanySchemaDefinition);
-const companyModel = mongoose.model<Company & mongoose.Document>("Company", companySchema);
+const companyModel = mongoose.model<Company & mongoose.Document>(CompanyUtils.MODEL_NAME, companySchema);
+const domainDefaultCharCount = 16;
 
-module.exports = (new Seed<Company>(companyModel, "Companies", {documentCount: 10}))
+module.exports = (new Seed<Company>(companyModel, CompanyUtils.COLLECTION_NAME, {documentCount: 20}))
     .insertMany((
         beforeEachResponse: string[],
         index: number,
@@ -20,7 +21,6 @@ module.exports = (new Seed<Company>(companyModel, "Companies", {documentCount: 1
         const companyName = faker.fake("{{company.companyName}}");
         let domainNameBody = companyName.replace(/\W/ig, "");
         if (domainNameBody.length > CompanyUtils.MAX_DOMAIN_NAME) {
-            const domainDefaultCharCount = 16;
             domainNameBody = domainNameBody.substr(0, CompanyUtils.MAX_DOMAIN_NAME - domainDefaultCharCount);
         }
         return {
