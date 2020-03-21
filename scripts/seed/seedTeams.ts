@@ -17,6 +17,6 @@ module.exports = (new Seed<Team>(userModel, TeamUtils.COLLECTION_NAME, {document
         // Previous seeded collections can be reached at each document level by using seedState instance.
         // seedState.getState() OR seedState.getCollection(collectionName)
         return {
-            teamName: `Team_${faker.fake("{{name.jobArea}}")}`,
+            teamName: `${TeamUtils.MODEL_NAME}_${faker.fake("{{name.jobArea}}")}`,
         } as Team;
     });
