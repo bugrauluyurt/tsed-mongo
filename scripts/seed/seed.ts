@@ -29,6 +29,8 @@ export class SeedState {
     }
 }
 
+type AfterEachBatchItem = (documentIndex: number, createdDocument: object | any, seedState: SeedState) => Promise<any>;
+
 export class Seed<IModel> {
     private model: Model<IModel & mongoose.Document>;
     private iteratorFn: (beforeEachItems: any[], index: number, seedState: SeedState, preSeedResponse: any[]) => IModel;
@@ -38,7 +40,8 @@ export class Seed<IModel> {
     };
     private preSeedBatch: Promise<any>[] = [];
     private postSeedBatch: Promise<any>[] = [];
-    private beforeEachBatch: Array<() => Promise<any>> |  Array<Promise<any>> = [];
+    private beforeEachBatch: Array<() => Promise<any>> | Array<Promise<any>> = [];
+    private afterEachBatch: Array<AfterEachBatchItem> = [];
     public name: string;
 
     constructor(
@@ -51,13 +54,31 @@ export class Seed<IModel> {
         this.updateOptions(options);
     }
 
-    private prepareDocumentSeed(documentIndex: number, seedState: SeedState, preSeedResponse: any[]): Promise<any> {
+    private beforeEachExec(): Promise<any> {
         return Bluebird.mapSeries(
             this.beforeEachBatch,
-            (beforeEachItem) => _.isFunction(beforeEachItem) ? beforeEachItem() : beforeEachItem)
+            (beforeEachItem) => _.isFunction(beforeEachItem) ? beforeEachItem() : beforeEachItem
+        );
+    }
+
+    private afterEachExec(documentIndex: number, createdDocument: IModel, seedState: SeedState): Promise<any> {
+        return Bluebird.mapSeries(
+            this.afterEachBatch,
+            (afterEachItem) => _.isFunction(afterEachItem)
+                ? afterEachItem(documentIndex, createdDocument, seedState)
+                : afterEachItem
+        );
+    }
+
+    private prepareDocumentSeed(documentIndex: number, seedState: SeedState, preSeedResponse: any[]): Promise<any> {
+        return Promise.resolve()
+            .then(() => this.beforeEachExec())
             .then((beforeEachItems: any[]) => {
                 const template = this.iteratorFn(beforeEachItems, documentIndex, seedState, preSeedResponse);
                 return this.model.create(template);
+            })
+            .then((createdDocument) => {
+                return this.afterEachExec(documentIndex, createdDocument, seedState).then(() => createdDocument);
             });
     }
 
@@ -97,7 +118,7 @@ export class Seed<IModel> {
         documentCount?: number | undefined
     ): Seed<IModel> {
         if (documentCount) {
-            this.updateOptions({ documentCount });
+            this.updateOptions({documentCount});
         }
         this.iteratorFn = iteratorFn;
         return this;
@@ -126,6 +147,11 @@ export class Seed<IModel> {
 
     public beforeEach(beforeEachBatch: Array<() => Promise<any>> | Array<Promise<any>>): Seed<IModel> {
         this.beforeEachBatch = beforeEachBatch;
+        return this;
+    }
+
+    public afterEach(afterEachBatch: Array<AfterEachBatchItem>): Seed<IModel> {
+        this.afterEachBatch = afterEachBatch;
         return this;
     }
 

@@ -7,11 +7,11 @@ require("../../config/env").registerDotEnvFiles();
 
 // Put seed files here
 const seeds = [
-    require("./seedProjectTypes"),
-    require("./seedTaskStatuses"),
-    require("./seedCompanies"),
-    require("./seedUsers"),
-    require("./seedTeams"),
+    require("./seedProjectTypes").seed,
+    require("./seedTaskStatuses").seed,
+    require("./seedCompanies").seed,
+    require("./seedUsers").seed,
+    require("./seedTeams").seed,
 ];
 
 const seedPartials = (partialIndex, seedState: SeedState) => {
@@ -21,10 +21,15 @@ const seedPartials = (partialIndex, seedState: SeedState) => {
         return process.exit(0);
     }
     logWithColor("[SEED]", `Seeding [${nextSeed.name}] into database...`, false);
-    nextSeed.seed(seedState).then((seededItems) => {
-        seedState.updateState({ [nextSeed.name]: seededItems });
-        seedPartials(partialIndex + 1, seedState);
-    });
+    nextSeed.seed(seedState)
+        .then((seededItems) => {
+            seedState.updateState({ [nextSeed.name]: seededItems });
+            seedPartials(partialIndex + 1, seedState);
+        })
+        .catch((err) => {
+            logWithColor("[SEED]", {text: "Seed error!", err}, true);
+            process.exit(1);
+        });
 };
 
 getMongoConnection("[SEED]").then(() => {

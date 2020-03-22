@@ -1,9 +1,22 @@
 import * as _ from "lodash";
 import { logWithColor } from "../../utils/default";
 import chalk = require("chalk");
+import * as bcrypt from "bcrypt";
 
-const generateRandomIndex = (length: number) => {
-    return _.random(0, length - 1);
+export const DEFAULT_PASSWORD = "12345";
+export const ADMIN_USER_NAME = "admin";
+export const ADMIN_PASSWORD = "admin";
+
+export const createAdminPassword = () => {
+    return bcrypt.hash(ADMIN_PASSWORD, 10);
+};
+
+export const createDefaultPassword = () => {
+    return bcrypt.hash(DEFAULT_PASSWORD, 10);
+};
+
+const generateRandomIndexFromListSize = (listSize: number) => {
+    return _.random(0, listSize - 1);
 };
 
 export const getRandomUniqueSeedItems = (
@@ -29,7 +42,7 @@ export const getRandomUniqueSeedItems = (
             }
             return undefined;
         }
-        const randomItem = collection[generateRandomIndex(collectionLength)];
+        const randomItem = collection[generateRandomIndexFromListSize(collectionLength)];
         if (!randomItemMap[randomItem._id]) {
             randomItemMap[randomItem._id] = true;
             return randomItem;
@@ -40,7 +53,7 @@ export const getRandomUniqueSeedItems = (
     let requestedItemCount = returnedItemCount;
     if (changeReturnedItemCountEachIteration) {
         const countRange = _.range(0, returnedItemCount);
-        requestedItemCount = countRange[generateRandomIndex(countRange.length)];
+        requestedItemCount = countRange[generateRandomIndexFromListSize(countRange.length)];
     }
     const returnArr = [];
     while (requestedItemCount) {
