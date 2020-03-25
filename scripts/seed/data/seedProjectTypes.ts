@@ -1,7 +1,7 @@
-import { Seed, SeedState } from "./seed";
+import { Seed, SeedState } from "../seed";
 import * as mongoose from "mongoose";
-import { ProjectType, ProjectTypesSchemaDefinition } from "../../src/models/projectTypes/ProjectType";
-import { ProjectTypeUtils } from "../../src/models/projectTypes/ProjectType.utils";
+import { ProjectType, ProjectTypesSchemaDefinition } from "../../../src/models/projectTypes/ProjectType";
+import { ProjectTypeUtils } from "../../../src/models/projectTypes/ProjectType.utils";
 
 const projectTypeSchema = new mongoose.Schema(ProjectTypesSchemaDefinition);
 const projectTypeModel = mongoose.model<ProjectType & mongoose.Document>(ProjectTypeUtils.COLLECTION_NAME, projectTypeSchema);

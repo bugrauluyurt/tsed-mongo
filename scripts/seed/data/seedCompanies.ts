@@ -1,13 +1,18 @@
 import * as faker from "faker";
-import { Seed, SeedState } from "./seed";
+import { Seed, SeedState } from "../seed";
 import * as mongoose from "mongoose";
-import { Company, CompanySchemaDefinition } from "../../src/models/companies/Company";
+import { Company, CompanySchemaDefinition } from "../../../src/models/companies/Company";
 import * as _ from "lodash";
-import { CompanyUtils } from "../../src/models/companies/Company.utils";
-import { UserRole } from "../../src/models/users/UserRole";
-import { ADMIN_USER_NAME, createAdminPassword } from "./seedUtils";
-import { User } from "../../src/models/users/User";
+import { CompanyUtils } from "../../../src/models/companies/Company.utils";
+import { UserRole } from "../../../src/models/users/UserRole";
+import { ADMIN_USER_NAME, createAdminPassword } from "../seedUtils";
+import { User } from "../../../src/models/users/User";
+import { ProjectTypeUtils } from "../../../src/models/projectTypes/ProjectType.utils";
+import { logWithColor } from "../../../utils/default";
+import { ProjectUtils } from "../../../src/models/projects/Project.utils";
+
 const seedUsers = require("./seedUsers");
+const seedProjects = require("./seedProjects");
 
 const companySchema = new mongoose.Schema(CompanySchemaDefinition);
 const companyModel = mongoose.model<Company & mongoose.Document>(CompanyUtils.MODEL_NAME, companySchema);
@@ -43,6 +48,7 @@ module.exports = {
     schema: companySchema,
     model: companyModel,
     seed: (new Seed<Company>(companyModel, CompanyUtils.COLLECTION_NAME, {documentCount: 20}))
+        .preSeed(seedProjects.model.deleteMany({}))
         .insertMany((
             beforeEachResponse: string[],
             index: number,
@@ -59,7 +65,11 @@ module.exports = {
         })
         .afterEach([
             (documentIndex: number, createdCompany: Company, seedState: SeedState): Promise<any> => {
-                return createCompanyProjectAdmin(documentIndex, createdCompany);
-            }
-        ]),
+                const projectTypes = seedState.getCollection(ProjectTypeUtils.COLLECTION_NAME);
+                return Promise.resolve(true)
+                    .then(() => createCompanyProjectAdmin(documentIndex, createdCompany))
+                    .then(() => logWithColor("[SEED]", `Seeding [${ProjectUtils.COLLECTION_NAME}] for [Company -> ${createdCompany.companyName}] into database...`, false))
+                    .then(() => seedProjects.createProjects(createdCompany, seedState, projectTypes));
+            }]
+        )
 };

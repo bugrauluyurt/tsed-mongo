@@ -71,7 +71,7 @@ export class Seed<IModel> {
     }
 
     private prepareDocumentSeed(documentIndex: number, seedState: SeedState, preSeedResponse: any[]): Promise<any> {
-        return Promise.resolve()
+        return Promise.resolve(true)
             .then(() => this.beforeEachExec())
             .then((beforeEachItems: any[]) => {
                 const template = this.iteratorFn(beforeEachItems, documentIndex, seedState, preSeedResponse);

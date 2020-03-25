@@ -2,16 +2,18 @@ import { Indexed, Model, ObjectID, PreHook, Ref } from "@tsed/mongoose";
 import { Property, Required } from "@tsed/common";
 import { ProjectType } from "../projectTypes/projectType";
 import { Description } from "@tsed/swagger";
-import { ProjectSection } from "../projectSections/ProjectSections";
+// import { ProjectSection } from "../projectSections/ProjectSections";
 import { Company } from "../companies/Company";
 import { Team } from "../teams/Team";
 import * as _ from "lodash";
 import { Schema } from "mongoose";
 import { CompanyUtils } from "../companies/Company.utils";
 import { preSaveActiveStatus } from "../../../utils/preSaveActiveStatus";
-import { ProjectSectionsUtils } from "../projectSections/ProjectSections.utils";
+// import { ProjectSectionsUtils } from "../projectSections/ProjectSections.utils";
 import { ProjectTypeUtils } from "../projectTypes/ProjectType.utils";
 import { TeamUtils } from "../teams/Team.utils";
+import { ProjectSection } from "../projectSections/ProjectSections";
+import { ProjectSectionsUtils } from "../projectSections/ProjectSections.utils";
 
 @Model()
 export class Project {
@@ -19,6 +21,7 @@ export class Project {
     _id: string;
 
     @Indexed()
+    @Required()
     @Ref(Company)
     @Description("Company which project belongs to")
     company: Ref<Company>;
@@ -31,8 +34,8 @@ export class Project {
     @Description("List of project sections. ProjectSection model")
     projectSections: Ref<ProjectSection>[] = []; // should be populated, not-expensive
 
-    @Ref(ProjectType)
     @Required()
+    @Ref(ProjectType)
     @Description("Project's type")
     projectType: Ref<ProjectType>; // should be populated, not-expensive
 
@@ -61,10 +64,10 @@ export class Project {
 
 // [SEED] Schema Definition
 export const ProjectSchemaDefinition = {
-    company: { type: Schema.Types.ObjectId, ref: CompanyUtils.MODEL_NAME, index: true },
+    company: {type: Schema.Types.ObjectId, ref: CompanyUtils.MODEL_NAME, index: true},
     projectName: String,
-    projectSections: [{ type: Schema.Types.ObjectId, ref: ProjectSectionsUtils.MODEL_NAME }],
-    projectType: { type: Schema.Types.ObjectId, ref: ProjectTypeUtils.MODEL_NAME },
-    teams: [{ type: Schema.Types.ObjectId, ref: TeamUtils.MODEL_NAME }],
+    projectSections: [{type: Schema.Types.ObjectId, ref: ProjectSectionsUtils.MODEL_NAME}],
+    projectType: {type: Schema.Types.ObjectId, ref: ProjectTypeUtils.MODEL_NAME},
+    teams: [{type: Schema.Types.ObjectId, ref: TeamUtils.MODEL_NAME}],
     active: Boolean,
 };

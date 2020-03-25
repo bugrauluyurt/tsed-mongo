@@ -1,12 +1,12 @@
 import * as faker from "faker";
-import { Seed, SeedState } from "./seed";
-import { IUser } from "../../src/models/users/User.interface";
+import { Seed, SeedState } from "../seed";
+import { IUser } from "../../../src/models/users/User.interface";
 import * as mongoose from "mongoose";
-import { UserSchemaDefinition } from "../../src/models/users/User";
-import { UserUtils } from "../../src/models/users/User.utils";
-import { createDefaultPassword, getRandomUniqueSeedItems } from "./seedUtils";
-import { CompanyUtils } from "../../src/models/companies/Company.utils";
-import { UserRole } from "../../src/models/users/UserRole";
+import { UserSchemaDefinition } from "../../../src/models/users/User";
+import { UserUtils } from "../../../src/models/users/User.utils";
+import { createDefaultPassword, getRandomUniqueSeedItems } from "../seedUtils";
+import { CompanyUtils } from "../../../src/models/companies/Company.utils";
+import { UserRole } from "../../../src/models/users/UserRole";
 
 const userSchema = new mongoose.Schema(UserSchemaDefinition);
 const userModel = mongoose.model<IUser & mongoose.Document>(UserUtils.COLLECTION_NAME, userSchema);

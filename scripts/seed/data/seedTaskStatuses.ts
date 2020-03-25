@@ -1,7 +1,7 @@
-import { Seed, SeedState } from "./seed";
+import { Seed, SeedState } from "../seed";
 import * as mongoose from "mongoose";
-import { TaskStatus, TaskStatusSchemaDefinition } from "../../src/models/taskStatuses/TaskStatus";
-import { TaskStatusUtils } from "../../src/models/taskStatuses/TaskStatus.utils";
+import { TaskStatus, TaskStatusSchemaDefinition } from "../../../src/models/taskStatuses/TaskStatus";
+import { TaskStatusUtils } from "../../../src/models/taskStatuses/TaskStatus.utils";
 
 const taskStatusSchema = new mongoose.Schema(TaskStatusSchemaDefinition);
 const taskStatusModel = mongoose.model<TaskStatus & mongoose.Document>(TaskStatusUtils.COLLECTION_NAME, taskStatusSchema);

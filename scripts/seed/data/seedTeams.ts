@@ -1,8 +1,8 @@
 import * as faker from "faker";
-import { Seed, SeedState } from "./seed";
+import { Seed, SeedState } from "../seed";
 import * as mongoose from "mongoose";
-import { Team, TeamSchemaDefinition } from "../../src/models/teams/Team";
-import { TeamUtils } from "../../src/models/teams/Team.utils";
+import { Team, TeamSchemaDefinition } from "../../../src/models/teams/Team";
+import { TeamUtils } from "../../../src/models/teams/Team.utils";
 
 const userSchema = new mongoose.Schema(TeamSchemaDefinition);
 const userModel = mongoose.model<Team & mongoose.Document>(TeamUtils.COLLECTION_NAME, userSchema);

@@ -19,6 +19,8 @@ const generateRandomIndexFromListSize = (listSize: number) => {
     return _.random(0, listSize - 1);
 };
 
+export const noop = () => {};
+
 export const getRandomUniqueSeedItems = (
     collection: any[] = [],
     // Given is the number of items to be returned.

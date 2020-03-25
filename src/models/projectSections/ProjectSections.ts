@@ -11,11 +11,10 @@ export class ProjectSection {
     @ObjectID("id")
     _id: string;
 
-    @Ref(Project)
     @Indexed()
     @Required()
     @Description("Project parent of this section")
-    project: Ref<Project>;
+    projectId: string;
 
     @Property()
     @Required()
@@ -35,7 +34,7 @@ export class ProjectSection {
 
 // [SEED] Schema Definition
 export const ProjectSectionSchemaDefinition = {
-    project: { type: Schema.Types.ObjectId, ref: ProjectUtils.MODEL_NAME, index: true },
+    projectId: { type: Schema.Types.ObjectId, index: true },
     projectSectionName: String,
     active: Boolean,
 };
