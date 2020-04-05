@@ -27,7 +27,7 @@ export class UsersService {
 
     async findById(id: string): Promise<User> {
         $log.debug("Search a user by ID", id);
-        const user = await this.User.findById(id).exec();
+        const user = await this.User.findById(id).select("-password").exec();
 
         $log.debug("User found", user);
         return user;
@@ -60,7 +60,7 @@ export class UsersService {
     }
 
     async query(options: Partial<User> = {}): Promise<User[]> {
-        return this.User.find(options).exec();
+        return this.User.find(options).select("-password").exec();
     }
 
     async remove(id: string): Promise<User> {

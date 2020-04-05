@@ -20,7 +20,7 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
     }
 
     static serialize(user: User, done) {
-        done(null, user._id);
+        done(null, { ...user });
     }
 
     $beforeRoutesInit() {
