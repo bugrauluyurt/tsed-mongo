@@ -43,8 +43,8 @@ export class UsersCtrl {
         {roles: UserRolesAll}
     )
     @Status(200, {description: "Success", type: User})
-    async get(@Session() { passport: { user: id } }: any): Promise<User> {
-        const userData = await this.usersService.findById(id);
+    async get(@Session() session: any): Promise<User> {
+        const userData = await this.usersService.findById(session.passport.user);
         if (userData) {
             return userData;
         }

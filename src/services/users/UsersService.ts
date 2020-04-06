@@ -60,7 +60,7 @@ export class UsersService {
     }
 
     async query(options: Partial<User> = {}): Promise<User[]> {
-        return this.User.find(options).select("-password").exec();
+        return this.User.find(options).exec();
     }
 
     async remove(id: string): Promise<User> {
