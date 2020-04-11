@@ -1,12 +1,13 @@
-import * as fs from "fs";
-import * as path from "path";
 import * as chalk from "chalk";
-import { logObject, logWithColor } from "../utils/default";
-import { getMongoUrl, getSecret } from "./env";
-import { Connection } from "mongoose";
 import { MongoStoreFactory } from "connect-mongo";
-import { getMongoConnectionOptions } from "./connection";
+import { CookieOptions } from "express";
+import * as fs from "fs";
+import { Connection } from "mongoose";
+import * as path from "path";
 import { User } from "../src/models/users/User";
+import { logObject, logWithColor } from "../utils/default";
+import { getMongoConnectionOptions } from "./connection";
+import { getMongoUrl, getSecret } from "./env";
 
 const logSettings = ({ server, morgan }: { [key: string]: any }): void => {
     const boundaryLine = "----------------------------------------";
@@ -30,12 +31,14 @@ export const getSessionSettings = (MongoStore: MongoStoreFactory, mongooseConnec
         maxAge: 36000,
         proxy: true, // trust the reverse proxy when setting secure cookies (X-Forwarded-Proto header will be used)
         cookie: {
-            path: "/",
             httpOnly: true,
             secure: true,
             maxAge: null,
-        }
+        } as CookieOptions
     };
+    if (process.env.DOMAIN_CLIENT) {
+        sessionSettings.cookie.domain = process.env.DOMAIN_CLIENT;
+    }
     logObject(sessionSettings, true);
     return sessionSettings;
 };
