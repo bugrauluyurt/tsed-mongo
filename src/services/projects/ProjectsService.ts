@@ -1,7 +1,6 @@
 import { Service } from "@tsed/common";
 
-
 @Service()
-export class ProjectService {
+export class ProjectsService {
 
 }

@@ -1,5 +1,5 @@
 import { Controller } from "@tsed/common";
-import { CalendarsService } from "../../services/calendars/CalendarsService";
+import { ProjectsService } from "../../services/projects/ProjectsService";
 
 /**
  * Add @Controller annotation to declare your class as Router controller.
@@ -11,6 +11,6 @@ import { CalendarsService } from "../../services/calendars/CalendarsService";
  */
 @Controller("/projects")
 export class CalendarsCtrl {
-    constructor(private projectsService: CalendarsService) {
+    constructor(private projectsService: ProjectsService) {
     }
 }
