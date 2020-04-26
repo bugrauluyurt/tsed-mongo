@@ -21,13 +21,14 @@ const seedPartials = (partialIndex, seedState: SeedState) => {
         return process.exit(0);
     }
     logWithColor("[SEED]", `Seeding [${nextSeed.name}] into database...`, false);
-    nextSeed.seed(seedState)
+    nextSeed
+        .seed(seedState)
         .then((seededItems) => {
             seedState.updateState({ [nextSeed.name]: seededItems });
             seedPartials(partialIndex + 1, seedState);
         })
         .catch((err) => {
-            logWithColor("[SEED]", {text: "Seed error!", err}, true);
+            logWithColor("[SEED]", { text: "Seed error!", err }, true);
             process.exit(1);
         });
 };
@@ -35,6 +36,5 @@ const seedPartials = (partialIndex, seedState: SeedState) => {
 getMongoConnection("[SEED]").then(() => {
     logWithColor("[SEED]", `DB Connection successful.`, false);
     logWithColor("[SEED]", `Initiating seed process...`, false);
-    seedPartials(0,  new SeedState());
+    seedPartials(0, new SeedState());
 });
-

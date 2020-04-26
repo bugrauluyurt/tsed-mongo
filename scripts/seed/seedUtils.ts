@@ -24,10 +24,10 @@ export const noop = () => {};
 export const getRandomUniqueSeedItems = (
     collection: any[] = [],
     // Given is the number of items to be returned.
-    returnedItemCount: number = 1,
+    returnedItemCount = 1,
     // If changeReturnedItemCountEachIteration=true, then function randomly changes the returnedItemCount for each iteration taking the given argument value as max.
-    changeReturnedItemCountEachIteration: boolean = false,
-    collectionName?: string,
+    changeReturnedItemCountEachIteration = false,
+    collectionName?: string
 ): any[] => {
     const collectionLength = collection.length;
     if (!collectionLength) {
@@ -39,7 +39,12 @@ export const getRandomUniqueSeedItems = (
     const getRandomUniqueItem = (): any | undefined => {
         if (_.keys(randomItemMap).length >= collectionLength) {
             if (!errorTriggered) {
-                logWithColor(`[ERROR] [${collectionName || "NO_COLLECTION_NAME"}]`, "Unique items can not be generated. Please either lower returned item count or increase the source collection size", false, chalk.red);
+                logWithColor(
+                    `[ERROR] [${collectionName || "NO_COLLECTION_NAME"}]`,
+                    "Unique items can not be generated. Please either lower returned item count or increase the source collection size",
+                    false,
+                    chalk.red
+                );
                 errorTriggered = true;
             }
             return undefined;

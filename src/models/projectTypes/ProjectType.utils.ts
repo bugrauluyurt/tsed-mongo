@@ -1,6 +1,6 @@
 export namespace ProjectTypeUtils {
-    export const COLLECTION_NAME: string = "ProjectTypes";
-    export const MODEL_NAME: string = "ProjectType";
+    export const COLLECTION_NAME = "ProjectTypes";
+    export const MODEL_NAME = "ProjectType";
 
     export enum TYPE {
         MANAGEMENT = "management",

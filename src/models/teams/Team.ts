@@ -3,8 +3,8 @@ import { Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { User } from "../users/User";
 import { Schema } from "mongoose";
-import { UserUtils } from "../users/User.utils";
 import * as _ from "lodash";
+import { UserUtils } from "../users/User.utils";
 
 @Model()
 export class Team {
@@ -21,7 +21,7 @@ export class Team {
     teamMembers: Ref<User>[] = [];
 
     @PreHook("save")
-    static preSave(team: Team, next) {
+    static preSave(team: Team, next): void {
         if (_.isEmpty(team.teamMembers)) {
             team.teamMembers = [];
         }

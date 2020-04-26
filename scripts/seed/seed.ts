@@ -24,7 +24,7 @@ export class SeedState {
     }
 
     updateState(partialState: ISeedState): ISeedState {
-        this.state = {...partialState, ...this.state};
+        this.state = { ...partialState, ...this.state };
         return this.state;
     }
 }
@@ -44,29 +44,21 @@ export class Seed<IModel> {
     private afterEachBatch: Array<AfterEachBatchItem> = [];
     public name: string;
 
-    constructor(
-        model: Model<IModel & mongoose.Document>,
-        name: string,
-        options: Partial<SeedOptions> = {}
-    ) {
+    constructor(model: Model<IModel & mongoose.Document>, name: string, options: Partial<SeedOptions> = {}) {
         this.model = model;
         this.name = name;
         this.updateOptions(options);
     }
 
     private beforeEachExec(): Promise<any> {
-        return Bluebird.mapSeries(
-            this.beforeEachBatch,
-            (beforeEachItem) => _.isFunction(beforeEachItem) ? beforeEachItem() : beforeEachItem
+        return Bluebird.mapSeries(this.beforeEachBatch, (beforeEachItem) =>
+            _.isFunction(beforeEachItem) ? beforeEachItem() : beforeEachItem
         );
     }
 
     private afterEachExec(documentIndex: number, createdDocument: IModel, seedState: SeedState): Promise<any> {
-        return Bluebird.mapSeries(
-            this.afterEachBatch,
-            (afterEachItem) => _.isFunction(afterEachItem)
-                ? afterEachItem(documentIndex, createdDocument, seedState)
-                : afterEachItem
+        return Bluebird.mapSeries(this.afterEachBatch, (afterEachItem) =>
+            _.isFunction(afterEachItem) ? afterEachItem(documentIndex, createdDocument, seedState) : afterEachItem
         );
     }
 
@@ -83,8 +75,7 @@ export class Seed<IModel> {
     }
 
     private preSeedExec(seedState: SeedState): Promise<any> {
-        return Bluebird.mapSeries(this.preSeedBatch, (preSeedItem) => {
-        });
+        return Bluebird.mapSeries(this.preSeedBatch, (preSeedItem) => {});
     }
 
     private seedExec(seedState: SeedState, preSeedResponse: any[]): Promise<any> {
@@ -98,8 +89,7 @@ export class Seed<IModel> {
     }
 
     private postSeedExec(seedState: SeedState): Promise<any> {
-        return Bluebird.mapSeries(this.postSeedBatch, (postSeedItem) => {
-        });
+        return Bluebird.mapSeries(this.postSeedBatch, (postSeedItem) => {});
     }
 
     seed(seedState: SeedState): Promise<any> {
@@ -118,14 +108,14 @@ export class Seed<IModel> {
         documentCount?: number | undefined
     ): Seed<IModel> {
         if (documentCount) {
-            this.updateOptions({documentCount});
+            this.updateOptions({ documentCount });
         }
         this.iteratorFn = iteratorFn;
         return this;
     }
 
     updateOptions(optionsPartial: Partial<SeedOptions>): Seed<IModel> {
-        this.options = {...this.options, ...optionsPartial};
+        this.options = { ...this.options, ...optionsPartial };
         if (this.options.clearBeforeSeed) {
             const removePromise = new Promise((resolve, reject) => {
                 this.model.deleteMany({}, () => resolve());
@@ -154,5 +144,4 @@ export class Seed<IModel> {
         this.afterEachBatch = afterEachBatch;
         return this;
     }
-
 }

@@ -16,6 +16,7 @@
     "prettier/@typescript-eslint"
   ],
   "rules": {
-    "no-var": "error"
+    "no-var": "error",
+    "@typescript-eslint/no-namespace": "off"
   }
 }

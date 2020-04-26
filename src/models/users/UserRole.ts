@@ -3,7 +3,7 @@ export enum UserRole {
     BASIC = "basic",
     SERVER = "server",
     PROJECT_ADMIN = "projectAdmin",
-    PROJECT_MANAGER = "projectManager"
+    PROJECT_MANAGER = "projectManager",
 }
 
 export const UserRolesAll = [
@@ -11,5 +11,5 @@ export const UserRolesAll = [
     UserRole.BASIC,
     UserRole.SERVER,
     UserRole.PROJECT_ADMIN,
-    UserRole.PROJECT_MANAGER
+    UserRole.PROJECT_MANAGER,
 ];

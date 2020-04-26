@@ -7,9 +7,9 @@ import { Team } from "../teams/Team";
 import * as _ from "lodash";
 import { Schema } from "mongoose";
 import { CompanyUtils } from "../companies/Company.utils";
+import { TeamUtils } from "../teams/Team.utils";
 import { preSaveActiveStatus } from "../../../utils/preSaveActiveStatus";
 import { ProjectTypeUtils } from "../projectTypes/ProjectType.utils";
-import { TeamUtils } from "../teams/Team.utils";
 import { ProjectSection } from "../projectSections/ProjectSections";
 import { ProjectSectionsUtils } from "../projectSections/ProjectSections.utils";
 
@@ -44,10 +44,10 @@ export class Project {
 
     @Property()
     @Description("Active status indicator")
-    active: boolean = true;
+    active = true;
 
     @PreHook("save")
-    static preSave(project: Project, next) {
+    static preSave(project: Project, next): void {
         if (_.isEmpty(project.projectSections)) {
             project.projectSections = [];
         }
@@ -57,15 +57,14 @@ export class Project {
         preSaveActiveStatus(project);
         next();
     }
-
 }
 
 // [SEED] Schema Definition
 export const ProjectSchemaDefinition = {
-    company: {type: Schema.Types.ObjectId, ref: CompanyUtils.MODEL_NAME, index: true},
+    company: { type: Schema.Types.ObjectId, ref: CompanyUtils.MODEL_NAME, index: true },
     projectName: String,
-    projectSections: [{type: Schema.Types.ObjectId, ref: ProjectSectionsUtils.MODEL_NAME}],
-    projectType: {type: Schema.Types.ObjectId, ref: ProjectTypeUtils.MODEL_NAME},
-    teams: [{type: Schema.Types.ObjectId, ref: TeamUtils.MODEL_NAME}],
+    projectSections: [{ type: Schema.Types.ObjectId, ref: ProjectSectionsUtils.MODEL_NAME }],
+    projectType: { type: Schema.Types.ObjectId, ref: ProjectTypeUtils.MODEL_NAME },
+    teams: [{ type: Schema.Types.ObjectId, ref: TeamUtils.MODEL_NAME }],
     active: Boolean,
 };

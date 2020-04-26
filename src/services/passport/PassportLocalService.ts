@@ -9,10 +9,11 @@ import { UsersService } from "../users/UsersService";
 
 @Service()
 export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
-
-    constructor(private usersService: UsersService,
-                @Configuration() private configuration: Configuration,
-                @Inject(ExpressApplication) private  expressApplication: ExpressApplication) {
+    constructor(
+        private usersService: UsersService,
+        @Configuration() private configuration: Configuration,
+        @Inject(ExpressApplication) private expressApplication: ExpressApplication
+    ) {
         // used to serialize the user for the session
         Passport.serializeUser(PassportLocalService.serialize);
         // used to deserialize the user
@@ -24,11 +25,11 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
     }
 
     $beforeRoutesInit() {
-        const options: any = this.configuration.get("passport") || {} as any;
-        const {userProperty, pauseStream} = options;
+        const options: any = this.configuration.get("passport") || ({} as any);
+        const { userProperty, pauseStream } = options;
 
-        this.expressApplication.use(Passport.initialize({userProperty}));
-        this.expressApplication.use(Passport.session({pauseStream}));
+        this.expressApplication.use(Passport.initialize({ userProperty }));
+        this.expressApplication.use(Passport.session({ pauseStream }));
     }
 
     $afterRoutesInit() {
@@ -50,13 +51,18 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
     // we are using named strategies since we have one for login and one for signup
     // by default, if there was no name, it would just be called 'local'
     public initializeSignup() {
-        Passport
-            .use("signup", new LocalStrategy({
-                // by default, local strategy uses username and password, we will override with email
-                usernameField: "email",
-                passwordField: "password",
-                passReqToCallback: true // allows us to pass back the entire request to the callback
-            }, this.verify.bind(this)));
+        Passport.use(
+            "signup",
+            new LocalStrategy(
+                {
+                    // by default, local strategy uses username and password, we will override with email
+                    usernameField: "email",
+                    passwordField: "password",
+                    passReqToCallback: true, // allows us to pass back the entire request to the callback
+                },
+                this.verify.bind(this)
+            )
+        );
     }
 
     verify(req, email, password, done) {
@@ -66,7 +72,7 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
         this.signup({
             name: req.body.name,
             email,
-            password
+            password,
         })
             .then((user) => done(null, user))
             .catch((err) => done(err));
@@ -87,7 +93,7 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
 
         const hashedPassword = await bcrypt.hash(user.password, 10);
         // Create new User
-        const createdUser = await this.usersService.save(<User>{
+        const createdUser = await this.usersService.save({
             name: user.name,
             email: user.email,
             password: hashedPassword,
@@ -103,16 +109,22 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
     // by default, if there was no name, it would just be called 'local'
 
     public initializeLogin() {
-        Passport.use("login", new LocalStrategy({
-            // by default, local strategy uses username and password, we will override with email
-            usernameField: "email",
-            passwordField: "password",
-            passReqToCallback: true // allows us to pass back the entire request to the callback
-        }, (req, email, password, done) => {
-            this.login(email, password)
-                .then((user) => done(null, user))
-                .catch((err) => done(err));
-        }));
+        Passport.use(
+            "login",
+            new LocalStrategy(
+                {
+                    // by default, local strategy uses username and password, we will override with email
+                    usernameField: "email",
+                    passwordField: "password",
+                    passReqToCallback: true, // allows us to pass back the entire request to the callback
+                },
+                (req, email, password, done) => {
+                    this.login(email, password)
+                        .then((user) => done(null, user))
+                        .catch((err) => done(err));
+                }
+            )
+        );
     }
 
     /**

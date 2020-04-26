@@ -28,8 +28,7 @@ import { User } from "../../models/users/User";
  */
 @Controller("/users")
 export class UsersCtrl {
-    constructor(private usersService: UsersService) {
-    }
+    constructor(private usersService: UsersService) {}
 
     /**
      *
@@ -38,11 +37,8 @@ export class UsersCtrl {
      */
     @Get("/currentUser")
     @Summary("Return the active session user")
-    @UseAuth(
-        AuthMiddleware,
-        {roles: UserRolesAll}
-    )
-    @Status(200, {description: "Success", type: User})
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
+    @Status(200, { description: "Success", type: User })
     async get(@Session() session: any): Promise<User> {
         const userData = await this.usersService.findById(session.passport.user);
         if (userData) {

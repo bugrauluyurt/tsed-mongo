@@ -11,7 +11,7 @@ export class ErrorHandlerMiddleware extends GlobalErrorHandlerMiddleware {
             const customError = new CustomError({
                 status: _.get(error, "status", 404),
                 type: _.get(error, "type"),
-                key: _.get(error, "body.key"),
+                key: _.get(error, "body.key") || _.get(error, "name"),
                 message: _.get(error, "body.message"),
                 origin: _.get(error, "origin") || _.get(request, "url"),
             });

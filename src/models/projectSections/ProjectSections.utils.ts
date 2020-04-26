@@ -1,4 +1,4 @@
 export namespace ProjectSectionsUtils {
-    export const COLLECTION_NAME: string = "ProjectSections";
-    export const MODEL_NAME: string = "ProjectSection";
+    export const COLLECTION_NAME = "ProjectSections";
+    export const MODEL_NAME = "ProjectSection";
 }
