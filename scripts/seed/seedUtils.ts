@@ -19,6 +19,7 @@ const generateRandomIndexFromListSize = (listSize: number) => {
     return _.random(0, listSize - 1);
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = () => {};
 
 export const getRandomUniqueSeedItems = (

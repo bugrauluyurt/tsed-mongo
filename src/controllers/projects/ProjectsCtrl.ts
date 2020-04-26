@@ -4,7 +4,7 @@ import { Summary } from "@tsed/swagger";
 import { UserRolesAll } from "../../models/users/UserRole";
 import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
 import { Project } from "../../models/projects/Project";
-import { UseRequiredQueryParams } from "../../decorators/UseRequiredQueryParams";
+import { UseRequiredParams } from "../../decorators";
 
 /**
  * Add @Controller annotation to declare your class as Router controller.
@@ -20,13 +20,13 @@ export class CalendarsCtrl {
 
     @Get("/")
     @Summary("Return projects by companyId, additional filtering by query params is enabled")
-    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
-    @UseRequiredQueryParams(["companyId"])
     @Status(200, {
         description: "Success",
         type: Project,
         collectionType: Array,
     })
+    @UseRequiredParams({ type: "query", requiredParams: ["companyId"] })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async getAllProjects(@QueryParams("companyId") companyId: string): Promise<Project[]> {
         return this.projectsService.findByCompanyId(companyId);
     }

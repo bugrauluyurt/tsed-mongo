@@ -38,14 +38,14 @@ export class CalendarEventsService {
 
     async save(event: CalendarEvent) {
         CalendarEventsService.checkPrecondition(event);
-        $log.debug({message: "Validate event", event});
+        $log.debug({ message: "Validate event", event });
         const eventModel = new this.Event(event);
 
         await eventModel.validate();
-        $log.debug({message: "Save event", eventModel});
-        await eventModel.update(event, {upsert: true});
+        $log.debug({ message: "Save event", eventModel });
+        await eventModel.update(event, { upsert: true });
 
-        $log.debug({message: "Event saved", event});
+        $log.debug({ message: "Event saved", event });
 
         return eventModel;
     }
@@ -55,9 +55,7 @@ export class CalendarEventsService {
      * @returns {CalendarEvent[]}
      */
     async query(calendarId: string): Promise<CalendarEvent[]> {
-        const events = await this.Event
-            .find({calendarId: calendarId})
-            .exec();
+        const events = await this.Event.find({ calendarId: calendarId }).exec();
 
         return events;
     }

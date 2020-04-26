@@ -1,1 +1,1 @@
-export { UseRequiredQueryParams } from "./UseRequiredQueryParams";
+export { UseRequiredParams } from "./UseRequiredParams";
