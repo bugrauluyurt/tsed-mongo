@@ -13,11 +13,11 @@ export class ErrorHandlerMiddleware extends GlobalErrorHandlerMiddleware {
                 type: _.get(error, "type"),
                 key: _.get(error, "body.key"),
                 message: _.get(error, "body.message"),
-                origin: _.get(error, "origin") || _.get(request, "url")
+                origin: _.get(error, "origin") || _.get(request, "url"),
             });
             if (isDev()) {
                 request.log.error({
-                    error: { customError, stack: _.get(error, "stack") }
+                    error: { customError, stack: _.get(error, "stack") },
                 });
             }
             this.setHeaders(response, error, error.origin);

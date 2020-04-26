@@ -1,9 +1,9 @@
 import { Inject, Service } from "@tsed/common";
 import { MongooseModel } from "@tsed/mongoose";
-import { $log } from "ts-log-debug";
-import { User } from "../../models/users/User";
-import { isDev } from "../../../config/env";
 import * as _ from "lodash";
+import { $log } from "ts-log-debug";
+import { isDev } from "../../../config/env";
+import { User } from "../../models/users/User";
 
 @Service()
 export class UsersService {
@@ -20,7 +20,7 @@ export class UsersService {
         const users = await this.User.find({});
 
         if (users.length === 0) {
-            const promises = require("../../../resources/users,json").map(user => this.save(user));
+            const promises = require("../../../resources/users,json").map((user) => this.save(user));
             await Promise.all(promises);
         }
     }
@@ -35,26 +35,26 @@ export class UsersService {
 
     async findByEmail(email: string): Promise<User> {
         $log.debug("Search a user by email", email);
-        const users = await this.query( { email });
+        const users = await this.query({ email });
         $log.debug("Users found", users);
         return _.get(users, "0");
     }
 
     async findByCredential(email: string, password: string): Promise<User> {
         $log.debug("Search a user by email", email);
-        const users = await this.query( { email, password });
+        const users = await this.query({ email, password });
         $log.debug("Users found", users);
         return _.get(users, "0");
     }
 
     async save(user: Partial<User>): Promise<User> {
-        $log.debug({message: "Validate user", User});
+        $log.debug({ message: "Validate user", User });
 
         const model = new this.User(user);
-        $log.debug({message: "Save user", user});
+        $log.debug({ message: "Save user", user });
         await model.save();
 
-        $log.debug({message: "User saved", model});
+        $log.debug({ message: "User saved", model });
 
         return model;
     }

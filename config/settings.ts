@@ -24,7 +24,7 @@ export const getSessionSettings = (MongoStore: MongoStoreFactory, mongooseConnec
         store: new MongoStore({
             mongooseConnection,
             secret,
-            touchAfter: 24 * 3600 // time period in seconds
+            touchAfter: 24 * 3600, // time period in seconds
         }),
         resave: true, // do not automatically write to the session store
         saveUninitialized: false,
@@ -34,7 +34,7 @@ export const getSessionSettings = (MongoStore: MongoStoreFactory, mongooseConnec
             httpOnly: true,
             secure: true,
             maxAge: null,
-        } as CookieOptions
+        } as CookieOptions,
     };
     if (process.env.DOMAIN_CLIENT) {
         sessionSettings.cookie.domain = process.env.DOMAIN_CLIENT;
@@ -65,23 +65,20 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
             mount: {
                 "/rest": `${rootDir}/controllers/**/**.ts`,
             },
-            componentsScan: [
-                `${rootDir}/services/**/**.ts`,
-                `${rootDir}/middlewares/**/**.ts`,
-            ],
+            componentsScan: [`${rootDir}/services/**/**.ts`, `${rootDir}/middlewares/**/**.ts`],
             mongoose: {
                 urls: {
                     default: {
                         url: getMongoUrl(),
                         connectionOptions: getMongoConnectionOptions(),
-                    }
+                    },
                 },
             },
             passport: {
-                userInfoModel: User
+                userInfoModel: User,
             },
             swagger: {
-                path: "/api-docs"
+                path: "/api-docs",
             },
         },
         morgan: process.env.MORGAN_CONFIG,

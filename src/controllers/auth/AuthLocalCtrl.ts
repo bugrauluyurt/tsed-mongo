@@ -8,19 +8,17 @@ import { IUser } from "../../models/users/User.interface";
 
 function passportAuthenticate(event: string) {
     return (request: Express.Request, response: Express.Response, next: Express.NextFunction) => {
-        Passport
-            .authenticate(event, (err, user: IUser) => {
+        Passport.authenticate(event, (err, user: IUser) => {
+            if (err) return next(err);
+            if (!user) {
+                return next(new BadRequest("Wrong email or password"));
+            }
+
+            request.logIn(user, (err) => {
                 if (err) return next(err);
-                if (!user) {
-                    return next(new BadRequest("Wrong email or password"));
-                }
-
-                request.logIn(user, (err) => {
-                    if (err) return next(err);
-                    response.json(user);
-                });
-
-            })(request, response, next);
+                response.json(user);
+            });
+        })(request, response, next);
     };
 }
 
@@ -33,8 +31,7 @@ export class AuthLocalCtrl {
      */
     @Post("/login")
     @UseAfter(passportAuthenticate("login"))
-    async login(@Required() @BodyParams("email") email: string,
-                @Required() @BodyParams("password") password: string) {
+    async login(@Required() @BodyParams("email") email: string, @Required() @BodyParams("password") password: string) {
         checkEmail(email);
         checkPassword(password);
         // DO SOMETHING
@@ -48,9 +45,11 @@ export class AuthLocalCtrl {
      */
     @Post("/signup")
     @UseAfter(passportAuthenticate("signup"))
-    async signup(@Required() @BodyParams("name") name: string,
-                 @Required() @BodyParams("email") email: string,
-                 @Required() @BodyParams("password") password: string) {
+    async signup(
+        @Required() @BodyParams("name") name: string,
+        @Required() @BodyParams("email") email: string,
+        @Required() @BodyParams("password") password: string
+    ) {
         checkEmail(email);
         checkPassword(password);
         // DO SOMETHING

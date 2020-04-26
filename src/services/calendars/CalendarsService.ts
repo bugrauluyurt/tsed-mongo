@@ -3,7 +3,6 @@ import { MongooseModel } from "@tsed/mongoose";
 import { $log } from "ts-log-debug";
 import { Calendar } from "../../models/calendars/Calendar";
 
-
 @Service()
 export class CalendarsService {
     @Inject(Calendar)
@@ -17,7 +16,7 @@ export class CalendarsService {
         const calendars = await this.Calendar.find({});
 
         if (calendars.length === 0) {
-            const promises = require("../../../resources/calendars.json").map(calendar => this.save(calendar));
+            const promises = require("../../../resources/calendars.json").map((calendar) => this.save(calendar));
             await Promise.all(promises);
         }
     }
@@ -41,13 +40,13 @@ export class CalendarsService {
      * @returns {Promise<TResult|TResult2|Calendar>}
      */
     async save(calendar: Calendar): Promise<Calendar> {
-        $log.debug({message: "Validate calendar", calendar});
+        $log.debug({ message: "Validate calendar", calendar });
 
         const model = new this.Calendar(calendar);
-        $log.debug({message: "Save calendar", calendar});
+        $log.debug({ message: "Save calendar", calendar });
         await model.save();
 
-        $log.debug({message: "Calendar saved", model});
+        $log.debug({ message: "Calendar saved", model });
 
         return model;
     }
@@ -72,8 +71,10 @@ export class CalendarsService {
     async clear() {
         const calendars = await this.query();
 
-        await Promise.all(calendars.map((calendar) => {
-            return this.remove(calendar._id);
-        }));
+        await Promise.all(
+            calendars.map((calendar) => {
+                return this.remove(calendar._id);
+            })
+        );
     }
 }

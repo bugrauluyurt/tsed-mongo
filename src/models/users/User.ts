@@ -1,11 +1,11 @@
 import { MaxLength, MinLength, Property, Required } from "@tsed/common";
-import { Model, ObjectID, PreHook, Unique, Ref } from "@tsed/mongoose";
+import { Model, ObjectID, PreHook, Ref, Unique } from "@tsed/mongoose";
 import { Description } from "@tsed/swagger";
 import * as _ from "lodash";
-import { UserRole } from "./UserRole";
-import { Company } from "../companies/Company";
 import { Schema } from "mongoose";
+import { Company } from "../companies/Company";
 import { CompanyUtils } from "../companies/Company.utils";
+import { UserRole } from "./UserRole";
 
 @Model()
 export class User {
@@ -64,4 +64,3 @@ export const UserSchemaDefinition = {
     companies: [{ type: Schema.Types.ObjectId, ref: CompanyUtils.MODEL_NAME }],
     roles: { type: Array, default: [UserRole.BASIC] },
 };
-

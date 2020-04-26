@@ -11,6 +11,5 @@ import { ProjectsService } from "../../services/projects/ProjectsService";
  */
 @Controller("/projects")
 export class CalendarsCtrl {
-    constructor(private projectsService: ProjectsService) {
-    }
+    constructor(private projectsService: ProjectsService) {}
 }
