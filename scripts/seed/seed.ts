@@ -75,6 +75,7 @@ export class Seed<IModel> {
     }
 
     private preSeedExec(seedState: SeedState): Promise<any> {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         return Bluebird.mapSeries(this.preSeedBatch, (preSeedItem) => {});
     }
 
@@ -89,6 +90,7 @@ export class Seed<IModel> {
     }
 
     private postSeedExec(seedState: SeedState): Promise<any> {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         return Bluebird.mapSeries(this.postSeedBatch, (postSeedItem) => {});
     }
 
