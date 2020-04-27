@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const paths = require("./paths");
 const fs = require("fs");
 
@@ -15,7 +16,7 @@ export const registerDotEnvFiles = () => {
         dotenvFiles.push(paths.dotenv.dev);
     }
 
-    dotenvFiles.forEach(dotenvFile => {
+    dotenvFiles.forEach((dotenvFile) => {
         if (fs.existsSync(dotenvFile)) {
             require("dotenv").config({
                 path: dotenvFile,

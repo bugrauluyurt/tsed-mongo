@@ -6,20 +6,12 @@ import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
 import { Project } from "../../models/projects/Project";
 import { UseRequiredParams } from "../../decorators";
 
-/**
- * Add @Controller annotation to declare your class as Router controller.
- * The first param is the global path for your controller.
- * The others params is the controller dependencies.
- *
- * In this case, EventsCtrl is a dependency of CalendarsCtrl.
- * All routes of EventsCtrl will be mounted on the `/calendars` path.
- */
 @Controller("/projects")
-export class CalendarsCtrl {
+export class ProjectsCtrl {
     constructor(private projectsService: ProjectsService) {}
 
     @Get("/")
-    @Summary("Return projects by companyId, additional filtering by query params is enabled")
+    @Summary("Return active projects by companyId, additional filtering by query params is enabled")
     @Status(200, {
         description: "Success",
         type: Project,

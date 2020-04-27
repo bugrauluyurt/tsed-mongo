@@ -9,6 +9,8 @@ import * as path from "path";
 import { getMongoConnection } from "../config/connection";
 import { isProd, registerDotEnvFiles } from "../config/env";
 import { getServerSettings, getSessionSettings } from "../config/settings";
+import { UserAgentMiddleware } from "./middlewares/userAgent/userAgentMiddleware";
+import { ParameterPollutionMiddleware } from "./middlewares/parameterPollution/parameterPollutionMiddleware";
 
 registerDotEnvFiles();
 const rootDir = path.resolve(__dirname);
@@ -43,6 +45,8 @@ export class Server extends ServerLoader {
 
         this.use(morgan("common", { stream: accessLogStream }))
             .use(GlobalAcceptMimesMiddleware)
+            .use(UserAgentMiddleware)
+            .use(ParameterPollutionMiddleware)
             .use(cors())
             .use(cookieParser())
             .use(compress({}))
