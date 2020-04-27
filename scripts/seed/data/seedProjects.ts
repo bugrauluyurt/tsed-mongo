@@ -16,7 +16,7 @@ const createProjects = (
     company: Company,
     seedState: SeedState,
     projectTypes: ProjectType[],
-    requiredProjectCount: number = 5
+    requiredProjectCount = 5
 ): Promise<Project[]> => {
     const projectsPromiseBatch = [];
     let count = requiredProjectCount;
@@ -27,6 +27,7 @@ const createProjects = (
             company: company._id,
             projectName: `Project_${fakeProjectName.replace(/ /g, "_")}`,
             projectType: _.get(randomProjectType, "0._id"),
+            active: true,
         };
         return projectModel.create(projectTemplate);
     };
@@ -40,5 +41,5 @@ const createProjects = (
 module.exports = {
     schema: projectSchema,
     model: projectModel,
-    createProjects: createProjects
+    createProjects: createProjects,
 };

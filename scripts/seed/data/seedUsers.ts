@@ -20,7 +20,7 @@ const createUserDocumentTemplate = (hashedPassword: string, randomCompanyIds: st
         phone: userCard.phone,
         address: `${userCard.address.street} ${userCard.address.suite} ${userCard.address.city} ${userCard.address.zipcode}`,
         companies: randomCompanyIds,
-        roles: [UserRole.BASIC]
+        roles: [UserRole.BASIC],
     } as IUser;
 };
 
@@ -28,15 +28,9 @@ module.exports = {
     schema: userSchema,
     model: userModel,
     createTemplate: createUserDocumentTemplate,
-    seed: (new Seed<IUser>(userModel, UserUtils.COLLECTION_NAME, {documentCount: 20}))
-        .beforeEach([
-            () => createDefaultPassword(),
-        ])
-        .insertMany((
-            beforeEachResponse: string[],
-            index: number,
-            seedState: SeedState,
-            preSeedResponse) => {
+    seed: new Seed<IUser>(userModel, UserUtils.COLLECTION_NAME, { documentCount: 20 })
+        .beforeEach([() => createDefaultPassword()])
+        .insertMany((beforeEachResponse: string[], index: number, seedState: SeedState, preSeedResponse) => {
             // INFO
             // Previous seeded collections can be reached at each document level by using seedState instance.
             // seedState.getState() OR seedState.getCollection(collectionName)
