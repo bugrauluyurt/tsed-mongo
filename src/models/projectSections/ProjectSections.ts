@@ -23,7 +23,7 @@ export class ProjectSection {
 
     @Property()
     @Description("Active status indicator")
-    active: boolean;
+    active: number;
 
     @PreHook("save")
     static preSave(projectSection: ProjectSection, next) {
@@ -36,5 +36,5 @@ export class ProjectSection {
 export const ProjectSectionSchemaDefinition = {
     projectId: { type: Schema.Types.ObjectId, index: true },
     projectSectionName: String,
-    active: Boolean,
+    active: Number,
 };

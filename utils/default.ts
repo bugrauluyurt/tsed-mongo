@@ -1,6 +1,7 @@
 import * as chalk from "chalk";
 import * as moment from "moment";
 import { Chalk } from "chalk";
+import { LetterCase } from "../src/enums/letterCase";
 const LOG_BLACK_LIST = ["secret"];
 
 const getCircularReplacer = () => {
@@ -16,8 +17,11 @@ const getCircularReplacer = () => {
     };
 };
 
-export const firstLetterUpperCase = (str: string): string => {
-    const firstLetter = str.substring(0, 1).toUpperCase();
+export const firstLetterToggleCase = (str: string, letterCase: LetterCase): string => {
+    let firstLetter = str.substring(0, 1).toUpperCase();
+    if (letterCase === LetterCase.LOWER) {
+        firstLetter = firstLetter.toLowerCase();
+    }
     const remainingLetters = str.substring(1, str.length);
     return `${firstLetter}${remainingLetters}`;
 };
@@ -26,7 +30,7 @@ export const logWithColor = (key, value, shouldStringify = true, color: Chalk = 
     const colorBold = chalk.bold;
     const timeStamp = moment().format("YYYY-MM-DDTHH:MM:SS.SSS");
 
-    const keyLogMessage = colorBold(firstLetterUpperCase(key));
+    const keyLogMessage = colorBold(firstLetterToggleCase(key, LetterCase.UPPER));
     const valueLogMessage = shouldStringify ? JSON.stringify(value) : value;
 
     const defaultLogMessage = color(`[${timeStamp}] [INFO] [ULOG] -`);

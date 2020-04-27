@@ -2,6 +2,7 @@ import { MaxLength, MinLength, Required, Property, Default } from "@tsed/common"
 import { Model, ObjectID } from "@tsed/mongoose";
 import { Description } from "@tsed/swagger";
 import { CompanyUtils } from "./Company.utils";
+import { ActiveStatus } from "../../enums/activeStatus";
 
 @Model()
 export class Company {
@@ -22,13 +23,12 @@ export class Company {
     @Property()
     @Default(true)
     @Description("Shows if the company is active or not")
-    active: boolean;
+    active: number;
 }
 
 // [SEED] Schema Definition
 export const CompanySchemaDefinition = {
     companyName: String,
     domain: String,
-    active: { type: Boolean, default: true },
+    active: { type: Number, default: ActiveStatus.ACTIVE },
 };
-
