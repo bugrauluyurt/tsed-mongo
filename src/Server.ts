@@ -30,6 +30,7 @@ export class Server extends ServerLoader {
             session = require("express-session"),
             mongoStore: MongoStoreFactory = require("connect-mongo")(session),
             cors = require("cors"),
+            helmet = require("helmet"),
             morgan = require("morgan");
 
         // create a rotating write stream for logging
@@ -47,6 +48,7 @@ export class Server extends ServerLoader {
             .use(GlobalAcceptMimesMiddleware)
             .use(UserAgentMiddleware)
             .use(ParameterPollutionMiddleware)
+            .use(helmet())
             .use(cors())
             .use(cookieParser())
             .use(compress({}))
