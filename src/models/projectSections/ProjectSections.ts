@@ -26,7 +26,7 @@ export class ProjectSection {
     active: number;
 
     @PreHook("save")
-    static preSave(projectSection: ProjectSection, next) {
+    static preSave(projectSection: ProjectSection, next): void {
         preSaveActiveStatus(projectSection);
         next();
     }

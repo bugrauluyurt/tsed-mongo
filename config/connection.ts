@@ -5,10 +5,10 @@ import * as mongoose from "mongoose";
 import { ConnectionOptions, Mongoose } from "mongoose";
 
 export const getMongoConnectionOptions = (): ConnectionOptions => {
-    return {useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true};
+    return { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true };
 };
 
-export const getMongoConnection = async (logContext: string = "Connection"): Promise<Mongoose> => {
+export const getMongoConnection = async (logContext = "Connection"): Promise<Mongoose> => {
     const dbUrl = getMongoUrl();
     try {
         logWithColor(logContext, `Connecting to DB -> ${dbUrl}`, false);

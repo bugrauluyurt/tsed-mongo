@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import * as faker from "faker";
 import { Seed, SeedState } from "../seed";
 import * as mongoose from "mongoose";
@@ -18,8 +19,8 @@ const companySchema = new mongoose.Schema(CompanySchemaDefinition);
 const companyModel = mongoose.model<Company & mongoose.Document>(CompanyUtils.MODEL_NAME, companySchema);
 const domainDefaultCharCount = 16;
 
-const createFakeDomainName = (companyName: string, includeWebSignature: boolean = true): string => {
-    let domainNameBody = companyName.replace(/\W/ig, "");
+const createFakeDomainName = (companyName: string, includeWebSignature = true): string => {
+    let domainNameBody = companyName.replace(/\W/gi, "");
     if (domainNameBody.length > CompanyUtils.MAX_DOMAIN_NAME) {
         domainNameBody = domainNameBody.substr(0, CompanyUtils.MAX_DOMAIN_NAME - domainDefaultCharCount);
     }
@@ -31,29 +32,24 @@ const createFakeDomainName = (companyName: string, includeWebSignature: boolean 
 };
 
 const createCompanyProjectAdmin = (documentIndex: number, company: Company): Promise<User> => {
-    return createAdminPassword()
-        .then((hashedPassword: string) => {
-            const userDocumentTemplate = seedUsers.createTemplate(hashedPassword);
-            const fakeDomainName = createFakeDomainName(company.companyName, false);
-            userDocumentTemplate.name = ADMIN_USER_NAME;
-            userDocumentTemplate.password = hashedPassword;
-            userDocumentTemplate.email = `${ADMIN_USER_NAME}@${fakeDomainName}.com`;
-            userDocumentTemplate.companies = [company._id];
-            userDocumentTemplate.roles = [UserRole.PROJECT_ADMIN];
-            return seedUsers.model.create(userDocumentTemplate);
-        });
+    return createAdminPassword().then((hashedPassword: string) => {
+        const userDocumentTemplate = seedUsers.createTemplate(hashedPassword);
+        const fakeDomainName = createFakeDomainName(company.companyName, false);
+        userDocumentTemplate.name = ADMIN_USER_NAME;
+        userDocumentTemplate.password = hashedPassword;
+        userDocumentTemplate.email = `${ADMIN_USER_NAME}@${fakeDomainName}.com`;
+        userDocumentTemplate.companies = [company._id];
+        userDocumentTemplate.roles = [UserRole.PROJECT_ADMIN];
+        return seedUsers.model.create(userDocumentTemplate);
+    });
 };
 
 module.exports = {
     schema: companySchema,
     model: companyModel,
-    seed: (new Seed<Company>(companyModel, CompanyUtils.COLLECTION_NAME, {documentCount: 20}))
+    seed: new Seed<Company>(companyModel, CompanyUtils.COLLECTION_NAME, { documentCount: 20 })
         .preSeed(seedProjects.model.deleteMany({}))
-        .insertMany((
-            beforeEachResponse: string[],
-            index: number,
-            seedState: SeedState,
-            preSeedResponse) => {
+        .insertMany((beforeEachResponse: string[], index: number, seedState: SeedState, preSeedResponse) => {
             // INFO
             // Previous seeded collections can be reached at each document level by using seedState instance.
             // seedState.getState() OR seedState.getCollection(collectionName)
@@ -68,8 +64,14 @@ module.exports = {
                 const projectTypes = seedState.getCollection(ProjectTypeUtils.COLLECTION_NAME);
                 return Promise.resolve(true)
                     .then(() => createCompanyProjectAdmin(documentIndex, createdCompany))
-                    .then(() => logWithColor("[SEED]", `Seeding [${ProjectUtils.COLLECTION_NAME}] for [Company -> ${createdCompany.companyName}] into database...`, false))
+                    .then(() =>
+                        logWithColor(
+                            "[SEED]",
+                            `Seeding [${ProjectUtils.COLLECTION_NAME}] for [Company -> ${createdCompany.companyName}] into database...`,
+                            false
+                        )
+                    )
                     .then(() => seedProjects.createProjects(createdCompany, seedState, projectTypes));
-            }]
-        )
+            },
+        ]),
 };
