@@ -29,7 +29,7 @@ module.exports = {
     model: userModel,
     createTemplate: createUserDocumentTemplate,
     seed: new Seed<IUser>(userModel, UserUtils.COLLECTION_NAME, { documentCount: 20 })
-        .beforeEach([() => createDefaultPassword()])
+        .beforeEach([(): Promise<string> => createDefaultPassword()])
         .insertMany((beforeEachResponse: string[], index: number, seedState: SeedState, preSeedResponse) => {
             // INFO
             // Previous seeded collections can be reached at each document level by using seedState instance.

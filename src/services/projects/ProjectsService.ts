@@ -9,8 +9,9 @@ export class ProjectsService {
     @Inject(Project)
     private Project: MongooseModel<Project>;
     async findByCompanyId(companyId: string, activeStatus = 1): Promise<Project[]> {
-        return await this.Project.find({ company: companyId, active: activeStatus }).populate(
+        const projects = await this.Project.find({ company: companyId, active: activeStatus }).populate(
             getFieldNameFromClassName(ProjectTypeUtils.MODEL_NAME)
         );
+        return projects;
     }
 }

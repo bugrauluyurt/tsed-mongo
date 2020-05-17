@@ -31,7 +31,7 @@ export const RequiredParamsMiddleware = (meta: RequiredParamsMiddlewareMeta) => 
         const reqQuery = req[paramType] || {};
         const missingParams = _.filter(requiredParams, (requiredParam) => {
             return !reqQuery[requiredParam];
-        });
+        }) as string[];
         if (!_.isEmpty(missingParams)) {
             const errorMessage = generateErrorMessage(
                 RequiredParamsMiddlewareErrorMessages[RequiredParamsMiddlewareErrorKeys.MISSING_PARAMS],

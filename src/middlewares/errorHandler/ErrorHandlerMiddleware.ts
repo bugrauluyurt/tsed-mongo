@@ -16,7 +16,7 @@ export class ErrorHandlerMiddleware extends GlobalErrorHandlerMiddleware {
                 origin: _.get(error, "origin") || _.get(request, "url"),
             });
             if (isDev()) {
-                request.log.error({
+                request["log"].error({
                     error: { customError, stack: _.get(error, "stack") },
                 });
             }
