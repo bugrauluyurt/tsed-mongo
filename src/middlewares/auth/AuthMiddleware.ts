@@ -1,4 +1,4 @@
-import { EndpointInfo, IMiddleware, Middleware, Next, Req, Header, Locals } from "@tsed/common";
+import { EndpointInfo, IMiddleware, Middleware, Next, Req, Locals } from "@tsed/common";
 import * as _ from "lodash";
 import { User } from "src/models/users/User";
 import { Forbidden, Unauthorized } from "ts-httpexceptions";
@@ -12,8 +12,8 @@ export class AuthMiddleware implements IMiddleware {
         @Req() request: Express.Request,
         @EndpointInfo() endpoint: EndpointInfo,
         @Locals() locals: any,
-        @Next() next: Express.NextFunction
-    ): Express.NextFunction {
+        @Next() next: Next
+    ): void {
         if (isDev() && _.includes(locals.ua, UserAgents.POSTMAN)) {
             return next();
         }

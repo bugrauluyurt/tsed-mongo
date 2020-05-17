@@ -5,6 +5,7 @@ import {
     RequiredParamsMiddlewareErrorMessages,
 } from "./errors/RequiredParamsMiddlewareErrors";
 import { RequiredParamsMiddlewareMeta } from "src/types/RequiredParamsMiddlewareMeta";
+import { Next } from "@tsed/common";
 
 const fillParamType = (errorMessage: string, type: string): string => {
     return _.replace(errorMessage, "[PARAM_TYPE]", type);
@@ -20,7 +21,7 @@ const generateErrorMessage = (errorMessage: string, type: string, missingParams?
 };
 
 export const RequiredParamsMiddleware = (meta: RequiredParamsMiddlewareMeta) => {
-    return (req: Express.Request, res: Express.Response, next: Express.NextFunction): void => {
+    return (req: Express.Request, res: Express.Response, next: Next): void => {
         const { requiredParams, type } = meta;
         if (_.isEmpty(requiredParams)) {
             const errorMessage =
