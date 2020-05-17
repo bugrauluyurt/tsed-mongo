@@ -20,7 +20,7 @@ export class UsersService {
         const users = await this.User.find({});
 
         if (users.length === 0) {
-            const promises = require("../../../resources/users,json").map((user) => this.save(user));
+            const promises = require("../../../resources/users.json").map((user) => this.save(user));
             await Promise.all(promises);
         }
     }

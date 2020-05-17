@@ -1,6 +1,5 @@
 import { Indexed, Model, ObjectID, PreHook, Ref } from "@tsed/mongoose";
 import { Property, Required } from "@tsed/common";
-import { ProjectType } from "../projectTypes/projectType";
 import { Description } from "@tsed/swagger";
 import { Company } from "../companies/Company";
 import { Team } from "../teams/Team";
@@ -12,6 +11,7 @@ import { preSaveActiveStatus } from "../../../utils/preSaveActiveStatus";
 import { ProjectTypeUtils } from "../projectTypes/ProjectType.utils";
 import { ProjectSection } from "../projectSections/ProjectSections";
 import { ProjectSectionsUtils } from "../projectSections/ProjectSections.utils";
+import { ProjectType } from "../projectTypes/ProjectType";
 
 @Model()
 export class Project {
