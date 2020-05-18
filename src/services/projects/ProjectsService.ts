@@ -5,8 +5,8 @@ import { getFieldNameFromClassName } from "../../../utils/populateByName";
 import { ProjectTypeUtils } from "../../models/projectTypes/ProjectType.utils";
 import { Company } from "../../models/companies/Company";
 import * as _ from "lodash";
-import { BadRequest } from "ts-httpexceptions";
-import { ERROR_COMPANY_MISSING, ERROR_NO_COMPANY_ID } from "../../errors/ProjectsError";
+import { BadRequest, NotFound } from "ts-httpexceptions";
+import { ERROR_NO_COMPANY_ID, ERROR_NO_PROJECT, ERROR_NO_PROJECT_ID } from "../../errors/ProjectsError";
 
 @Service()
 export class ProjectsService {
@@ -21,8 +21,12 @@ export class ProjectsService {
             .exec();
     }
 
-    async getProjectById(projectId: string): Promise<Project> {
-        return await this.Project.findById(projectId).exec();
+    async findProjectById(projectId: string): Promise<Project> {
+        const project = await this.Project.findById(projectId).exec();
+        if (!project) {
+            throw new NotFound(ERROR_NO_PROJECT);
+        }
+        return project;
     }
 
     async addProject(project: Project): Promise<Project> {
@@ -33,8 +37,10 @@ export class ProjectsService {
         return await this.Project.create(model);
     }
 
-    async updateProject(projectId: string, project: Omit<Project, "companyId" | "_id">): Promise<Project> {
-        // @TODO: Validate project partial. Ref Id existence if automatically validated by idValidator plugin on the model itself.
+    async updateProject(projectId: string, project: Partial<Project>): Promise<Project> {
+        if (_.isEmpty(projectId)) {
+            throw new BadRequest(ERROR_NO_PROJECT_ID);
+        }
         return await this.Project.findByIdAndUpdate(projectId, project, { omitUndefined: true }).exec();
     }
 }

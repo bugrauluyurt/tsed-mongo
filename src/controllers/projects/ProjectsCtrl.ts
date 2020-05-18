@@ -1,4 +1,15 @@
-import { Controller, Get, UseAuth, Status, QueryParams, Post, BodyParams, Req } from "@tsed/common";
+import {
+    Controller,
+    Get,
+    UseAuth,
+    Status,
+    QueryParams,
+    Post,
+    BodyParams,
+    Req,
+    PathParams,
+    Required,
+} from "@tsed/common";
 import { ProjectsService } from "../../services/projects/ProjectsService";
 import { Summary } from "@tsed/swagger";
 import { UserRole, UserRolesAll } from "../../models/users/UserRole";
@@ -24,6 +35,18 @@ export class ProjectsCtrl {
         @QueryParams("active") activeStatus = 1
     ): Promise<Project[]> {
         return this.projectsService.findByCompanyId(companyId, activeStatus);
+    }
+
+    @Get("/projects/:projectId")
+    @Summary("Return an existing project by its projecId")
+    @Status(200, {
+        description: "Success",
+        type: Project,
+        collectionType: Project,
+    })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
+    async getProject(@PathParams("projectId") @Required() projectId: string): Promise<Project> {
+        return this.projectsService.findProjectById(projectId);
     }
 
     @Post("/add")
