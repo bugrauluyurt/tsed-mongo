@@ -1,6 +1,6 @@
 import { Err, GlobalErrorHandlerMiddleware, OverrideProvider, Req, Res } from "@tsed/common";
 import * as _ from "lodash";
-import { Exception } from "ts-httpexceptions";
+import { Exception } from "@tsed/exceptions";
 import { isDev } from "../../../config/env";
 import CustomError from "../../models/customErrors/CustomError";
 

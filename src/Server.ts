@@ -53,12 +53,12 @@ export class Server extends ServerLoader {
             .use(cookieParser())
             .use(compress({}))
             .use(methodOverride())
-            .use(bodyParser.json())
             .use(
                 bodyParser.urlencoded({
                     extended: true,
                 })
             )
+            .use(bodyParser.json())
             .use(session(sessionSettings));
 
         return Promise.resolve();

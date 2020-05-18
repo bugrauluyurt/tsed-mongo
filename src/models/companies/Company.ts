@@ -1,8 +1,9 @@
 import { MaxLength, MinLength, Required, Property, Default } from "@tsed/common";
-import { Model, ObjectID } from "@tsed/mongoose";
+import { Model, ObjectID, PreHook } from "@tsed/mongoose";
 import { Description } from "@tsed/swagger";
 import { CompanyUtils } from "./Company.utils";
 import { ActiveStatus } from "../../enums/activeStatus";
+import { preSaveActiveStatus } from "../../../utils/preSaveActiveStatus";
 
 @Model()
 export class Company {
@@ -24,6 +25,12 @@ export class Company {
     @Default(true)
     @Description("Shows if the company is active or not")
     active: number;
+
+    @PreHook("save")
+    static preSave(company: Company, next): void {
+        preSaveActiveStatus(company);
+        next();
+    }
 }
 
 // [SEED] Schema Definition

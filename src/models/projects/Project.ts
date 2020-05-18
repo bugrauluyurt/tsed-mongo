@@ -1,4 +1,4 @@
-import { Indexed, Model, ObjectID, PreHook, Ref } from "@tsed/mongoose";
+import { Indexed, Model, MongoosePlugin, ObjectID, PreHook, Ref } from "@tsed/mongoose";
 import { Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { Company } from "../companies/Company";
@@ -12,8 +12,10 @@ import { ProjectTypeUtils } from "../projectTypes/ProjectType.utils";
 import { ProjectSection } from "../projectSections/ProjectSections";
 import { ProjectSectionsUtils } from "../projectSections/ProjectSections.utils";
 import { ProjectType } from "../projectTypes/ProjectType";
+import * as IdValidator from "mongoose-id-validator";
 
 @Model()
+@MongoosePlugin(IdValidator)
 export class Project {
     @ObjectID("id")
     _id: string;

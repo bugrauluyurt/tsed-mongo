@@ -1,7 +1,7 @@
-import { Controller, Get, UseAuth, Status, QueryParams, Post, BodyParams } from "@tsed/common";
+import { Controller, Get, UseAuth, Status, QueryParams, Post, BodyParams, Req } from "@tsed/common";
 import { ProjectsService } from "../../services/projects/ProjectsService";
 import { Summary } from "@tsed/swagger";
-import { UserRolesAll } from "../../models/users/UserRole";
+import { UserRole, UserRolesAll } from "../../models/users/UserRole";
 import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
 import { Project } from "../../models/projects/Project";
 import { UseRequiredParams } from "../../decorators";
@@ -26,16 +26,15 @@ export class ProjectsCtrl {
         return this.projectsService.findByCompanyId(companyId, activeStatus);
     }
 
-    // @Post("/add")
-    // @Summary("Adds a project")
-    // @Status(200, {
-    //     description: "Success",
-    //     type: Project,
-    //     collectionType: Project,
-    // })
-    // @UseRequiredParams({ type: "query", requiredParams: ["companyId"] })
-    // @UseAuth(AuthMiddleware, { roles: UserRolesAll })
-    // async addProject(@BodyParams({ required: true, useValidation: true }) project: Project): any {
-    //     //return this.projectsService.findByCompanyId(companyId, activeStatus);
-    // }
+    @Post("/add")
+    @Summary("Adds a project")
+    @Status(200, {
+        description: "Success",
+        type: Project,
+        collectionType: Project,
+    })
+    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN] })
+    async addProject(req: Req): Promise<Project> {
+        return this.projectsService.addProject(req.body as Project);
+    }
 }
