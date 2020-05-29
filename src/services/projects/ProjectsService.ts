@@ -1,19 +1,19 @@
 import { Service, Inject } from "@tsed/common";
-import { Project } from "../../models/projects/Project";
-import { MongooseModel } from "@tsed/mongoose";
+import { Project, ProjectModel } from "../../models/projects/Project";
 import { getFieldNameFromClassName } from "../../../utils/populateByName";
 import { ProjectTypeUtils } from "../../models/projectTypes/ProjectType.utils";
-import { Company } from "../../models/companies/Company";
 import * as _ from "lodash";
 import { BadRequest, NotFound } from "ts-httpexceptions";
 import { ERROR_NO_COMPANY_ID, ERROR_NO_PROJECT, ERROR_NO_PROJECT_ID } from "../../errors/ProjectsError";
+import { MongooseModel } from "../../types/MongooseModel";
 
 @Service()
 export class ProjectsService {
-    @Inject(Project)
     private Project: MongooseModel<Project>;
-    @Inject(Company)
-    private Company: MongooseModel<Company>;
+
+    constructor() {
+        this.Project = ProjectModel as MongooseModel<Project>;
+    }
 
     async findByCompanyId(companyId: string, activeStatus = 1): Promise<Project[]> {
         return await this.Project.find({ company: companyId, active: activeStatus })
@@ -37,10 +37,13 @@ export class ProjectsService {
         return await this.Project.create(model);
     }
 
-    async updateProject(projectId: string, project: Partial<Project>): Promise<Project> {
+    async updateProject(projectId: string, projectPartial: Partial<Project>): Promise<Project> {
         if (_.isEmpty(projectId)) {
             throw new BadRequest(ERROR_NO_PROJECT_ID);
         }
-        return await this.Project.findByIdAndUpdate(projectId, project, { omitUndefined: true }).exec();
+        const projectResponse = await this.Project.findByIdAndUpdate(projectId, projectPartial, {
+            omitUndefined: true,
+        }).exec();
+        return Promise.resolve({ ...projectResponse, ...projectPartial });
     }
 }

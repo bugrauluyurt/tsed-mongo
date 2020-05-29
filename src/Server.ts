@@ -4,6 +4,7 @@ import { GlobalAcceptMimesMiddleware, ServerLoader, ServerSettings } from "@tsed
 import "@tsed/mongoose";
 import "@tsed/passport";
 import "@tsed/swagger";
+import "reflect-metadata";
 import { MongoStoreFactory } from "connect-mongo";
 import * as path from "path";
 import { getMongoConnection } from "../config/connection";

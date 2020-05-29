@@ -1,9 +1,9 @@
-import { Indexed, Model, MongoosePlugin, ObjectID, PreHook, Ref } from "@tsed/mongoose";
+import { Indexed, Model, MongoosePlugin, MongooseSchema, ObjectID, PreHook, Ref } from "@tsed/mongoose";
 import { Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { Company } from "../companies/Company";
 import { Team } from "../teams/Team";
-import * as _ from "lodash";
+import * as mongoose from "mongoose";
 import { Schema } from "mongoose";
 import { CompanyUtils } from "../companies/Company.utils";
 import { TeamUtils } from "../teams/Team.utils";
@@ -13,8 +13,32 @@ import { ProjectSection } from "../projectSections/ProjectSections";
 import { ProjectSectionsUtils } from "../projectSections/ProjectSections.utils";
 import { ProjectType } from "../projectTypes/ProjectType";
 import * as IdValidator from "mongoose-id-validator";
+import { foreignKeyHelper } from "../../../utils/foreignKeyHelper";
+import { ProjectUtils } from "./Project.utils";
+import * as _ from "lodash";
+import { ERROR_COMPANY_MISSING } from "../../errors/ProjectsError";
 
-@Model()
+// [SEED] Schema Definition
+export const ProjectSchemaDefinition = {
+    company: {
+        type: Schema.Types.ObjectId,
+        ref: CompanyUtils.MODEL_NAME,
+        validate: {
+            validator: (v): Promise<boolean> => {
+                return foreignKeyHelper(mongoose.model(CompanyUtils.MODEL_NAME), v);
+            },
+            message: ERROR_COMPANY_MISSING,
+        },
+        index: true,
+    },
+    projectName: String,
+    projectSections: [{ type: Schema.Types.ObjectId, ref: ProjectSectionsUtils.MODEL_NAME }],
+    projectType: { type: Schema.Types.ObjectId, ref: ProjectTypeUtils.MODEL_NAME },
+    teams: [{ type: Schema.Types.ObjectId, ref: TeamUtils.MODEL_NAME }],
+    active: Number,
+};
+
+@MongooseSchema()
 @MongoosePlugin(IdValidator)
 export class Project {
     @ObjectID("id")
@@ -49,7 +73,7 @@ export class Project {
     active = 1;
 
     @PreHook("save")
-    static preSave(project: Project, next): void {
+    static preSave(project: Project, next): any {
         if (_.isEmpty(project.projectSections)) {
             project.projectSections = [];
         }
@@ -57,16 +81,8 @@ export class Project {
             project.teams = [];
         }
         preSaveActiveStatus(project);
-        next();
+        return Promise.all([foreignKeyHelper(Company, _.get(project, "company"))]);
     }
 }
 
-// [SEED] Schema Definition
-export const ProjectSchemaDefinition = {
-    company: { type: Schema.Types.ObjectId, ref: CompanyUtils.MODEL_NAME, index: true },
-    projectName: String,
-    projectSections: [{ type: Schema.Types.ObjectId, ref: ProjectSectionsUtils.MODEL_NAME }],
-    projectType: { type: Schema.Types.ObjectId, ref: ProjectTypeUtils.MODEL_NAME },
-    teams: [{ type: Schema.Types.ObjectId, ref: TeamUtils.MODEL_NAME }],
-    active: Number,
-};
+export const ProjectModel = mongoose.model(ProjectUtils.MODEL_NAME, new Schema(ProjectSchemaDefinition));
