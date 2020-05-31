@@ -2,6 +2,7 @@ import * as chalk from "chalk";
 import * as moment from "moment";
 import { Chalk } from "chalk";
 import { LetterCase } from "../src/enums/letterCase";
+import * as _ from "lodash";
 const LOG_BLACK_LIST = ["secret"];
 
 const getCircularReplacer = () => {
@@ -18,6 +19,9 @@ const getCircularReplacer = () => {
 };
 
 export const firstLetterToggleCase = (str: string, letterCase: LetterCase): string => {
+    if (_.isEmpty(str)) {
+        return "";
+    }
     let firstLetter = str.substring(0, 1).toUpperCase();
     if (letterCase === LetterCase.LOWER) {
         firstLetter = firstLetter.toLowerCase();

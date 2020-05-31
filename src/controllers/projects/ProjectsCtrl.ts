@@ -18,7 +18,6 @@ import { UserRole, UserRolesAll } from "../../models/users/UserRole";
 import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
 import { Project } from "../../models/projects/Project";
 import { UseRequiredParams } from "../../decorators";
-import * as _ from "lodash";
 
 @Controller("/projects")
 export class ProjectsCtrl {
@@ -80,12 +79,38 @@ export class ProjectsCtrl {
     }
 
     @Delete("/:projectId/remove")
-    @Summary("Update a project")
+    @Summary("Delete a project")
     @Status(200, {
         description: "Success",
     })
     @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN] })
     async removeProject(@PathParams("projectId") projectId: string): Promise<Project> {
         return this.projectsService.removeProject(projectId);
+    }
+
+    @Patch("/:projectId/team/update")
+    @Summary("Updates the teams of the project")
+    @Status(200, {
+        description: "Success",
+    })
+    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN, UserRole.PROJECT_MANAGER] })
+    async updateTeams(
+        @PathParams("projectId") projectId: string,
+        @Required() @BodyParams("teamIds") teamIds: string[]
+    ): Promise<Project> {
+        return this.projectsService.updateTeams(projectId, teamIds);
+    }
+
+    @Patch("/:projectId/projectsection/update")
+    @Summary("Updates the projectSections of the project")
+    @Status(200, {
+        description: "Success",
+    })
+    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN, UserRole.PROJECT_MANAGER] })
+    async updateProjectSections(
+        @PathParams("projectId") projectId: string,
+        @Required() @BodyParams("projectSectionIds") projectSectionIds: string[]
+    ): Promise<Project> {
+        return this.projectsService.updateProjectSections(projectId, projectSectionIds);
     }
 }

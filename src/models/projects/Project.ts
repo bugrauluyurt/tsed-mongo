@@ -25,6 +25,7 @@ import {
     ERROR_TEAM_MISSING,
     ERROR_PROJECT_ADMIN_MISSING,
     ERROR_PROJECT_MANAGER_MISSING,
+    ERROR_NOT_VALID_PROJECT_SECTION,
 } from "../../errors/ProjectsError";
 import { User } from "../users/User";
 import { UserUtils } from "../users/User.utils";
@@ -44,35 +45,54 @@ export const ProjectSchemaDefinition = {
         minLength: [2, ERROR_PROJECT_NAME_MIN_LENGTH],
         maxLength: [2, ERROR_PROJECT_NAME_MAX_LENGTH],
     },
-    projectSections: [{ type: Schema.Types.ObjectId, ref: ProjectSectionsUtils.MODEL_NAME }],
+    projectSections: {
+        type: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: ProjectSectionsUtils.MODEL_NAME,
+                validate: getForeignKeyValidator.call(
+                    this,
+                    ProjectSectionsUtils.MODEL_NAME,
+                    ERROR_NOT_VALID_PROJECT_SECTION
+                ),
+            },
+        ],
+    },
     projectType: {
         type: Schema.Types.ObjectId,
         ref: ProjectTypeUtils.MODEL_NAME,
         required: [true, ERROR_PROJECT_TYPE_MISSING],
         validate: getForeignKeyValidator.call(this, ProjectTypeUtils.MODEL_NAME, ERROR_NOT_VALID_PROJECT_TYPE),
     },
-    projectAdmins: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: UserUtils.MODEL_NAME,
-            required: [true, ERROR_PROJECT_ADMIN_MISSING],
-            validate: getForeignKeyValidator.call(this, UserUtils.MODEL_NAME, ERROR_PROJECT_ADMIN_MISSING),
-        },
-    ],
-    projectManagers: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: UserUtils.MODEL_NAME,
-            validate: getForeignKeyValidator.call(this, UserUtils.MODEL_NAME, ERROR_PROJECT_MANAGER_MISSING),
-        },
-    ],
-    teams: [
-        {
-            type: Schema.Types.ObjectId,
-            ref: TeamUtils.MODEL_NAME,
-            validate: getForeignKeyValidator.call(this, TeamUtils.MODEL_NAME, ERROR_TEAM_MISSING),
-        },
-    ],
+    projectAdmins: {
+        type: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: UserUtils.MODEL_NAME,
+                required: [true, ERROR_PROJECT_ADMIN_MISSING],
+                validate: getForeignKeyValidator.call(this, UserUtils.MODEL_NAME, ERROR_PROJECT_ADMIN_MISSING),
+            },
+        ],
+        required: [true, ERROR_PROJECT_ADMIN_MISSING],
+    },
+    projectManagers: {
+        type: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: UserUtils.MODEL_NAME,
+                validate: getForeignKeyValidator.call(this, UserUtils.MODEL_NAME, ERROR_PROJECT_MANAGER_MISSING),
+            },
+        ],
+    },
+    teams: {
+        type: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: TeamUtils.MODEL_NAME,
+                validate: getForeignKeyValidator.call(this, TeamUtils.MODEL_NAME, ERROR_TEAM_MISSING),
+            },
+        ],
+    },
     active: Number,
 };
 

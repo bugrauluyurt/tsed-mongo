@@ -17,7 +17,7 @@ export class ErrorHandlerMiddleware extends GlobalErrorHandlerMiddleware {
                 origin: _.get(error, "origin") || _.get(request, "url"),
             });
             const stack = _.get(error, "stack", "");
-            if (stack.indexOf("ValidationError") !== -1) {
+            if (stack.indexOf("ValidationError") !== -1 || stack.indexOf("CastError") !== -1) {
                 customError.message = _.get(stack.split("\n"), "0");
             }
             if (isDev()) {

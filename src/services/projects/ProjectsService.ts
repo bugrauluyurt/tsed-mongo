@@ -4,7 +4,13 @@ import { getFieldNameFromClassName } from "../../../utils/populateByName";
 import { ProjectTypeUtils } from "../../models/projectTypes/ProjectType.utils";
 import * as _ from "lodash";
 import { BadRequest, NotFound } from "ts-httpexceptions";
-import { ERROR_NO_COMPANY_ID, ERROR_NO_PROJECT, ERROR_NO_PROJECT_ID } from "../../errors/ProjectsError";
+import {
+    ERROR_NO_COMPANY_ID,
+    ERROR_NO_PROJECT,
+    ERROR_NO_PROJECT_ID,
+    ERROR_NO_PROJECT_SECTION_ID,
+    ERROR_NO_TEAM_ID,
+} from "../../errors/ProjectsError";
 import { MongooseModel } from "../../types/MongooseModel";
 
 @Service()
@@ -53,5 +59,35 @@ export class ProjectsService {
             throw new BadRequest(ERROR_NO_PROJECT_ID);
         }
         return await this.Project.findByIdAndDelete(projectId).exec();
+    }
+
+    async updateTeams(projectId: string, teamIds: string[]): Promise<Project> {
+        if (_.isEmpty(teamIds)) {
+            throw new BadRequest(ERROR_NO_TEAM_ID);
+        }
+        return await this.Project.findOneAndUpdate(
+            { _id: projectId },
+            { teams: teamIds },
+            {
+                omitUndefined: true,
+                new: true,
+                runValidators: true,
+            }
+        ).exec();
+    }
+
+    async updateProjectSections(projectId: string, projectSectionIds: string[]): Promise<Project> {
+        if (_.isEmpty(projectSectionIds)) {
+            throw new BadRequest(ERROR_NO_PROJECT_SECTION_ID);
+        }
+        return await this.Project.findOneAndUpdate(
+            { _id: projectId },
+            { projectSections: projectSectionIds },
+            {
+                omitUndefined: true,
+                new: true,
+                runValidators: true,
+            }
+        ).exec();
     }
 }
