@@ -6,5 +6,7 @@ export const ERROR_PROJECT_NAME_MISSING = "Project name missing.";
 export const ERROR_PROJECT_NAME_MIN_LENGTH = "Project name min length should be 3 characters";
 export const ERROR_PROJECT_NAME_MAX_LENGTH = "Project name min length should be 100 characters";
 export const ERROR_PROJECT_TYPE_MISSING = "Project type missing.";
+export const ERROR_PROJECT_ADMIN_MISSING = "Project admin missing.";
+export const ERROR_PROJECT_MANAGER_MISSING = "Project manager missing.";
 export const ERROR_NOT_VALID_PROJECT_TYPE = "Not a valid project type.";
 export const ERROR_TEAM_MISSING = "Team does not exist.";

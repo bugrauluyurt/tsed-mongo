@@ -11,6 +11,7 @@ import { User } from "../../../src/models/users/User";
 import { ProjectTypeUtils } from "../../../src/models/projectTypes/ProjectType.utils";
 import { logWithColor } from "../../../utils/default";
 import { ProjectUtils } from "../../../src/models/projects/Project.utils";
+import { ProjectModel } from "../../../src/models/projects/Project";
 
 const seedUsers = require("./seedUsers");
 const seedProjects = require("./seedProjects");
@@ -31,7 +32,7 @@ const createFakeDomainName = (companyName: string, includeWebSignature = true): 
     return `https://www.${lowerCasedDomainNameBody}.com`;
 };
 
-const createCompanyProjectAdmin = (documentIndex: number, company: Company): Promise<User> => {
+const createCompanyProjectAdmin = (documentIndex: number, company: Company): Promise<mongoose.Document | User> => {
     return createAdminPassword().then((hashedPassword: string) => {
         const userDocumentTemplate = seedUsers.createTemplate(hashedPassword);
         const fakeDomainName = createFakeDomainName(company.companyName, false);
@@ -48,7 +49,7 @@ module.exports = {
     schema: companySchema,
     model: companyModel,
     seed: new Seed<Company>(companyModel, CompanyUtils.COLLECTION_NAME, { documentCount: 20 })
-        .preSeed(seedProjects.model.deleteMany({}))
+        .preSeed(ProjectModel.deleteMany({}).exec())
         .insertMany((beforeEachResponse: string[], index: number, seedState: SeedState, preSeedResponse) => {
             // INFO
             // Previous seeded collections can be reached at each document level by using seedState instance.
@@ -64,14 +65,17 @@ module.exports = {
                 const projectTypes = seedState.getCollection(ProjectTypeUtils.COLLECTION_NAME);
                 return Promise.resolve(true)
                     .then(() => createCompanyProjectAdmin(documentIndex, createdCompany))
-                    .then(() =>
+                    .then((projectAdmin: User) => {
                         logWithColor(
                             "[SEED]",
                             `Seeding [${ProjectUtils.COLLECTION_NAME}] for [Company -> ${createdCompany.companyName}] into database...`,
                             false
-                        )
-                    )
-                    .then(() => seedProjects.createProjects(createdCompany, seedState, projectTypes));
+                        );
+                        return projectAdmin;
+                    })
+                    .then((projectAdmin) =>
+                        seedProjects.createProjects(projectAdmin, createdCompany, seedState, projectTypes)
+                    );
             },
         ]),
 };

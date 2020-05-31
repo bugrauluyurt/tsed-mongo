@@ -23,7 +23,11 @@ import {
     ERROR_PROJECT_TYPE_MISSING,
     ERROR_NOT_VALID_PROJECT_TYPE,
     ERROR_TEAM_MISSING,
+    ERROR_PROJECT_ADMIN_MISSING,
+    ERROR_PROJECT_MANAGER_MISSING,
 } from "../../errors/ProjectsError";
+import { User } from "../users/User";
+import { UserUtils } from "../users/User.utils";
 
 // Schema Definition
 export const ProjectSchemaDefinition = {
@@ -47,6 +51,21 @@ export const ProjectSchemaDefinition = {
         required: [true, ERROR_PROJECT_TYPE_MISSING],
         validate: getForeignKeyValidator.call(this, ProjectTypeUtils.MODEL_NAME, ERROR_NOT_VALID_PROJECT_TYPE),
     },
+    projectAdmins: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: UserUtils.MODEL_NAME,
+            required: [true, ERROR_PROJECT_ADMIN_MISSING],
+            validate: getForeignKeyValidator.call(this, UserUtils.MODEL_NAME, ERROR_PROJECT_ADMIN_MISSING),
+        },
+    ],
+    projectManagers: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: UserUtils.MODEL_NAME,
+            validate: getForeignKeyValidator.call(this, UserUtils.MODEL_NAME, ERROR_PROJECT_MANAGER_MISSING),
+        },
+    ],
     teams: [
         {
             type: Schema.Types.ObjectId,
@@ -64,6 +83,9 @@ ProjectSchema.pre("save", function <Project>(next) {
     }
     if (_.isEmpty(this.teams)) {
         this.teams = [];
+    }
+    if (_.isEmpty(this.projectManagers)) {
+        this.projectManagers = [];
     }
     preSaveActiveStatus(this);
     next();
@@ -92,6 +114,17 @@ export class Project {
     @Ref(ProjectType)
     @Description("Project's type")
     projectType: Ref<ProjectType>; // should be populated, not-expensive
+
+    @Required()
+    @Ref(User)
+    @Description("Project's admins who can do crud operations")
+    projectAdmins: Ref<User[]>;
+
+    @Ref(User)
+    @Description(
+        "Project's managers who are authorized to do team changes, change the active status of the projects and manipulate project sections"
+    )
+    projectManagers: Ref<User[]>;
 
     @Property()
     @Ref(Team)
