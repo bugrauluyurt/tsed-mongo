@@ -1,4 +1,4 @@
-import { Service, Inject } from "@tsed/common";
+import { Service } from "@tsed/common";
 import { Project, ProjectModel } from "../../models/projects/Project";
 import { getFieldNameFromClassName } from "../../../utils/populateByName";
 import { ProjectTypeUtils } from "../../models/projectTypes/ProjectType.utils";
@@ -41,9 +41,17 @@ export class ProjectsService {
         if (_.isEmpty(projectId)) {
             throw new BadRequest(ERROR_NO_PROJECT_ID);
         }
-        const projectResponse = await this.Project.findByIdAndUpdate(projectId, projectPartial, {
+        return await this.Project.findByIdAndUpdate(projectId, projectPartial, {
             omitUndefined: true,
+            new: true,
+            runValidators: true,
         }).exec();
-        return Promise.resolve({ ...projectResponse, ...projectPartial });
+    }
+
+    async removeProject(projectId: string): Promise<Project> {
+        if (_.isEmpty(projectId)) {
+            throw new BadRequest(ERROR_NO_PROJECT_ID);
+        }
+        return await this.Project.findByIdAndDelete(projectId).exec();
     }
 }

@@ -1,4 +1,4 @@
-import { Indexed, Model, MongoosePlugin, MongooseSchema, ObjectID, PreHook, Ref } from "@tsed/mongoose";
+import { Indexed, MongooseSchema, ObjectID, Ref } from "@tsed/mongoose";
 import { Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { Company } from "../companies/Company";
@@ -12,34 +12,64 @@ import { ProjectTypeUtils } from "../projectTypes/ProjectType.utils";
 import { ProjectSection } from "../projectSections/ProjectSections";
 import { ProjectSectionsUtils } from "../projectSections/ProjectSections.utils";
 import { ProjectType } from "../projectTypes/ProjectType";
-import * as IdValidator from "mongoose-id-validator";
-import { foreignKeyHelper } from "../../../utils/foreignKeyHelper";
+import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
 import { ProjectUtils } from "./Project.utils";
 import * as _ from "lodash";
-import { ERROR_COMPANY_MISSING } from "../../errors/ProjectsError";
+import {
+    ERROR_COMPANY_MISSING,
+    ERROR_PROJECT_NAME_MAX_LENGTH,
+    ERROR_PROJECT_NAME_MIN_LENGTH,
+    ERROR_PROJECT_NAME_MISSING,
+    ERROR_PROJECT_TYPE_MISSING,
+    ERROR_NOT_VALID_PROJECT_TYPE,
+    ERROR_TEAM_MISSING,
+} from "../../errors/ProjectsError";
 
-// [SEED] Schema Definition
+// Schema Definition
 export const ProjectSchemaDefinition = {
     company: {
         type: Schema.Types.ObjectId,
         ref: CompanyUtils.MODEL_NAME,
-        validate: {
-            validator: (v): Promise<boolean> => {
-                return foreignKeyHelper(mongoose.model(CompanyUtils.MODEL_NAME), v);
-            },
-            message: ERROR_COMPANY_MISSING,
-        },
+        required: [true, ERROR_COMPANY_MISSING],
+        validate: getForeignKeyValidator.call(this, CompanyUtils.MODEL_NAME, ERROR_COMPANY_MISSING),
         index: true,
     },
-    projectName: String,
+    projectName: {
+        type: String,
+        required: [true, ERROR_PROJECT_NAME_MISSING],
+        minLength: [2, ERROR_PROJECT_NAME_MIN_LENGTH],
+        maxLength: [2, ERROR_PROJECT_NAME_MAX_LENGTH],
+    },
     projectSections: [{ type: Schema.Types.ObjectId, ref: ProjectSectionsUtils.MODEL_NAME }],
-    projectType: { type: Schema.Types.ObjectId, ref: ProjectTypeUtils.MODEL_NAME },
-    teams: [{ type: Schema.Types.ObjectId, ref: TeamUtils.MODEL_NAME }],
+    projectType: {
+        type: Schema.Types.ObjectId,
+        ref: ProjectTypeUtils.MODEL_NAME,
+        required: [true, ERROR_PROJECT_TYPE_MISSING],
+        validate: getForeignKeyValidator.call(this, ProjectTypeUtils.MODEL_NAME, ERROR_NOT_VALID_PROJECT_TYPE),
+    },
+    teams: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: TeamUtils.MODEL_NAME,
+            validate: getForeignKeyValidator.call(this, TeamUtils.MODEL_NAME, ERROR_TEAM_MISSING),
+        },
+    ],
     active: Number,
 };
 
+export const ProjectSchema = new Schema(ProjectSchemaDefinition);
+ProjectSchema.pre("save", function <Project>(next) {
+    if (_.isEmpty(this.projectSections)) {
+        this.projectSections = [];
+    }
+    if (_.isEmpty(this.teams)) {
+        this.teams = [];
+    }
+    preSaveActiveStatus(this);
+    next();
+});
+
 @MongooseSchema()
-@MongoosePlugin(IdValidator)
 export class Project {
     @ObjectID("id")
     _id: string;
@@ -71,18 +101,6 @@ export class Project {
     @Property()
     @Description("Active status indicator")
     active = 1;
-
-    @PreHook("save")
-    static preSave(project: Project, next): any {
-        if (_.isEmpty(project.projectSections)) {
-            project.projectSections = [];
-        }
-        if (_.isEmpty(project.teams)) {
-            project.teams = [];
-        }
-        preSaveActiveStatus(project);
-        return Promise.all([foreignKeyHelper(Company, _.get(project, "company"))]);
-    }
 }
 
-export const ProjectModel = mongoose.model(ProjectUtils.MODEL_NAME, new Schema(ProjectSchemaDefinition));
+export const ProjectModel = mongoose.model(ProjectUtils.MODEL_NAME, ProjectSchema);

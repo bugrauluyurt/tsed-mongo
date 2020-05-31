@@ -10,6 +10,7 @@ import {
     Required,
     Patch,
     BodyParams,
+    Delete,
 } from "@tsed/common";
 import { ProjectsService } from "../../services/projects/ProjectsService";
 import { Summary } from "@tsed/swagger";
@@ -76,5 +77,15 @@ export class ProjectsCtrl {
         @PathParams("projectId") projectId: string
     ): Promise<Project> {
         return this.projectsService.updateProject(projectId, payload as Partial<Project>);
+    }
+
+    @Delete("/:projectId/remove")
+    @Summary("Update a project")
+    @Status(200, {
+        description: "Success",
+    })
+    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN] })
+    async removeProject(@PathParams("projectId") projectId: string): Promise<Project> {
+        return this.projectsService.removeProject(projectId);
     }
 }
