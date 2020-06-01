@@ -1,5 +1,5 @@
 import { MaxLength, MinLength, Property, Required } from "@tsed/common";
-import { Indexed, Model, MongooseSchema, ObjectID, Ref, Unique } from "@tsed/mongoose";
+import { Indexed, MongooseSchema, ObjectID, Ref, Unique } from "@tsed/mongoose";
 import { Description } from "@tsed/swagger";
 import * as mongoose from "mongoose";
 import { Company } from "../companies/Company";
@@ -97,6 +97,7 @@ export const UserSchemaDefinition = {
         default: [UserRole.BASIC],
     },
 };
+// @TODO Add "pre" save hook which updates a dateUpdated value on user object
 
 export const UserSchema = new mongoose.Schema(UserSchemaDefinition);
 export const UserModel = mongoose.model<IUser & mongoose.Document>(UserUtils.MODEL_NAME, UserSchema);

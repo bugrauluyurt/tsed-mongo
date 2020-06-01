@@ -3,6 +3,7 @@ export namespace TaskStatusUtils {
     export const MODEL_NAME = "TaskStatus";
 
     export enum STATUS {
+        READY = "ready",
         WORKING = "working",
         STUCK = "stuck",
         DONE = "done",

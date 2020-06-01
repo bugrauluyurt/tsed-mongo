@@ -29,6 +29,51 @@ import { User } from "../users/User";
 import { UserUtils } from "../users/User.utils";
 import { ActiveStatus } from "../../enums/activeStatus";
 
+@MongooseSchema()
+export class Project {
+    @ObjectID("id")
+    _id: string;
+
+    @Indexed()
+    @Required()
+    @Ref(Company)
+    @Description("Company which project belongs to")
+    company: Ref<Company>;
+
+    @Property()
+    @Required()
+    projectName: string;
+
+    @Ref(ProjectSection)
+    @Description("List of project sections. ProjectSection model")
+    projectSections: Ref<ProjectSection>[] = []; // should be populated, not-expensive
+
+    @Required()
+    @Ref(ProjectType)
+    @Description("Project's type")
+    projectType: Ref<ProjectType>; // should be populated, not-expensive
+
+    @Required()
+    @Ref(User)
+    @Description("Project's admins who can do crud operations")
+    projectAdmins: Ref<User[]>;
+
+    @Ref(User)
+    @Description(
+        "Project's managers who are authorized to do team changes, change the active status of the projects and manipulate project sections"
+    )
+    projectManagers: Ref<User[]>;
+
+    @Property()
+    @Ref(Team)
+    @Description("Teams associated with this project")
+    teams: Ref<Team>[] = [];
+
+    @Property()
+    @Description("Active status indicator")
+    active = 1;
+}
+
 // Schema Definition
 export const ProjectSchemaDefinition = {
     company: {
@@ -97,51 +142,6 @@ export const ProjectSchemaDefinition = {
     },
     active: { type: Number, default: ActiveStatus.ACTIVE },
 };
-
-@MongooseSchema()
-export class Project {
-    @ObjectID("id")
-    _id: string;
-
-    @Indexed()
-    @Required()
-    @Ref(Company)
-    @Description("Company which project belongs to")
-    company: Ref<Company>;
-
-    @Property()
-    @Required()
-    projectName: string;
-
-    @Ref(ProjectSection)
-    @Description("List of project sections. ProjectSection model")
-    projectSections: Ref<ProjectSection>[] = []; // should be populated, not-expensive
-
-    @Required()
-    @Ref(ProjectType)
-    @Description("Project's type")
-    projectType: Ref<ProjectType>; // should be populated, not-expensive
-
-    @Required()
-    @Ref(User)
-    @Description("Project's admins who can do crud operations")
-    projectAdmins: Ref<User[]>;
-
-    @Ref(User)
-    @Description(
-        "Project's managers who are authorized to do team changes, change the active status of the projects and manipulate project sections"
-    )
-    projectManagers: Ref<User[]>;
-
-    @Property()
-    @Ref(Team)
-    @Description("Teams associated with this project")
-    teams: Ref<Team>[] = [];
-
-    @Property()
-    @Description("Active status indicator")
-    active = 1;
-}
 
 export const ProjectSchema = new Schema(ProjectSchemaDefinition);
 export const ProjectModel = mongoose.model(ProjectUtils.MODEL_NAME, ProjectSchema);

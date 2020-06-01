@@ -1,9 +1,8 @@
 import { MaxLength, MinLength, Required, Property, Default } from "@tsed/common";
-import { Model, MongooseSchema, ObjectID, PreHook } from "@tsed/mongoose";
+import { MongooseSchema, ObjectID } from "@tsed/mongoose";
 import { Description } from "@tsed/swagger";
 import { CompanyUtils } from "./Company.utils";
 import { ActiveStatus } from "../../enums/activeStatus";
-import { preSaveActiveStatus } from "../../../utils/preSaveActiveStatus";
 import {
     ERROR_COMPANY_NAME_MISSING,
     ERROR_COMPANY_NAME_MIN_LENGTH,

@@ -12,7 +12,7 @@ export class TaskStatus {
 
     @Required()
     @Enum(TaskStatusUtils.STATUS)
-    @Description("Status of the task, one of working | stuck | done | introCall | negotiation")
+    @Description("Status of the task, one of ready | working | stuck | done | introCall | negotiation")
     name: TaskStatusUtils.STATUS;
 }
 
@@ -22,6 +22,7 @@ export const TaskStatusSchemaDefinition = {
         type: String,
         required: [true, ERROR_TASK_STATUS_NAME_MISSING],
         enum: [
+            TaskStatusUtils.STATUS.READY,
             TaskStatusUtils.STATUS.DONE,
             TaskStatusUtils.STATUS.INTRO_CALL,
             TaskStatusUtils.STATUS.NEGOTIATION,
