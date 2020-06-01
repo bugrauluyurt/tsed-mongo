@@ -1,23 +1,37 @@
 import { MaxLength, MinLength, Property, Required } from "@tsed/common";
-import { Model, ObjectID, PreHook, Ref, Unique } from "@tsed/mongoose";
+import { Indexed, Model, MongooseSchema, ObjectID, Ref, Unique } from "@tsed/mongoose";
 import { Description } from "@tsed/swagger";
-import * as _ from "lodash";
-import { Schema } from "mongoose";
+import * as mongoose from "mongoose";
 import { Company } from "../companies/Company";
 import { CompanyUtils } from "../companies/Company.utils";
-import { UserRole } from "./UserRole";
+import { UserRole, UserRolesAll } from "./UserRole";
+import { UserUtils } from "./User.utils";
+import {
+    ERROR_USER_NAME_MAX_LENGTH,
+    ERROR_USER_NAME_MIN_LENGTH,
+    ERROR_USER_EMAIL_MIN_LENGTH,
+    ERROR_USER_EMAIL_MAX_LENGTH,
+    ERROR_USER_EMAIL_MISSING,
+    ERROR_USER_PASSWORD_MISSING,
+    ERROR_USER_COMPANY_MISSING,
+} from "../../errors/UsersError";
+import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
+import { IUser } from "./User.interface";
 
-@Model()
+@MongooseSchema()
 export class User {
     @ObjectID("id")
     _id: string;
 
     @Property()
+    @MinLength(UserUtils.USER_NAME_MIN_LENGTH)
+    @MaxLength(UserUtils.USER_NAME_MAX_LENGTH)
     @Description("Name of the user")
     name: string;
 
-    @MinLength(10)
-    @MaxLength(100)
+    @MinLength(UserUtils.USER_EMAIL_MIN_LENGTH)
+    @MaxLength(UserUtils.USER_EMAIL_MAX_LENGTH)
+    @Indexed()
     @Unique()
     @Required()
     @Description("Email of the user")
@@ -35,32 +49,54 @@ export class User {
     address: string;
 
     @Description("Company ids that user belongs to. Populated field")
+    @Required()
     @Ref(Company)
     companies: Ref<Company>[] = [];
 
     @Property()
     @Description("List of user roles")
-    roles: UserRole[];
-
-    @PreHook("save")
-    static preSave(user: User, next) {
-        if (_.isEmpty(user.roles)) {
-            user.roles = [UserRole.BASIC];
-        }
-        if (_.isEmpty(user.companies)) {
-            user.companies = [];
-        }
-        next();
-    }
+    roles: UserRole[] = [UserRole.BASIC];
 }
 
-// [SEED] Schema Definition
+// Schema Definition
 export const UserSchemaDefinition = {
-    name: String,
-    email: String,
-    password: String,
+    name: {
+        type: String,
+        minLength: [UserUtils.USER_NAME_MIN_LENGTH, ERROR_USER_NAME_MIN_LENGTH],
+        maxLength: [UserUtils.USER_NAME_MIN_LENGTH, ERROR_USER_NAME_MAX_LENGTH],
+    },
+    // Email validation is done at authentication controller level
+    email: {
+        type: String,
+        minLength: [UserUtils.USER_EMAIL_MIN_LENGTH, ERROR_USER_EMAIL_MIN_LENGTH],
+        maxLength: [UserUtils.USER_EMAIL_MIN_LENGTH, ERROR_USER_EMAIL_MAX_LENGTH],
+        required: [true, ERROR_USER_EMAIL_MISSING],
+        unique: true,
+    },
+    // Password validation is done at authentication controller level
+    password: { type: String, required: [true, ERROR_USER_PASSWORD_MISSING] },
     phone: String,
     address: String,
-    companies: [{ type: Schema.Types.ObjectId, ref: CompanyUtils.MODEL_NAME }],
-    roles: { type: Array, default: [UserRole.BASIC] },
+    companies: {
+        type: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: CompanyUtils.MODEL_NAME,
+                validate: getForeignKeyValidator.call(this, CompanyUtils.MODEL_NAME, ERROR_USER_COMPANY_MISSING),
+            },
+        ],
+        required: [true, ERROR_USER_COMPANY_MISSING],
+    },
+    roles: {
+        type: [
+            {
+                type: String,
+                enum: UserRolesAll,
+            },
+        ],
+        default: [UserRole.BASIC],
+    },
 };
+
+export const UserSchema = new mongoose.Schema(UserSchemaDefinition);
+export const UserModel = mongoose.model<IUser & mongoose.Document>(UserUtils.MODEL_NAME, UserSchema);

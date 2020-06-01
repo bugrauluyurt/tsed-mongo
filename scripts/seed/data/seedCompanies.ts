@@ -2,12 +2,12 @@
 import * as faker from "faker";
 import { Seed, SeedState } from "../seed";
 import * as mongoose from "mongoose";
-import { Company, CompanySchemaDefinition } from "../../../src/models/companies/Company";
+import { Company, CompanyModel } from "../../../src/models/companies/Company";
 import * as _ from "lodash";
 import { CompanyUtils } from "../../../src/models/companies/Company.utils";
 import { UserRole } from "../../../src/models/users/UserRole";
 import { ADMIN_USER_NAME, createAdminPassword } from "../seedUtils";
-import { User } from "../../../src/models/users/User";
+import { User, UserModel } from "../../../src/models/users/User";
 import { ProjectTypeUtils } from "../../../src/models/projectTypes/ProjectType.utils";
 import { logWithColor } from "../../../utils/default";
 import { ProjectUtils } from "../../../src/models/projects/Project.utils";
@@ -16,8 +16,6 @@ import { ProjectModel } from "../../../src/models/projects/Project";
 const seedUsers = require("./seedUsers");
 const seedProjects = require("./seedProjects");
 
-const companySchema = new mongoose.Schema(CompanySchemaDefinition);
-const companyModel = mongoose.model<Company & mongoose.Document>(CompanyUtils.MODEL_NAME, companySchema);
 const domainDefaultCharCount = 16;
 
 const createFakeDomainName = (companyName: string, includeWebSignature = true): string => {
@@ -41,14 +39,12 @@ const createCompanyProjectAdmin = (documentIndex: number, company: Company): Pro
         userDocumentTemplate.email = `${ADMIN_USER_NAME}@${fakeDomainName}.com`;
         userDocumentTemplate.companies = [company._id];
         userDocumentTemplate.roles = [UserRole.PROJECT_ADMIN];
-        return seedUsers.model.create(userDocumentTemplate);
+        return UserModel.create(userDocumentTemplate);
     });
 };
 
 module.exports = {
-    schema: companySchema,
-    model: companyModel,
-    seed: new Seed<Company>(companyModel, CompanyUtils.COLLECTION_NAME, { documentCount: 20 })
+    seed: new Seed<Company>(CompanyModel, CompanyUtils.COLLECTION_NAME, { documentCount: 20 })
         .preSeed(ProjectModel.deleteMany({}).exec())
         .insertMany((beforeEachResponse: string[], index: number, seedState: SeedState, preSeedResponse) => {
             // INFO
@@ -68,7 +64,7 @@ module.exports = {
                     .then((projectAdmin: User) => {
                         logWithColor(
                             "[SEED]",
-                            `Seeding [${ProjectUtils.COLLECTION_NAME}] for [Company -> ${createdCompany.companyName}] into database...`,
+                            `Seeding [${ProjectUtils.COLLECTION_NAME}] for [Company] -> ${createdCompany.companyName}] into database...`,
                             false
                         );
                         return projectAdmin;

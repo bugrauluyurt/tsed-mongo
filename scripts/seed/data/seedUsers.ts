@@ -1,15 +1,11 @@
 import * as faker from "faker";
 import { Seed, SeedState } from "../seed";
 import { IUser } from "../../../src/models/users/User.interface";
-import * as mongoose from "mongoose";
-import { UserSchemaDefinition } from "../../../src/models/users/User";
 import { UserUtils } from "../../../src/models/users/User.utils";
 import { createDefaultPassword, getRandomUniqueSeedItems } from "../seedUtils";
 import { CompanyUtils } from "../../../src/models/companies/Company.utils";
 import { UserRole } from "../../../src/models/users/UserRole";
-
-const userSchema = new mongoose.Schema(UserSchemaDefinition);
-const userModel = mongoose.model<IUser & mongoose.Document>(UserUtils.COLLECTION_NAME, userSchema);
+import { UserModel } from "../../../src/models/users/User";
 
 const createUserDocumentTemplate = (hashedPassword: string, randomCompanyIds: string[] = []): IUser => {
     const userCard = faker.helpers.userCard();
@@ -25,10 +21,8 @@ const createUserDocumentTemplate = (hashedPassword: string, randomCompanyIds: st
 };
 
 module.exports = {
-    schema: userSchema,
-    model: userModel,
     createTemplate: createUserDocumentTemplate,
-    seed: new Seed<IUser>(userModel, UserUtils.COLLECTION_NAME, { documentCount: 20 })
+    seed: new Seed<IUser>(UserModel, UserUtils.COLLECTION_NAME, { documentCount: 20 })
         .beforeEach([(): Promise<string> => createDefaultPassword()])
         .insertMany((beforeEachResponse: string[], index: number, seedState: SeedState, preSeedResponse) => {
             // INFO

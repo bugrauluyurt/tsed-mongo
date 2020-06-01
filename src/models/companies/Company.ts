@@ -1,11 +1,20 @@
 import { MaxLength, MinLength, Required, Property, Default } from "@tsed/common";
-import { Model, ObjectID, PreHook } from "@tsed/mongoose";
+import { Model, MongooseSchema, ObjectID, PreHook } from "@tsed/mongoose";
 import { Description } from "@tsed/swagger";
 import { CompanyUtils } from "./Company.utils";
 import { ActiveStatus } from "../../enums/activeStatus";
 import { preSaveActiveStatus } from "../../../utils/preSaveActiveStatus";
+import {
+    ERROR_COMPANY_NAME_MISSING,
+    ERROR_COMPANY_NAME_MIN_LENGTH,
+    ERROR_COMPANY_NAME_MAX_LENGTH,
+    ERROR_COMPANY_DOMAIN_NAME_MIN_LENGTH,
+    ERROR_COMPANY_DOMAIN_NAME_MAX_LENGTH,
+} from "../../errors/CompaniesError";
+import { Schema } from "mongoose";
+import * as mongoose from "mongoose";
 
-@Model()
+@MongooseSchema()
 export class Company {
     @ObjectID("id")
     _id: string;
@@ -24,18 +33,24 @@ export class Company {
     @Property()
     @Default(true)
     @Description("Shows if the company is active or not")
-    active: number;
-
-    @PreHook("save")
-    static preSave(company: Company, next): void {
-        preSaveActiveStatus(company);
-        next();
-    }
+    active: number = ActiveStatus.ACTIVE;
 }
 
-// [SEED] Schema Definition
+// Schema Definition
 export const CompanySchemaDefinition = {
-    companyName: String,
-    domain: String,
+    companyName: {
+        type: String,
+        required: [true, ERROR_COMPANY_NAME_MISSING],
+        minLength: [CompanyUtils.MIN_NAME, ERROR_COMPANY_NAME_MIN_LENGTH],
+        maxLength: [CompanyUtils.MAX_NAME, ERROR_COMPANY_NAME_MAX_LENGTH],
+    },
+    domain: {
+        type: String,
+        minLength: [CompanyUtils.MIN_DOMAIN_NAME, ERROR_COMPANY_DOMAIN_NAME_MIN_LENGTH],
+        maxLength: [CompanyUtils.MAX_DOMAIN_NAME, ERROR_COMPANY_DOMAIN_NAME_MAX_LENGTH],
+    },
     active: { type: Number, default: ActiveStatus.ACTIVE },
 };
+
+export const CompanySchema = new Schema(CompanySchemaDefinition);
+export const CompanyModel = mongoose.model<Company & mongoose.Document>(CompanyUtils.MODEL_NAME, CompanySchema);

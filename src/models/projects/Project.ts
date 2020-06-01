@@ -7,14 +7,12 @@ import * as mongoose from "mongoose";
 import { Schema } from "mongoose";
 import { CompanyUtils } from "../companies/Company.utils";
 import { TeamUtils } from "../teams/Team.utils";
-import { preSaveActiveStatus } from "../../../utils/preSaveActiveStatus";
 import { ProjectTypeUtils } from "../projectTypes/ProjectType.utils";
 import { ProjectSection } from "../projectSections/ProjectSections";
 import { ProjectSectionsUtils } from "../projectSections/ProjectSections.utils";
 import { ProjectType } from "../projectTypes/ProjectType";
 import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
 import { ProjectUtils } from "./Project.utils";
-import * as _ from "lodash";
 import {
     ERROR_COMPANY_MISSING,
     ERROR_PROJECT_NAME_MAX_LENGTH,
@@ -29,6 +27,7 @@ import {
 } from "../../errors/ProjectsError";
 import { User } from "../users/User";
 import { UserUtils } from "../users/User.utils";
+import { ActiveStatus } from "../../enums/activeStatus";
 
 // Schema Definition
 export const ProjectSchemaDefinition = {
@@ -43,7 +42,7 @@ export const ProjectSchemaDefinition = {
         type: String,
         required: [true, ERROR_PROJECT_NAME_MISSING],
         minLength: [2, ERROR_PROJECT_NAME_MIN_LENGTH],
-        maxLength: [2, ERROR_PROJECT_NAME_MAX_LENGTH],
+        maxLength: [100, ERROR_PROJECT_NAME_MAX_LENGTH],
     },
     projectSections: {
         type: [
@@ -57,6 +56,7 @@ export const ProjectSchemaDefinition = {
                 ),
             },
         ],
+        default: [],
     },
     projectType: {
         type: Schema.Types.ObjectId,
@@ -83,6 +83,7 @@ export const ProjectSchemaDefinition = {
                 validate: getForeignKeyValidator.call(this, UserUtils.MODEL_NAME, ERROR_PROJECT_MANAGER_MISSING),
             },
         ],
+        default: [],
     },
     teams: {
         type: [
@@ -92,24 +93,10 @@ export const ProjectSchemaDefinition = {
                 validate: getForeignKeyValidator.call(this, TeamUtils.MODEL_NAME, ERROR_TEAM_MISSING),
             },
         ],
+        default: [],
     },
-    active: Number,
+    active: { type: Number, default: ActiveStatus.ACTIVE },
 };
-
-export const ProjectSchema = new Schema(ProjectSchemaDefinition);
-ProjectSchema.pre("save", function <Project>(next) {
-    if (_.isEmpty(this.projectSections)) {
-        this.projectSections = [];
-    }
-    if (_.isEmpty(this.teams)) {
-        this.teams = [];
-    }
-    if (_.isEmpty(this.projectManagers)) {
-        this.projectManagers = [];
-    }
-    preSaveActiveStatus(this);
-    next();
-});
 
 @MongooseSchema()
 export class Project {
@@ -156,4 +143,5 @@ export class Project {
     active = 1;
 }
 
+export const ProjectSchema = new Schema(ProjectSchemaDefinition);
 export const ProjectModel = mongoose.model(ProjectUtils.MODEL_NAME, ProjectSchema);

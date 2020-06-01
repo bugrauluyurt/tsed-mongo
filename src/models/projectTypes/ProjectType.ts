@@ -1,9 +1,12 @@
-import { ObjectID, Model } from "@tsed/mongoose";
+import { ObjectID, MongooseSchema } from "@tsed/mongoose";
 import { Enum } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { ProjectTypeUtils } from "./ProjectType.utils";
+import { ERROR_PROJECT_TYPE_NAME_MISSING } from "../../errors/ProjectTypesError";
+import { Schema } from "mongoose";
+import * as mongoose from "mongoose";
 
-@Model()
+@MongooseSchema()
 export class ProjectType {
     @ObjectID("id")
     _id: string;
@@ -13,7 +16,17 @@ export class ProjectType {
     name: ProjectTypeUtils.TYPE;
 }
 
-// [SEED] Schema Definition
+// Schema Definition
 export const ProjectTypesSchemaDefinition = {
-    name: String,
+    name: {
+        type: String,
+        required: [true, ERROR_PROJECT_TYPE_NAME_MISSING],
+        enum: [ProjectTypeUtils.TYPE.MANAGEMENT, ProjectTypeUtils.TYPE.SALES],
+    },
 };
+
+export const ProjectTypeSchema = new Schema(ProjectTypesSchemaDefinition);
+export const ProjectTypeModel = mongoose.model<ProjectType & mongoose.Document>(
+    ProjectTypeUtils.MODEL_NAME,
+    ProjectTypeSchema
+);

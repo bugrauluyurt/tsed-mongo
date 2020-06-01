@@ -1,20 +1,12 @@
 import { Seed, SeedState } from "../seed";
-import * as mongoose from "mongoose";
-import { ProjectType, ProjectTypesSchemaDefinition } from "../../../src/models/projectTypes/ProjectType";
+import { ProjectType, ProjectTypeModel } from "../../../src/models/projectTypes/ProjectType";
 import { ProjectTypeUtils } from "../../../src/models/projectTypes/ProjectType.utils";
 
-const projectTypeSchema = new mongoose.Schema(ProjectTypesSchemaDefinition);
-const projectTypeModel = mongoose.model<ProjectType & mongoose.Document>(
-    ProjectTypeUtils.COLLECTION_NAME,
-    projectTypeSchema
-);
 const projectTypeKeys = Object.keys(ProjectTypeUtils.TYPE);
 const projectTypeCount = projectTypeKeys.length;
 
 module.exports = {
-    schema: projectTypeSchema,
-    model: projectTypeModel,
-    seed: new Seed<ProjectType>(projectTypeModel, ProjectTypeUtils.COLLECTION_NAME, {
+    seed: new Seed<ProjectType>(ProjectTypeModel, ProjectTypeUtils.COLLECTION_NAME, {
         documentCount: projectTypeCount,
     }).insertMany((beforeEachResponse: string[], index: number, seedState: SeedState, preSeedResponse) => {
         // INFO
