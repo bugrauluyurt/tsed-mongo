@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import "@tsed/ajv";
-import { GlobalAcceptMimesMiddleware, ServerLoader, ServerSettings } from "@tsed/common";
+import {
+    GlobalAcceptMimesMiddleware,
+    ServerLoader,
+    ServerSettings,
+    Configuration,
+    PlatformApplication,
+    Inject,
+} from "@tsed/common";
 import "@tsed/mongoose";
 import "@tsed/passport";
 import "@tsed/swagger";
@@ -17,8 +24,14 @@ registerDotEnvFiles();
 const rootDir = path.resolve(__dirname);
 const { server: serverSettings } = getServerSettings(rootDir);
 
-@ServerSettings(serverSettings)
+@Configuration(serverSettings)
 export class Server extends ServerLoader {
+    @Inject()
+    app: PlatformApplication;
+
+    @Configuration()
+    settings: Configuration;
+
     async $beforeRoutesInit(): Promise<void> {
         await getMongoConnection();
 
@@ -45,7 +58,8 @@ export class Server extends ServerLoader {
             this.set("trust proxy", 1); // trust first proxy
         }
 
-        this.use(morgan("common", { stream: accessLogStream }))
+        this.app
+            .use(morgan("common", { stream: accessLogStream }))
             .use(GlobalAcceptMimesMiddleware)
             .use(UserAgentMiddleware)
             .use(ParameterPollutionMiddleware)
