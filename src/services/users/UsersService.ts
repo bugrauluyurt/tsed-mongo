@@ -1,4 +1,4 @@
-import { Inject, Service } from "@tsed/common";
+import { Service } from "@tsed/common";
 import * as _ from "lodash";
 import { $log } from "ts-log-debug";
 import { isDev } from "../../../config/env";

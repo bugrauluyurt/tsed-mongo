@@ -53,6 +53,7 @@ export const TaskSchemaDefinition = {
         ref: ProjectSectionsUtils.MODEL_NAME,
         validate: getForeignKeyValidator.call(this, ProjectSectionsUtils.MODEL_NAME, ERROR_PROJECT_SECTION_MISSING),
         required: [true, ERROR_PROJECT_SECTION_MISSING],
+        index: true,
     },
     taskName: {
         type: String,
@@ -62,8 +63,7 @@ export const TaskSchemaDefinition = {
     },
     startDate: {
         type: Date,
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        required: function () {
+        required: function (): boolean {
             return !_.isEmpty(this.endDate);
         },
         validate: {
@@ -76,8 +76,7 @@ export const TaskSchemaDefinition = {
     },
     endDate: {
         type: Date,
-        // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-        required: function () {
+        required: function (): boolean {
             return !_.isEmpty(this.startDate);
         },
         validate: {
