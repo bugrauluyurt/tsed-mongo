@@ -40,7 +40,7 @@ export class ProjectsService {
             throw new BadRequest(ERROR_NO_COMPANY_ID);
         }
         const model = new this.Project(project);
-        return await this.Project.create(model);
+        return await model.save();
     }
 
     async updateProject(projectId: string, projectPartial: Partial<Project>): Promise<Project> {

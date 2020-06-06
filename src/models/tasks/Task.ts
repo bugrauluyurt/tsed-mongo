@@ -6,7 +6,7 @@ import { TeamUtils } from "../teams/Team.utils";
 import * as mongoose from "mongoose";
 import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
 import { ProjectSectionsUtils } from "../projectSections/ProjectSections.utils";
-import { ERROR_PROJECT_SECTION_MISSING } from "src/errors/ProejctSectionsError";
+import { ERROR_PROJECT_SECTION_MISSING } from "../../errors/ProjectSectionsError";
 import * as _ from "lodash";
 import {
     ERROR_TASK_NAME_MIN_LENGTH,
@@ -90,4 +90,4 @@ export const TaskSchemaDefinition = {
 };
 
 export const TaskSchema = new mongoose.Schema(TaskSchemaDefinition);
-export const TaskModel = mongoose.model<Task & mongoose.Document>(TeamUtils.MODEL_NAME, TaskSchema);
+export const TaskModel = mongoose.model<Task & mongoose.Document>(TaskUtils.MODEL_NAME, TaskSchema);

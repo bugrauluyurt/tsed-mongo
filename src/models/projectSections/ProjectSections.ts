@@ -12,7 +12,7 @@ import {
     ERROR_NO_PROJECT_SECTION_NAME,
     ERROR_PROJECT_SECTION_NAME_MIN_LENGTH,
     ERROR_PROJECT_SECTION_NAME_MAX_LENGTH,
-} from "../../errors/ProejctSectionsError";
+} from "../../errors/ProjectSectionsError";
 
 @MongooseSchema()
 export class ProjectSection {

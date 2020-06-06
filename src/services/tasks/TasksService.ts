@@ -4,7 +4,7 @@ import { TaskModel } from "../../models/tasks/Task";
 import { Task } from "src/models/tasks/Task";
 import { BadRequest } from "ts-httpexceptions";
 import { ERROR_TASK_ID_MISSING } from "../../errors/TasksError";
-import { ERROR_PROJECT_SECTION_ID_MISSING } from "../../errors/ProejctSectionsError";
+import { ERROR_PROJECT_SECTION_ID_MISSING } from "../../errors/ProjectSectionsError";
 
 @Service()
 export class TasksService {
