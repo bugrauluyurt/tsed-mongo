@@ -1,14 +1,17 @@
 import { Inject, Service } from "@tsed/common";
-import { MongooseModel } from "@tsed/mongoose";
 import * as _ from "lodash";
 import { $log } from "ts-log-debug";
 import { isDev } from "../../../config/env";
-import { User } from "../../models/users/User";
+import { User, UserModel } from "../../models/users/User";
+import { MongooseModel } from "../../types/MongooseModel";
 
 @Service()
 export class UsersService {
-    @Inject(User)
     private User: MongooseModel<User>;
+
+    constructor() {
+        this.User = UserModel as MongooseModel<User>;
+    }
 
     $onInit() {
         if (isDev()) {
