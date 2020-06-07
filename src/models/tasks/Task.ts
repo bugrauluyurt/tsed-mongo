@@ -167,7 +167,7 @@ export const TaskSchemaDefinition = {
                     return Promise.resolve(true);
                 }
                 return new Promise(function (resolve, reject) {
-                    CurrencyModel.findOne({ unit: estDealCurrency as Currencies }).exec((err, res) => {
+                    CurrencyModel.findOne({ code: estDealCurrency as Currencies }).exec((err, res) => {
                         if (err) {
                             reject(new NotFound(ERROR_CURRENCY_MISSING));
                         }

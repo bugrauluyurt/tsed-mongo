@@ -16,12 +16,12 @@ export class Currency {
     @Required()
     @Indexed()
     @Description("Currency")
-    unit: Currencies;
+    code: Currencies;
 }
 
 // Schema Definition
 export const CurrencySchemaDefinition = {
-    unit: {
+    code: {
         type: String,
         required: [true, ERROR_CURRENCY_MISSING],
         enum: [...Object.values(Currencies)],
