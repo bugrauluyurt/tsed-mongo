@@ -55,7 +55,7 @@ export class Server extends ServerLoader {
         const sessionSettings = getSessionSettings(mongoStore, mongoose.connection);
 
         if (isProd()) {
-            this.set("trust proxy", 1); // trust first proxy
+            this.app.raw.set("trust proxy", 1); // trust first proxy
         }
 
         this.app

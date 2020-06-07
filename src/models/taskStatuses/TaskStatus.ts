@@ -3,7 +3,7 @@ import { Enum, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { TaskStatusUtils } from "./TaskStatus.utils";
 import * as mongoose from "mongoose";
-import { ERROR_TASK_STATUS_NAME_MISSING } from "../../errors/TaskStatusErrors";
+import { ERROR_TASK_STATUS_NAME_MISSING } from "../../errors/TaskStatusError";
 
 @MongooseSchema()
 export class TaskStatus {

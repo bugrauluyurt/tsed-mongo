@@ -1,4 +1,4 @@
-import { ProjectSectionsUtils } from "../models/projectSections/ProjectSections.utils";
+import { ProjectSectionsUtils } from "../models/projectSections/ProjectSection.utils";
 
 export const ERROR_PROJECT_SECTION_ID_MISSING = "Project section id missing.";
 export const ERROR_NO_PROJECT_SECTION_NAME = "Please provide a project section name";
