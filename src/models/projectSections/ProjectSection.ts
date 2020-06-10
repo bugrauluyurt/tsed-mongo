@@ -2,7 +2,7 @@ import { Indexed, MongooseSchema, ObjectID } from "@tsed/mongoose";
 import { MaxLength, MinLength, Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { Schema } from "mongoose";
-import { ActiveStatus } from "../../enums/activeStatus";
+import { ActiveStatus } from "../../enums/ActiveStatus";
 import { ERROR_NO_PROJECT, ERROR_NO_PROJECT_ID } from "../../errors/ProjectsError";
 import * as mongoose from "mongoose";
 import { ProjectSectionsUtils } from "./ProjectSection.utils";

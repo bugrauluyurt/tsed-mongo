@@ -1,7 +1,7 @@
 import * as chalk from "chalk";
 import * as moment from "moment";
 import { Chalk } from "chalk";
-import { LetterCase } from "../src/enums/letterCase";
+import { LetterCase } from "../src/enums/LetterCase";
 import * as _ from "lodash";
 const LOG_BLACK_LIST = ["secret"];
 

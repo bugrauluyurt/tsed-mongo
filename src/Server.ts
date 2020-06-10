@@ -17,8 +17,8 @@ import * as path from "path";
 import { getMongoConnection } from "../config/connection";
 import { isProd, registerDotEnvFiles } from "../config/env";
 import { getServerSettings, getSessionSettings } from "../config/settings";
-import { UserAgentMiddleware } from "./middlewares/userAgent/userAgentMiddleware";
-import { ParameterPollutionMiddleware } from "./middlewares/parameterPollution/parameterPollutionMiddleware";
+import { UserAgentMiddleware } from "./middlewares/userAgent/UserAgentMiddleware";
+import { ParameterPollutionMiddleware } from "./middlewares/parameterPollution/ParameterPollutionMiddleware";
 
 registerDotEnvFiles();
 const rootDir = path.resolve(__dirname);

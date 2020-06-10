@@ -1,6 +1,6 @@
 import * as faker from "faker";
 import { Seed, SeedState } from "../seed";
-import { IUser } from "../../../src/models/users/User.interface";
+import { IUser } from "../../../src/interfaces/User/User.interface";
 import { UserUtils } from "../../../src/models/users/User.utils";
 import { createDefaultPassword, getRandomUniqueSeedItems } from "../seedUtils";
 import { CompanyUtils } from "../../../src/models/companies/Company.utils";

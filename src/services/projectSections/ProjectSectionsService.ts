@@ -3,7 +3,9 @@ import { Service } from "@tsed/di";
 import { ProjectSection, ProjectSectionModel } from "../../models/projectSections/ProjectSection";
 import { NotFound } from "ts-httpexceptions";
 import { ERROR_PROJECT_SECTION_MISSING } from "../../errors/ProjectSectionsError";
-import { PageSizes } from "../../enums/pageSizes";
+import { getSanitizedPaginationParams } from "../../../utils/paginationHelper";
+import { IProjectSectionQueryParams } from "../../interfaces/ProjectSection/ProjectSectionQueryParams.interface";
+import * as _ from "lodash";
 
 @Service()
 export class ProjectSectionsService {
@@ -23,10 +25,18 @@ export class ProjectSectionsService {
 
     async findProjectSectionsByProjectId(
         projectId: string,
-        page = 0,
-        pageSize = PageSizes.TWENTY
+        queryParams: IProjectSectionQueryParams
     ): Promise<ProjectSection[]> {
-        // @TODO Filtering and sorting of projectSections should be done here.
-        return Promise.resolve([]);
+        const { page, pageSize } = getSanitizedPaginationParams(queryParams);
+        const conditions = { projectId } as Partial<IProjectSectionQueryParams>;
+        const active = _.get(queryParams, "active");
+        if (!_.isUndefined(active)) {
+            conditions.active = active;
+        }
+        return await this.ProjectSection.find(conditions)
+            .sort({ projectSectionName: 1 })
+            .skip(page * pageSize)
+            .limit(pageSize)
+            .exec();
     }
 }

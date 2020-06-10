@@ -16,7 +16,7 @@ import {
     ERROR_USER_COMPANY_MISSING,
 } from "../../errors/UsersError";
 import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
-import { IUser } from "./User.interface";
+import { IUser } from "../../interfaces/User/User.interface";
 
 @MongooseSchema()
 export class User {

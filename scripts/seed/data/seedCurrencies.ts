@@ -1,6 +1,6 @@
 import { Seed, SeedState } from "../seed";
 import { Currency, CurrencyModel } from "../../../src/models/currencies/Currency";
-import { Currencies } from "../../../src/enums/currencies";
+import { Currencies } from "../../../src/enums/Currencies";
 import { CurrencyUtils } from "../../../src/models/currencies/Currency.utils";
 
 const currenciesValues = Object.values(Currencies);

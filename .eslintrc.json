@@ -17,6 +17,7 @@
   ],
   "rules": {
     "no-var": "error",
-    "@typescript-eslint/no-namespace": "off"
+    "@typescript-eslint/no-namespace": "off",
+    "@typescript-eslint/interface-name-prefix":  "off"
   }
 }

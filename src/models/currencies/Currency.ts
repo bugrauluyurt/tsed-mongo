@@ -3,7 +3,7 @@ import { Enum, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { Schema } from "mongoose";
 import * as mongoose from "mongoose";
-import { Currencies } from "../../enums/currencies";
+import { Currencies } from "../../enums/Currencies";
 import { ERROR_CURRENCY_MISSING } from "../../errors/CurrencyError";
 import { CurrencyUtils } from "./Currency.utils";
 

@@ -5,7 +5,7 @@ import { Forbidden, Unauthorized } from "ts-httpexceptions";
 import { createCustomErrorBody } from "../../models/customErrors/CustomErrorBody";
 import { AuthMiddlewareErrorKeys, AuthMiddlewareErrorMessages } from "./errors/AuthMiddlewareErrors";
 import { isDev } from "../../../config/env";
-import { UserAgents } from "../../enums/userAgents";
+import { UserAgents } from "../../enums/UserAgents";
 @Middleware()
 export class AuthMiddleware implements IMiddleware {
     public use(

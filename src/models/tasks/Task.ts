@@ -18,15 +18,15 @@ import { TaskUtils } from "./Task.utils";
 import { TaskStatus, TaskStatusModel } from "../taskStatuses/TaskStatus";
 import { TaskStatusUtils } from "../taskStatuses/TaskStatus.utils";
 import { ERROR_TASK_STATUS_NAME_MISSING } from "../../errors/TaskStatusError";
-import { TaskTags } from "../../enums/taskTags";
-import { Score } from "../../enums/scores";
-import { GenericDocumentTypes } from "../../enums/genericDocumentTypes";
+import { TaskTags } from "../../enums/TaskTags";
+import { Score } from "../../enums/Scores";
+import { GenericDocumentTypes } from "../../enums/GenericDocumentTypes";
 import { getDocumentTypeFromUri } from "../../../utils/getDocumentTypeFromUri";
-import { Priority } from "../../enums/priority";
+import { Priority } from "../../enums/Priority";
 import { ERROR_CURRENCY_MISSING } from "../../errors/CurrencyError";
 import { CurrencyModel } from "../currencies/Currency";
 import { NotFound } from "ts-httpexceptions";
-import { Currencies } from "../../enums/currencies";
+import { Currencies } from "../../enums/Currencies";
 
 @MongooseSchema()
 export class Task {

@@ -6,7 +6,7 @@ import { ProjectType } from "../../../src/models/projectTypes/ProjectType";
 import { getRandomUniqueSeedItems } from "../seedUtils";
 import { ProjectTypeUtils } from "../../../src/models/projectTypes/ProjectType.utils";
 import * as _ from "lodash";
-import { ActiveStatus } from "../../../src/enums/activeStatus";
+import { ActiveStatus } from "../../../src/enums/ActiveStatus";
 import { User } from "../../../src/models/users/User";
 
 const createProjects = (

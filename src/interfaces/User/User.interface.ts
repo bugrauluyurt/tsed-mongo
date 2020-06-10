@@ -1,4 +1,4 @@
-import { UserRole } from "./UserRole";
+import { UserRole } from "../../models/users/UserRole";
 
 export interface IUser {
     _id?: string;

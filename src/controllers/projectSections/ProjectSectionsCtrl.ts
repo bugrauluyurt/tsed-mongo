@@ -19,12 +19,9 @@ export class ProjectSectionsCtrl {
     @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async getProjectSections(
         @QueryParams("projectId") @Required() projectId: string,
-        @QueryParams("page") page: number,
-        @QueryParams("pageSize") pageSize: number,
-        // @TODO Write query params type here.
         @QueryParams() queryParams: any
     ): Promise<ProjectSection[]> {
-        return this.projectSectionsService.findProjectSectionsByProjectId(projectId, page, pageSize);
+        return this.projectSectionsService.findProjectSectionsByProjectId(projectId, queryParams);
     }
 
     @Get("/:projectSectionId")

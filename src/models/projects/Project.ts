@@ -27,7 +27,7 @@ import {
 } from "../../errors/ProjectsError";
 import { User } from "../users/User";
 import { UserUtils } from "../users/User.utils";
-import { ActiveStatus } from "../../enums/activeStatus";
+import { ActiveStatus } from "../../enums/ActiveStatus";
 
 @MongooseSchema()
 export class Project {
