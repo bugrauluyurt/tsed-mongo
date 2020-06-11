@@ -56,10 +56,14 @@ export class ProjectSectionsService {
         if (_.isEmpty(projectSectionId)) {
             throw new BadRequest(ERROR_NO_PROJECT_SECTION_ID);
         }
-        return await this.ProjectSection.findByIdAndUpdate(projectSectionId, projectSectionPartial, {
-            omitUndefined: true,
-            new: true,
-            runValidators: true,
-        }).exec();
+        return await this.ProjectSection.findByIdAndUpdate(
+            projectSectionId,
+            _.omit(projectSectionPartial, "projectId"),
+            {
+                omitUndefined: true,
+                new: true,
+                runValidators: true,
+            }
+        ).exec();
     }
 }

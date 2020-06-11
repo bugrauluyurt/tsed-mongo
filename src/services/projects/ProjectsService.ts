@@ -51,18 +51,29 @@ export class ProjectsService {
         if (_.isEmpty(projectId)) {
             throw new BadRequest(ERROR_NO_PROJECT_ID);
         }
-        return await this.Project.findByIdAndUpdate(projectId, projectPartial, {
-            omitUndefined: true,
-            new: true,
-            runValidators: true,
-        }).exec();
+        return await this.Project.findByIdAndUpdate(
+            projectId,
+            _.omit(projectPartial, ["company", "projectAdmins", "projectManagers"]),
+            {
+                omitUndefined: true,
+                new: true,
+                runValidators: true,
+            }
+        ).exec();
     }
 
     async removeProject(projectId: string): Promise<Project> {
         if (_.isEmpty(projectId)) {
             throw new BadRequest(ERROR_NO_PROJECT_ID);
         }
-        return await this.Project.findByIdAndDelete(projectId).exec();
+        const project = await this.Project.findById(projectId);
+        if (!project) {
+            throw new BadRequest(ERROR_NO_PROJECT);
+        }
+        return await Promise.all([
+            this.ProjectSection.deleteMany({ projectId }).exec().catch() as Promise<any>,
+            this.Project.findByIdAndDelete(projectId).exec(),
+        ]).then((response) => _.last(response));
     }
 
     async updateTeams(projectId: string, teamIds: string[]): Promise<Project> {
