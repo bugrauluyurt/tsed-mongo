@@ -109,7 +109,7 @@ export class ProjectsCtrl {
     @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN, UserRole.PROJECT_MANAGER] })
     async updateProjectSections(
         @PathParams("projectId") projectId: string,
-        @Required() @BodyParams("projectSectionIds") projectSectionIds: string[]
+        @Required() @BodyParams("projectSectionIds") projectSectionIds: string[] = []
     ): Promise<Project> {
         return this.projectsService.updateProjectSections(projectId, projectSectionIds);
     }

@@ -12,13 +12,17 @@ import {
     ERROR_NO_TEAM_ID,
 } from "../../errors/ProjectsError";
 import { MongooseModel } from "../../types/MongooseModel";
+import { ProjectSection, ProjectSectionModel } from "../../models/projectSections/ProjectSection";
+import { ActiveStatus } from "../../enums/ActiveStatus";
 
 @Service()
 export class ProjectsService {
     private Project: MongooseModel<Project>;
+    private ProjectSection: MongooseModel<ProjectSection>;
 
     constructor() {
         this.Project = ProjectModel as MongooseModel<Project>;
+        this.ProjectSection = ProjectSectionModel as MongooseModel<ProjectSection>;
     }
 
     async findByCompanyId(companyId: string, activeStatus = 1): Promise<Project[]> {
@@ -76,18 +80,28 @@ export class ProjectsService {
         ).exec();
     }
 
-    async updateProjectSections(projectId: string, projectSectionIds: string[]): Promise<Project> {
-        if (_.isEmpty(projectSectionIds)) {
-            throw new BadRequest(ERROR_NO_PROJECT_SECTION_ID);
-        }
-        return await this.Project.findOneAndUpdate(
-            { _id: projectId },
-            { projectSections: projectSectionIds },
-            {
-                omitUndefined: true,
-                new: true,
-                runValidators: true,
+    async updateProjectSections(projectId: string, projectSectionIds: string[] = []): Promise<Project> {
+        const { projectSections = [] } = await this.Project.findById(projectId).exec();
+        const deletedProjectSectionIds = _.difference(projectSections, projectSectionIds);
+        const projectSectionModelBatch: Promise<any>[] = deletedProjectSectionIds.map(
+            (deletedProjectSectionId: string) => {
+                return this.ProjectSection.findOneAndUpdate(
+                    { _id: deletedProjectSectionId },
+                    { active: ActiveStatus.NOT_ACTIVE }
+                ).exec();
             }
-        ).exec();
+        );
+        return await Promise.all([
+            ...projectSectionModelBatch,
+            this.Project.findOneAndUpdate(
+                { _id: projectId },
+                { projectSections: projectSectionIds },
+                {
+                    omitUndefined: true,
+                    new: true,
+                    runValidators: true,
+                }
+            ).exec(),
+        ]).then((response) => _.last(response));
     }
 }
