@@ -64,7 +64,7 @@ export class ProjectSectionsCtrl {
         return this.projectSectionsService.addProjectSection(req.body as ProjectSection);
     }
 
-    @Patch("/::projectSectionId/update")
+    @Patch("/:projectSectionId/update")
     @Summary("Update a projectSection")
     @Status(200, {
         description: "Success",
