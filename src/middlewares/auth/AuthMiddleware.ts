@@ -26,7 +26,8 @@ export class AuthMiddleware implements IMiddleware {
         }
 
         const { roles: userRoles }: Partial<User> = request.user;
-        const isRoleAuthenticated = _.some(userRoles, (userRole) => _.includes(options.roles, userRole));
+        const isRoleAuthenticated =
+            _.isEmpty(userRoles) || _.some(userRoles, (userRole) => _.includes(options.roles, userRole));
 
         if (!isRoleAuthenticated) {
             const forbiddenError = new Forbidden(AuthMiddlewareErrorMessages[AuthMiddlewareErrorKeys.FORBIDDEN]);

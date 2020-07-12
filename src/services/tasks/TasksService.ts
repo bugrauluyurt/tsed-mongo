@@ -15,7 +15,7 @@ export class TasksService {
         this.Task = TaskModel as MongooseModel<Task>;
     }
 
-    async getTask(taskId: number): Promise<Task> {
+    async getTask(taskId: string): Promise<Task> {
         if (!taskId) {
             throw new BadRequest(ERROR_TASK_ID_MISSING);
         }

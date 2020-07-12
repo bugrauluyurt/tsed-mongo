@@ -66,7 +66,7 @@ export class Task {
     @Description("Url of the affiliated document to this task.")
     documentUrl: string;
 
-    @Enum(TaskStatusUtils.STATUS)
+    @Enum(GenericDocumentTypes)
     @Description(
         "Type of the attached document. Supported document types are Word | Pdf | Excel | Image. Auto generated from document url."
     )
