@@ -24,14 +24,18 @@ export class MilestonesService {
     }
 
     async getMilestones(queryParams: object = {}): Promise<Milestone[]> {
+        const milestoneIds = _.get(queryParams, "milestoneIds");
         const sanitizedQueryParams = getSanitizedQueryParams<IMilestonesQueryParams>(
-            _.assign({}, new Milestone(), { milestoneIds: _.get(queryParams, "milestoneIds") }),
+            _.assign({}, new Milestone(), { milestoneIds }),
             queryParams
         );
-        if (!sanitizedQueryParams?.projectSection && _.isEmpty(sanitizedQueryParams?.milestoneIds)) {
+        if (!sanitizedQueryParams?.projectSection && _.isEmpty(milestoneIds)) {
             throw new BadRequest(ERROR_MILESTONE_QUERY_PARAM_MISSING);
         }
-        return await this.Milestone.find(sanitizedQueryParams).exec();
+        return await this.Milestone.find({
+            ...sanitizedQueryParams,
+            milestoneIds: { $in: _.split(milestoneIds, ",") },
+        }).exec();
     }
 
     async addMilestone(milestone: Milestone): Promise<Milestone> {
