@@ -1,7 +1,6 @@
 import { Service } from "@tsed/common";
 import { MongooseModel } from "../../types/MongooseModel";
-import { TaskModel } from "../../models/tasks/Task";
-import { Task } from "src/models/tasks/Task";
+import { TaskModel, Task } from "../../models/tasks/Task";
 import { BadRequest } from "ts-httpexceptions";
 import { ERROR_TASK_ID_MISSING } from "../../errors/TasksError";
 import { ERROR_PROJECT_SECTION_ID_MISSING } from "../../errors/ProjectSectionsError";

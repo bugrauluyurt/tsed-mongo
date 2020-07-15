@@ -8,12 +8,11 @@ import {
     ERROR_NO_COMPANY_ID,
     ERROR_NO_PROJECT,
     ERROR_NO_PROJECT_ID,
-    ERROR_NO_PROJECT_SECTION_ID,
     ERROR_NO_TEAM_ID,
 } from "../../errors/ProjectsError";
 import { MongooseModel } from "../../types/MongooseModel";
 import { ProjectSection, ProjectSectionModel } from "../../models/projectSections/ProjectSection";
-import { ActiveStatus } from "../../enums/ActiveStatus";
+import * as mongoose from "mongoose";
 
 @Service()
 export class ProjectsService {
@@ -93,19 +92,21 @@ export class ProjectsService {
 
     async updateProjectSections(projectId: string, projectSectionIds: string[] = []): Promise<Project> {
         const { projectSections = [] } = await this.Project.findById(projectId).exec();
-        const deletedProjectSectionIds = _.difference(projectSections, projectSectionIds);
-        const projectSectionModelBatch: Promise<any>[] = deletedProjectSectionIds.map(
-            (deletedProjectSectionId: string) => {
-                return this.ProjectSection.findOneAndUpdate(
-                    { _id: deletedProjectSectionId },
-                    { active: ActiveStatus.NOT_ACTIVE }
-                ).exec();
-            }
-        );
+        const deletedProjectSectionIds = _.difference(projectSections, projectSectionIds) as string[];
+
+        const projectSectionModelBatch: Promise<any> = this.ProjectSection.deleteMany({
+            _id: {
+                $in: _.reduce(
+                    deletedProjectSectionIds,
+                    (acc, projectSectionId) => acc.concat([mongoose.Types.ObjectId(projectSectionId)]),
+                    []
+                ),
+            },
+        }).exec();
         return await Promise.all([
-            ...projectSectionModelBatch,
+            projectSectionModelBatch,
             this.Project.findOneAndUpdate(
-                { _id: projectId },
+                { _id: mongoose.Types.ObjectId(projectId) },
                 { projectSections: projectSectionIds },
                 {
                     omitUndefined: true,

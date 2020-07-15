@@ -1,11 +1,11 @@
 import { EndpointInfo, IMiddleware, Middleware, Next, Req, Locals } from "@tsed/common";
 import * as _ from "lodash";
-import { User } from "src/models/users/User";
 import { Forbidden, Unauthorized } from "ts-httpexceptions";
 import { createCustomErrorBody } from "../../models/customErrors/CustomErrorBody";
 import { AuthMiddlewareErrorKeys, AuthMiddlewareErrorMessages } from "./errors/AuthMiddlewareErrors";
 import { isDev } from "../../../config/env";
 import { UserAgents } from "../../enums/UserAgents";
+import { User } from "../../models/users/User";
 @Middleware()
 export class AuthMiddleware implements IMiddleware {
     public use(

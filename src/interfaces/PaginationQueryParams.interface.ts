@@ -1,4 +1,4 @@
 export interface IPaginationQueryParams {
-    page: number;
-    pageSize: number;
+    page?: number;
+    pageSize?: number;
 }

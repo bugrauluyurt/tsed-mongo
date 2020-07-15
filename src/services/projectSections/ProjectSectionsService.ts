@@ -66,4 +66,13 @@ export class ProjectSectionsService {
             }
         ).exec();
     }
+
+    async removeProjectSection(projectSectionId: string): Promise<boolean> {
+        if (_.isEmpty(projectSectionId)) {
+            throw new BadRequest(ERROR_NO_PROJECT_SECTION_ID);
+        }
+        return await this.ProjectSection.findByIdAndDelete(projectSectionId)
+            .exec()
+            .then(() => true);
+    }
 }

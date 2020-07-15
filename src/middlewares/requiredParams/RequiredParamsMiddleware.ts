@@ -4,8 +4,8 @@ import {
     RequiredParamsMiddlewareErrorKeys,
     RequiredParamsMiddlewareErrorMessages,
 } from "./errors/RequiredParamsMiddlewareErrors";
-import { RequiredParamsMiddlewareMeta } from "src/types/RequiredParamsMiddlewareMeta";
 import { Next } from "@tsed/common";
+import { RequiredParamsMiddlewareMeta } from "../../types/RequiredParamsMiddlewareMeta";
 
 const fillParamType = (errorMessage: string, type: string): string => {
     return _.replace(errorMessage, "[PARAM_TYPE]", type);
