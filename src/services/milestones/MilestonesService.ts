@@ -4,7 +4,7 @@ import { MilestoneModel, Milestone } from "../../models/milestones/Milestone";
 import { BadRequest } from "ts-httpexceptions";
 import { ERROR_MILESTONE_ID_MISSING, ERROR_MILESTONE_QUERY_PARAM_MISSING } from "../../errors/MilestonesError";
 import { sanitizeModelBody } from "../../../utils/sanitizeUpdateBody";
-import { getSanitizedQueryParams } from "../../../utils/getSanitizedQueryParams";
+import { getModelSafeQueryParams } from "../../../utils/getModelSafeQueryParams";
 import { IMilestonesQueryParams } from "../../interfaces/Milestones/MilestonesQueryParams.interface";
 import * as _ from "lodash";
 
@@ -25,7 +25,7 @@ export class MilestonesService {
 
     async getMilestones(queryParams: object = {}): Promise<Milestone[]> {
         const milestoneIds = _.get(queryParams, "milestoneIds");
-        const sanitizedQueryParams = getSanitizedQueryParams<IMilestonesQueryParams>(
+        const sanitizedQueryParams = getModelSafeQueryParams<IMilestonesQueryParams>(
             _.assign({}, new Milestone(), { milestoneIds }),
             queryParams
         );

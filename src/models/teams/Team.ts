@@ -12,6 +12,7 @@ import {
 import { TeamUtils } from "./Team.utils";
 import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
 import { ERROR_USER_MISSING } from "../../errors/UsersError";
+import { CompanySchemaDefinition } from "../companies/Company";
 
 @MongooseSchema()
 export class Team {
@@ -50,5 +51,5 @@ export const TeamSchemaDefinition = {
     },
 };
 
-export const TeamSchema = new mongoose.Schema(TeamSchemaDefinition);
+export const TeamSchema = new mongoose.Schema(TeamSchemaDefinition, { versionKey: false });
 export const TeamModel = mongoose.model<Team & mongoose.Document>(TeamUtils.MODEL_NAME, TeamSchema);

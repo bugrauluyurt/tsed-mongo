@@ -20,6 +20,7 @@ import {
 } from "../../errors/MilestonesError";
 import { ERROR_MILESTONE_STATUS_NAME_MISSING } from "../../errors/MilestoneStatusError";
 import { MilestoneStatusUtils } from "../milestoneStatuses/MilestoneStatus.utils";
+import { CompanySchemaDefinition } from "../companies/Company";
 
 @MongooseSchema()
 export class Milestone {
@@ -143,7 +144,7 @@ export const MilestoneSchemaDefinition = {
     },
 };
 
-export const MilestoneSchema = new mongoose.Schema(MilestoneSchemaDefinition);
+export const MilestoneSchema = new mongoose.Schema(MilestoneSchemaDefinition, { versionKey: false });
 
 // Hooks
 MilestoneSchema.pre<Milestone & mongoose.Document>("save", async function (next: HookNextFunction) {

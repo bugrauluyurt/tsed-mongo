@@ -2,7 +2,7 @@ import { Service } from "@tsed/common";
 import * as _ from "lodash";
 import { MongooseModel } from "../../types/MongooseModel";
 import { Company, CompanyModel } from "../../models/companies/Company";
-import { getSanitizedQueryParams } from "../../../utils/getSanitizedQueryParams";
+import { getModelSafeQueryParams } from "../../../utils/getModelSafeQueryParams";
 import { getSanitizedPaginationParams } from "../../../utils/paginationHelper";
 import * as mongoose from "mongoose";
 import { ICompaniesQueryParams } from "../../interfaces/Companies/CompaniesQueryParams.interface";
@@ -31,7 +31,7 @@ export class CompaniesService {
                   },
               }
             : {};
-        const sanitizedQueryParams = getSanitizedQueryParams(queryParams);
+        const sanitizedQueryParams = getModelSafeQueryParams(queryParams);
         return await this.Company.find({ ...conditions, ...sanitizedQueryParams })
             .sort({ projectSectionName: 1 })
             .skip(page * pageSize)
@@ -67,7 +67,7 @@ export class CompaniesService {
         if (!company) {
             throw new BadRequest(ERROR_NO_COMPANY);
         }
-        //@TODO: Mark all projects and project sections as inactive or delete them.
+        // @TODO: Mark all projects and project sections as inactive or delete them.
         return await this.Company.findByIdAndDelete(companyId).exec();
     }
 }

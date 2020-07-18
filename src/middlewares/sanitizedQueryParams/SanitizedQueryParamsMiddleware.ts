@@ -1,11 +1,11 @@
 import { Middleware, Req, QueryParams, Next } from "@tsed/common";
-import { removePollutingKeys } from "../../../utils/removePollutingKeys";
+import { getSanitizedQueryParams } from "../../../utils/getSanitizedQueryParams";
 
 @Middleware()
-export class ParameterPollutionMiddleware {
+export class SanitizedQueryParamsMiddleware {
     use(@Req() req: Express.Request, @QueryParams() queryParams: object, @Next() next: Next): void {
         if (!req) return next();
-        req["query"] = removePollutingKeys(queryParams);
+        req["query"] = getSanitizedQueryParams(queryParams);
         next();
     }
 }

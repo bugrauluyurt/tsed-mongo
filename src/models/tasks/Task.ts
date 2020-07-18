@@ -27,6 +27,7 @@ import { ERROR_CURRENCY_MISSING } from "../../errors/CurrencyError";
 import { CurrencyModel } from "../currencies/Currency";
 import { NotFound } from "ts-httpexceptions";
 import { Currencies } from "../../enums/Currencies";
+import { CompanySchemaDefinition } from "../companies/Company";
 
 @MongooseSchema()
 export class Task {
@@ -183,7 +184,7 @@ export const TaskSchemaDefinition = {
     },
 };
 
-export const TaskSchema = new mongoose.Schema(TaskSchemaDefinition);
+export const TaskSchema = new mongoose.Schema(TaskSchemaDefinition, { versionKey: false });
 
 // Hooks
 TaskSchema.pre<Task & mongoose.Document>("save", async function (next: HookNextFunction) {

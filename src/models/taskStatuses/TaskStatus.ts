@@ -32,7 +32,9 @@ export const TaskStatusSchemaDefinition = {
     },
 };
 
-export const TaskStatusSchema = new mongoose.Schema(TaskStatusSchemaDefinition);
+export const TaskStatusSchema = new mongoose.Schema(TaskStatusSchemaDefinition, {
+    versionKey: false,
+});
 export const TaskStatusModel = mongoose.model<TaskStatus & mongoose.Document>(
     TaskStatusUtils.MODEL_NAME,
     TaskStatusSchema

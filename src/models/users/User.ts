@@ -2,7 +2,7 @@ import { MaxLength, MinLength, Property, Required } from "@tsed/common";
 import { Indexed, MongooseSchema, ObjectID, Ref, Unique } from "@tsed/mongoose";
 import { Description } from "@tsed/swagger";
 import * as mongoose from "mongoose";
-import { Company } from "../companies/Company";
+import { Company, CompanySchemaDefinition } from "../companies/Company";
 import { CompanyUtils } from "../companies/Company.utils";
 import { UserRole, UserRolesAll } from "./UserRole";
 import { UserUtils } from "./User.utils";
@@ -99,5 +99,5 @@ export const UserSchemaDefinition = {
 };
 // @TODO Add "pre" save hook which updates a dateUpdated value on user object
 
-export const UserSchema = new mongoose.Schema(UserSchemaDefinition);
+export const UserSchema = new mongoose.Schema(UserSchemaDefinition, { versionKey: false });
 export const UserModel = mongoose.model<IUser & mongoose.Document>(UserUtils.MODEL_NAME, UserSchema);

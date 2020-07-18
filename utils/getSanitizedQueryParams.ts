@@ -1,17 +1,27 @@
 import * as _ from "lodash";
 
-const forbiddenQueryParams = ["id", "_id"];
-export const getSanitizedQueryParams = <T>(model: T, queryParams = {}): Partial<T> => {
-    if (!model || _.isEmpty(queryParams)) {
+export const getSanitizedQueryParams = (params: object): object => {
+    if (_.isEmpty(params) || !_.isObject(params)) {
         return {};
     }
     return _.reduce(
-        Object.keys(queryParams),
-        (acc, queryParam) => {
-            if (!Object.hasOwnProperty.call(model, queryParam) || _.includes(forbiddenQueryParams, queryParam)) {
+        Object.keys(params),
+        (acc, paramKey) => {
+            let paramValue = params[paramKey];
+            if (
+                paramKey === "undefined" || // Param key is string undefined
+                paramValue === "undefined" || // Param value is string undefined
+                acc[paramKey] || // Duplicate params
+                !paramValue || // Param value is undefined
+                /^\$/.test(paramKey)
+            ) {
+                delete params[paramKey];
                 return acc;
             }
-            return { ...acc, [queryParam]: queryParams[queryParam] };
+            if (_.isArray(paramValue)) {
+                paramValue = _.get(paramValue, "0");
+            }
+            return { ...acc, [paramKey]: paramValue };
         },
         {}
     );

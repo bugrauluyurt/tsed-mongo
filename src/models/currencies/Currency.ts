@@ -6,6 +6,7 @@ import * as mongoose from "mongoose";
 import { Currencies } from "../../enums/Currencies";
 import { ERROR_CURRENCY_MISSING } from "../../errors/CurrencyError";
 import { CurrencyUtils } from "./Currency.utils";
+import { CompanySchemaDefinition } from "../companies/Company";
 
 @MongooseSchema()
 export class Currency {
@@ -28,5 +29,5 @@ export const CurrencySchemaDefinition = {
     },
 };
 
-export const CurrencySchema = new Schema(CurrencySchemaDefinition);
+export const CurrencySchema = new Schema(CurrencySchemaDefinition, { versionKey: false });
 export const CurrencyModel = mongoose.model<Currency & mongoose.Document>(CurrencyUtils.MODEL_NAME, CurrencySchema);

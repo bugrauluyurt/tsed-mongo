@@ -1,7 +1,7 @@
 import { Indexed, MongooseSchema, ObjectID, Ref } from "@tsed/mongoose";
 import { Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
-import { Company } from "../companies/Company";
+import { Company, CompanySchemaDefinition } from "../companies/Company";
 import { Team } from "../teams/Team";
 import * as mongoose from "mongoose";
 import { Schema } from "mongoose";
@@ -143,5 +143,5 @@ export const ProjectSchemaDefinition = {
     active: { type: Number, default: ActiveStatus.ACTIVE },
 };
 
-export const ProjectSchema = new Schema(ProjectSchemaDefinition);
+export const ProjectSchema = new Schema(ProjectSchemaDefinition, { versionKey: false });
 export const ProjectModel = mongoose.model(ProjectUtils.MODEL_NAME, ProjectSchema);

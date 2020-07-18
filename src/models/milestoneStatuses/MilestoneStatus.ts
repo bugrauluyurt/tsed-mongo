@@ -32,7 +32,7 @@ export const MilestoneStatusSchemaDefinition = {
     },
 };
 
-export const MilestoneStatusSchema = new mongoose.Schema(MilestoneStatusSchemaDefinition);
+export const MilestoneStatusSchema = new mongoose.Schema(MilestoneStatusSchemaDefinition, { versionKey: false });
 export const MilestoneStatusModel = mongoose.model<MilestoneStatus & mongoose.Document>(
     MilestoneStatusUtils.MODEL_NAME,
     MilestoneStatusSchema

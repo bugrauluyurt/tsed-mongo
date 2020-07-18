@@ -51,5 +51,5 @@ export const CompanySchemaDefinition = {
     active: { type: Number, default: ActiveStatus.ACTIVE },
 };
 
-export const CompanySchema = new Schema(CompanySchemaDefinition);
+export const CompanySchema = new Schema(CompanySchemaDefinition, { versionKey: false });
 export const CompanyModel = mongoose.model<Company & mongoose.Document>(CompanyUtils.MODEL_NAME, CompanySchema);

@@ -5,6 +5,7 @@ import { ProjectTypeUtils } from "./ProjectType.utils";
 import { ERROR_PROJECT_TYPE_NAME_MISSING } from "../../errors/ProjectTypesError";
 import { Schema } from "mongoose";
 import * as mongoose from "mongoose";
+import { CompanySchemaDefinition } from "../companies/Company";
 
 @MongooseSchema()
 export class ProjectType {
@@ -25,7 +26,7 @@ export const ProjectTypesSchemaDefinition = {
     },
 };
 
-export const ProjectTypeSchema = new Schema(ProjectTypesSchemaDefinition);
+export const ProjectTypeSchema = new Schema(ProjectTypesSchemaDefinition, { versionKey: false });
 export const ProjectTypeModel = mongoose.model<ProjectType & mongoose.Document>(
     ProjectTypeUtils.MODEL_NAME,
     ProjectTypeSchema

@@ -1,13 +1,6 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import "@tsed/ajv";
-import {
-    GlobalAcceptMimesMiddleware,
-    ServerLoader,
-    ServerSettings,
-    Configuration,
-    PlatformApplication,
-    Inject,
-} from "@tsed/common";
+import { GlobalAcceptMimesMiddleware, ServerLoader, Configuration, PlatformApplication, Inject } from "@tsed/common";
 import "@tsed/mongoose";
 import "@tsed/passport";
 import "@tsed/swagger";
@@ -18,7 +11,7 @@ import { getMongoConnection } from "../config/connection";
 import { isProd, registerDotEnvFiles } from "../config/env";
 import { getServerSettings, getSessionSettings } from "../config/settings";
 import { UserAgentMiddleware } from "./middlewares/userAgent/UserAgentMiddleware";
-import { ParameterPollutionMiddleware } from "./middlewares/parameterPollution/ParameterPollutionMiddleware";
+import { SanitizedQueryParamsMiddleware } from "./middlewares/sanitizedQueryParams/SanitizedQueryParamsMiddleware";
 
 registerDotEnvFiles();
 const rootDir = path.resolve(__dirname);
@@ -62,7 +55,7 @@ export class Server extends ServerLoader {
             .use(morgan("common", { stream: accessLogStream }))
             .use(GlobalAcceptMimesMiddleware)
             .use(UserAgentMiddleware)
-            .use(ParameterPollutionMiddleware)
+            .use(SanitizedQueryParamsMiddleware)
             .use(helmet())
             .use(cors())
             .use(cookieParser())

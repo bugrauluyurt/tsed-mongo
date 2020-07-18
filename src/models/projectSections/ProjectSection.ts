@@ -13,6 +13,7 @@ import {
     ERROR_PROJECT_SECTION_NAME_MIN_LENGTH,
     ERROR_PROJECT_SECTION_NAME_MAX_LENGTH,
 } from "../../errors/ProjectSectionsError";
+import { CompanySchemaDefinition } from "../companies/Company";
 
 @MongooseSchema()
 export class ProjectSection {
@@ -53,7 +54,7 @@ export const ProjectSectionSchemaDefinition = {
     active: { type: Number, default: ActiveStatus.ACTIVE },
 };
 
-export const ProjectSectionSchema = new Schema(ProjectSectionSchemaDefinition);
+export const ProjectSectionSchema = new Schema(ProjectSectionSchemaDefinition, { versionKey: false });
 export const ProjectSectionModel = mongoose.model<ProjectSection & mongoose.Document>(
     ProjectSectionsUtils.MODEL_NAME,
     ProjectSectionSchema

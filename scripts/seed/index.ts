@@ -9,6 +9,7 @@ require("../../config/env").registerDotEnvFiles();
 const seeds = [
     require("./data/seedCurrencies").seed,
     require("./data/seedProjectTypes").seed,
+    require("./data/seedMilestoneStatuses").seed,
     require("./data/seedTaskStatuses").seed,
     require("./data/seedCompanies").seed,
     require("./data/seedUsers").seed,
