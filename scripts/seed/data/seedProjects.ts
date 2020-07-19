@@ -8,6 +8,7 @@ import { ProjectTypeUtils } from "../../../src/models/projectTypes/ProjectType.u
 import * as _ from "lodash";
 import { ActiveStatus } from "../../../src/enums/ActiveStatus";
 import { User } from "../../../src/models/users/User";
+import { Promise } from "mongoose";
 
 const createProjects = (
     projectAdmin: User,
@@ -18,7 +19,7 @@ const createProjects = (
 ): Promise<Project[]> => {
     const projectsPromiseBatch = [];
     let count = requiredProjectCount;
-    const createRandomProject = () => {
+    const createRandomProject = (): Promise<object> => {
         const randomProjectType = getRandomUniqueSeedItems(projectTypes, 1, false, ProjectTypeUtils.COLLECTION_NAME);
         const fakeProjectName = faker.fake("{{random.word}}");
         const projectTemplate = {

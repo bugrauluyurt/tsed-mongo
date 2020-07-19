@@ -16,7 +16,7 @@ import { UserRole, UserRolesAll } from "../../models/users/UserRole";
 import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
 import { CompaniesService } from "../../services/companies/CompaniesService";
 import { Company } from "../../models/companies/Company";
-import { ICompaniesQueryParams } from "../../interfaces/Companies/CompaniesQueryParams.interface";
+import { CompanyQueryParams } from "../../models/companies/CompanyQueryParams";
 
 @Controller("/company")
 export class CompaniesCtrl {
@@ -30,20 +30,8 @@ export class CompaniesCtrl {
         collectionType: Array,
     })
     @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.SERVER] })
-    async getCompanies(@QueryParams("companyId") queryParams: Partial<ICompaniesQueryParams>): Promise<Company[]> {
+    async getCompanies(@QueryParams() queryParams: Partial<CompanyQueryParams>): Promise<Company[]> {
         return this.companiesService.findCompanies(queryParams);
-    }
-
-    @Get("/details/:companyId")
-    @Summary("Returns a company by id")
-    @Status(200, {
-        description: "Success",
-        type: Company,
-        collectionType: Company,
-    })
-    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
-    async getCompanyById(@Required() @PathParams("companyId") companyId: string): Promise<Company> {
-        return this.companiesService.findCompanyById(companyId);
     }
 
     @Post("/add")
@@ -58,7 +46,19 @@ export class CompaniesCtrl {
         return this.companiesService.addCompany(req.body as Company);
     }
 
-    @Patch("/details/:companyId")
+    @Get("/:companyId")
+    @Summary("Returns a company by id")
+    @Status(200, {
+        description: "Success",
+        type: Company,
+        collectionType: Company,
+    })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
+    async getCompanyById(@Required() @PathParams("companyId") companyId: string): Promise<Company> {
+        return this.companiesService.findCompanyById(companyId);
+    }
+
+    @Patch("/:companyId")
     @Summary("Updates a company")
     @Status(200, {
         description: "Success",
@@ -70,7 +70,7 @@ export class CompaniesCtrl {
         return this.companiesService.updateCompany(companyId, req.body as Company);
     }
 
-    @Delete("/remove/:companyId")
+    @Delete("/:companyId")
     @Summary("Deletes a company")
     @Status(200, {
         description: "Success",

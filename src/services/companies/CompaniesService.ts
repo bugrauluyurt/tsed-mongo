@@ -1,14 +1,14 @@
 import { Service } from "@tsed/common";
-import * as _ from "lodash";
 import { MongooseModel } from "../../types/MongooseModel";
 import { Company, CompanyModel } from "../../models/companies/Company";
-import { getModelSafeQueryParams } from "../../../utils/getModelSafeQueryParams";
-import { getSanitizedPaginationParams } from "../../../utils/paginationHelper";
-import * as mongoose from "mongoose";
-import { ICompaniesQueryParams } from "../../interfaces/Companies/CompaniesQueryParams.interface";
 import { sanitizeModelBody } from "../../../utils/sanitizeUpdateBody";
 import { BadRequest } from "ts-httpexceptions";
 import { ERROR_NO_COMPANY_ID, ERROR_NO_COMPANY } from "../../errors/CompaniesError";
+import { mongooseUpdateOptions } from "../../../utils/mongooseUpdateOptions";
+import { isMongoId } from "class-validator";
+import { CompanyQueryParams } from "../../models/companies/CompanyQueryParams";
+import { getModelSafeData } from "../../../utils/getModelSafeData";
+import { getSafeFindQueryConditions } from "../../../utils/getSafeFindQueryConditions";
 
 @Service()
 export class CompaniesService {
@@ -18,24 +18,15 @@ export class CompaniesService {
         this.Company = CompanyModel as MongooseModel<Company>;
     }
 
-    async findCompanies(queryParams: Partial<ICompaniesQueryParams>): Promise<Company[]> {
-        const { page, pageSize } = getSanitizedPaginationParams<Partial<ICompaniesQueryParams>>(queryParams);
-        const conditions = !_.isEmpty(queryParams?.companyIds)
-            ? {
-                  _id: {
-                      $in: _.reduce(
-                          queryParams?.companyIds,
-                          (acc, companyId) => acc.concat([mongoose.Types.ObjectId(companyId)]),
-                          []
-                      ),
-                  },
-              }
-            : {};
-        const sanitizedQueryParams = getModelSafeQueryParams(queryParams);
-        return await this.Company.find({ ...conditions, ...sanitizedQueryParams })
-            .sort({ projectSectionName: 1 })
-            .skip(page * pageSize)
-            .limit(pageSize)
+    async findCompanies(queryParams: Partial<CompanyQueryParams>): Promise<Company[]> {
+        const { modelSafeData, otherData } = getModelSafeData<CompanyQueryParams>(
+            queryParams,
+            new CompanyQueryParams()
+        );
+        const conditions = getSafeFindQueryConditions(modelSafeData, [["_id", "companyIds"]]);
+        return await this.Company.find(conditions)
+            .skip(otherData.page * otherData.pageSize)
+            .limit(otherData.pageSize)
             .exec();
     }
 
@@ -49,18 +40,18 @@ export class CompaniesService {
     }
 
     async updateCompany(companyId: string, companyPartial: Partial<Company>): Promise<Company> {
-        if (_.isEmpty(companyId)) {
+        if (!isMongoId(companyId)) {
             throw new BadRequest(ERROR_NO_COMPANY_ID);
         }
-        return await this.Company.findByIdAndUpdate(companyId, sanitizeModelBody(companyPartial), {
-            omitUndefined: true,
-            new: true,
-            runValidators: true,
-        }).exec();
+        return await this.Company.findByIdAndUpdate(
+            companyId,
+            sanitizeModelBody(companyPartial),
+            mongooseUpdateOptions
+        ).exec();
     }
 
     async removeCompany(companyId: string): Promise<Company> {
-        if (_.isEmpty(companyId)) {
+        if (!isMongoId(companyId)) {
             throw new BadRequest(ERROR_NO_COMPANY_ID);
         }
         const company = await this.Company.findById(companyId);

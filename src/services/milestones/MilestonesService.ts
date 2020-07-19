@@ -4,9 +4,10 @@ import { MilestoneModel, Milestone } from "../../models/milestones/Milestone";
 import { BadRequest } from "ts-httpexceptions";
 import { ERROR_MILESTONE_ID_MISSING, ERROR_MILESTONE_QUERY_PARAM_MISSING } from "../../errors/MilestonesError";
 import { sanitizeModelBody } from "../../../utils/sanitizeUpdateBody";
-import { getModelSafeQueryParams } from "../../../utils/getModelSafeQueryParams";
-import { IMilestonesQueryParams } from "../../interfaces/Milestones/MilestonesQueryParams.interface";
 import * as _ from "lodash";
+import { MilestonesQueryParams } from "../../models/milestones/MilestoneQueryParams";
+import { getModelSafeData } from "../../../utils/getModelSafeData";
+import { getSafeFindQueryConditions } from "../../../utils/getSafeFindQueryConditions";
 
 @Service()
 export class MilestonesService {
@@ -24,18 +25,16 @@ export class MilestonesService {
     }
 
     async getMilestones(queryParams: object = {}): Promise<Milestone[]> {
-        const milestoneIds = _.get(queryParams, "milestoneIds");
-        const sanitizedQueryParams = getModelSafeQueryParams<IMilestonesQueryParams>(
-            _.assign({}, new Milestone(), { milestoneIds }),
-            queryParams
-        );
-        if (!sanitizedQueryParams?.projectSection && _.isEmpty(milestoneIds)) {
+        const { modelSafeData } = getModelSafeData<MilestonesQueryParams>(queryParams, new MilestonesQueryParams());
+        if (!modelSafeData?.projectSection && _.isEmpty(modelSafeData?.milestoneIds)) {
             throw new BadRequest(ERROR_MILESTONE_QUERY_PARAM_MISSING);
         }
-        return await this.Milestone.find({
-            ...sanitizedQueryParams,
-            milestoneIds: { $in: _.split(milestoneIds, ",") },
-        }).exec();
+        return await this.Milestone.find(
+            getSafeFindQueryConditions<MilestonesQueryParams>(modelSafeData, [
+                ["_id", "milestoneIds"],
+                ["projectSection"],
+            ])
+        ).exec();
     }
 
     async addMilestone(milestone: Milestone): Promise<Milestone> {
