@@ -10,6 +10,7 @@ import {
     Patch,
     Post,
     Delete,
+    BodyParams,
 } from "@tsed/common";
 import { Summary } from "@tsed/swagger";
 import { UserRole, UserRolesAll } from "../../models/users/UserRole";
@@ -42,7 +43,7 @@ export class CompaniesCtrl {
         collectionType: Company,
     })
     @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.SERVER] })
-    async addCompany(req: Req): Promise<Company> {
+    async addCompany(req: Req): Promise<Company | Error> {
         return this.companiesService.addCompany(req.body as Company);
     }
 
@@ -66,8 +67,11 @@ export class CompaniesCtrl {
         collectionType: Company,
     })
     @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.SERVER, UserRole.PROJECT_ADMIN] })
-    async updateCompany(@Required() @PathParams() companyId: string, req: Req): Promise<Company> {
-        return this.companiesService.updateCompany(companyId, req.body as Company);
+    async updateCompany(
+        @Required() @PathParams("companyId") companyId: string,
+        @BodyParams() reqBody
+    ): Promise<Company> {
+        return this.companiesService.updateCompany(companyId, reqBody as Company);
     }
 
     @Delete("/:companyId")
@@ -78,7 +82,7 @@ export class CompaniesCtrl {
         collectionType: Company,
     })
     @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.SERVER, UserRole.PROJECT_ADMIN] })
-    async removeCompany(@Required() @PathParams() companyId: string): Promise<Company> {
+    async removeCompany(@Required() @PathParams("companyId") companyId: string): Promise<Company> {
         return this.companiesService.removeCompany(companyId);
     }
 }
