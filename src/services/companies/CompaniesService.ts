@@ -1,7 +1,7 @@
 import { Service } from "@tsed/common";
 import { MongooseModel } from "../../types/MongooseModel";
 import { Company, CompanyModel } from "../../models/companies/Company";
-import { sanitizeModelBody } from "../../../utils/sanitizeUpdateBody";
+import { sanitizeModelBody } from "../../../utils/sanitizeModelBody";
 import { BadRequest } from "ts-httpexceptions";
 import { ERROR_NO_COMPANY_ID, ERROR_NO_COMPANY, ERROR_NOT_VALID_COMPANY } from "../../errors/CompaniesError";
 import { mongooseUpdateOptions } from "../../../utils/mongooseUpdateOptions";

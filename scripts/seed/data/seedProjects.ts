@@ -23,7 +23,6 @@ const createProjects = (
         const randomProjectType = getRandomUniqueSeedItems(projectTypes, 1, false, ProjectTypeUtils.COLLECTION_NAME);
         const fakeProjectName = faker.fake("{{random.word}}");
         const projectTemplate = {
-            projectAdmins: [projectAdmin._id],
             company: company._id,
             projectName: `Project_${fakeProjectName.replace(/ /g, "_")}`,
             projectType: _.get(randomProjectType, "0._id"),

@@ -14,7 +14,7 @@ import {
 import { ProjectSectionsService } from "../../services/projectSections/ProjectSectionsService";
 import { Summary } from "@tsed/swagger";
 import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
-import { UserRole, UserRolesAll } from "../../models/users/UserRole";
+import { UserRolesAll } from "../../models/users/UserRole";
 import { ProjectSection } from "../../models/projectSections/ProjectSection";
 
 @Controller("/projectssection")
@@ -57,9 +57,7 @@ export class ProjectSectionsCtrl {
         type: ProjectSection,
         collectionType: ProjectSection,
     })
-    @UseAuth(AuthMiddleware, {
-        roles: [UserRole.ADMIN, UserRole.SERVER, UserRole.PROJECT_ADMIN, UserRole.PROJECT_MANAGER],
-    })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async addProjectSection(req: Req): Promise<ProjectSection> {
         return this.projectSectionsService.addProjectSection(req.body as ProjectSection);
     }
@@ -71,9 +69,7 @@ export class ProjectSectionsCtrl {
         type: ProjectSection,
         collectionType: ProjectSection,
     })
-    @UseAuth(AuthMiddleware, {
-        roles: [UserRole.ADMIN, UserRole.SERVER, UserRole.PROJECT_ADMIN, UserRole.PROJECT_MANAGER],
-    })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async updateProjectSection(
         @BodyParams() payload: Partial<ProjectSection>,
         @PathParams("projectSectionId") projectSectionId: string

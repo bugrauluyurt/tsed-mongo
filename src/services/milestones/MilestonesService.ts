@@ -3,7 +3,7 @@ import { MongooseModel } from "../../types/MongooseModel";
 import { MilestoneModel, Milestone } from "../../models/milestones/Milestone";
 import { BadRequest } from "ts-httpexceptions";
 import { ERROR_MILESTONE_ID_MISSING, ERROR_MILESTONE_QUERY_PARAM_MISSING } from "../../errors/MilestonesError";
-import { sanitizeModelBody } from "../../../utils/sanitizeUpdateBody";
+import { sanitizeModelBody } from "../../../utils/sanitizeModelBody";
 import * as _ from "lodash";
 import { MilestonesQueryParams } from "../../models/milestones/MilestoneQueryParams";
 import { getModelSafeData } from "../../../utils/getModelSafeData";

@@ -12,7 +12,6 @@ import {
 import { TeamUtils } from "./Team.utils";
 import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
 import { ERROR_USER_MISSING } from "../../errors/UsersError";
-import { CompanySchemaDefinition } from "../companies/Company";
 
 @MongooseSchema()
 export class Team {

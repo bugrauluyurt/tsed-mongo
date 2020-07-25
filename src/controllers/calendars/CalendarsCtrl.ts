@@ -93,7 +93,7 @@ export class CalendarsCtrl {
      */
     @Get("/")
     @Summary("Return all calendars")
-    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_MANAGER, UserRole.SERVER, UserRole.BASIC] })
+    @UseAuth(AuthMiddleware)
     @Status(200, {
         description: "Success",
         type: Calendar,

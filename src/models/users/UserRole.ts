@@ -1,15 +1,7 @@
 export enum UserRole {
-    ADMIN = "admin",
-    BASIC = "basic",
     SERVER = "server",
-    PROJECT_ADMIN = "projectAdmin",
-    PROJECT_MANAGER = "projectManager",
+    ADMIN = "admin",
+    GENERAL = "general",
 }
 
-export const UserRolesAll = [
-    UserRole.ADMIN,
-    UserRole.BASIC,
-    UserRole.SERVER,
-    UserRole.PROJECT_ADMIN,
-    UserRole.PROJECT_MANAGER,
-];
+export const UserRolesAll = [UserRole.SERVER, UserRole.ADMIN, UserRole.GENERAL];

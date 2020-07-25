@@ -17,6 +17,7 @@ import {
 } from "../../errors/UsersError";
 import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
 import { IUser } from "../../interfaces/User/User.interface";
+import { UserCompanyRole, UserCompanyRolesAll } from "./UserCompanyRole";
 
 @MongooseSchema()
 export class User {
@@ -55,7 +56,11 @@ export class User {
 
     @Property()
     @Description("List of user roles")
-    roles: UserRole[] = [UserRole.BASIC];
+    roles: UserRole[] = [UserRole.GENERAL];
+
+    @Property()
+    @Description("List of user company roles")
+    companyRoles: UserCompanyRole[] = [UserCompanyRole.COMPANY_MEMBER];
 }
 
 // Schema Definition
@@ -94,7 +99,16 @@ export const UserSchemaDefinition = {
                 enum: UserRolesAll,
             },
         ],
-        default: [UserRole.BASIC],
+        default: [UserRole.GENERAL],
+    },
+    companyRoles: {
+        type: [
+            {
+                type: String,
+                enum: UserCompanyRolesAll,
+            },
+        ],
+        default: [UserCompanyRole.COMPANY_MEMBER],
     },
 };
 // @TODO Add "pre" save hook which updates a dateUpdated value on user object

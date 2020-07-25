@@ -12,6 +12,7 @@ import { ProjectTypeUtils } from "../../../src/models/projectTypes/ProjectType.u
 import { logWithColor } from "../../../utils/default";
 import { ProjectUtils } from "../../../src/models/projects/Project.utils";
 import { ProjectModel } from "../../../src/models/projects/Project";
+import { UserCompanyRole } from "../../../src/models/users/UserCompanyRole";
 
 const seedUsers = require("./seedUsers");
 const seedProjects = require("./seedProjects");
@@ -30,7 +31,7 @@ const createFakeDomainName = (companyName: string, includeWebSignature = true): 
     return `https://www.${lowerCasedDomainNameBody}.com`;
 };
 
-const createCompanyProjectAdmin = (documentIndex: number, company: Company): Promise<mongoose.Document | User> => {
+const createCompanyAdmin = (documentIndex: number, company: Company): Promise<mongoose.Document | User> => {
     return createAdminPassword().then((hashedPassword: string) => {
         const userDocumentTemplate = seedUsers.createTemplate(hashedPassword);
         const fakeDomainName = createFakeDomainName(company.companyName, false);
@@ -38,7 +39,8 @@ const createCompanyProjectAdmin = (documentIndex: number, company: Company): Pro
         userDocumentTemplate.password = hashedPassword;
         userDocumentTemplate.email = `${ADMIN_USER_NAME}@${fakeDomainName}.com`;
         userDocumentTemplate.companies = [company._id];
-        userDocumentTemplate.roles = [UserRole.PROJECT_ADMIN];
+        userDocumentTemplate.roles = [UserRole.GENERAL];
+        userDocumentTemplate.companyRoles = [UserCompanyRole.COMPANY_ADMIN];
         return UserModel.create(userDocumentTemplate);
     });
 };
@@ -60,7 +62,7 @@ module.exports = {
             (documentIndex: number, createdCompany: Company, seedState: SeedState): Promise<any> => {
                 const projectTypes = seedState.getCollection(ProjectTypeUtils.COLLECTION_NAME);
                 return Promise.resolve(true)
-                    .then(() => createCompanyProjectAdmin(documentIndex, createdCompany))
+                    .then(() => createCompanyAdmin(documentIndex, createdCompany))
                     .then((projectAdmin: User) => {
                         logWithColor(
                             "[SEED]",

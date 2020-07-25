@@ -1,10 +1,10 @@
 import { Indexed, MongooseSchema, ObjectID, Ref } from "@tsed/mongoose";
 import { Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
-import { Company, CompanySchemaDefinition } from "../companies/Company";
+import { Company } from "../companies/Company";
 import { Team } from "../teams/Team";
 import * as mongoose from "mongoose";
-import { Schema } from "mongoose";
+import { Schema, HookNextFunction } from "mongoose";
 import { CompanyUtils } from "../companies/Company.utils";
 import { TeamUtils } from "../teams/Team.utils";
 import { ProjectTypeUtils } from "../projectTypes/ProjectType.utils";
@@ -21,13 +21,16 @@ import {
     ERROR_PROJECT_TYPE_MISSING,
     ERROR_NOT_VALID_PROJECT_TYPE,
     ERROR_TEAM_MISSING,
-    ERROR_PROJECT_ADMIN_MISSING,
-    ERROR_PROJECT_MANAGER_MISSING,
     ERROR_NOT_VALID_PROJECT_SECTION,
 } from "../../errors/ProjectsError";
-import { User } from "../users/User";
-import { UserUtils } from "../users/User.utils";
 import { ActiveStatus } from "../../enums/ActiveStatus";
+import {
+    ProjectContributorCompanyMatchModel,
+    ProjectContributorCompanyMatch,
+} from "../ProjectContributerCompanyMatch/ProjectContributorCompanyMatch";
+import * as _ from "lodash";
+import { ExpectationFailed } from "ts-httpexceptions";
+import { ERROR_PROJECT_MATCH_NOT_CREATED } from "../../errors/ProjectContributorCompanyMatch";
 
 @MongooseSchema()
 export class Project {
@@ -52,17 +55,6 @@ export class Project {
     @Ref(ProjectType)
     @Description("Project's type")
     projectType: Ref<ProjectType>; // should be populated, not-expensive
-
-    @Required()
-    @Ref(User)
-    @Description("Project's admins who can do crud operations")
-    projectAdmins: Ref<User[]>;
-
-    @Ref(User)
-    @Description(
-        "Project's managers who are authorized to do team changes, change the active status of the projects and manipulate project sections"
-    )
-    projectManagers: Ref<User[]>;
 
     @Property()
     @Ref(Team)
@@ -109,27 +101,6 @@ export const ProjectSchemaDefinition = {
         required: [true, ERROR_PROJECT_TYPE_MISSING],
         validate: getForeignKeyValidator.call(this, ProjectTypeUtils.MODEL_NAME, ERROR_NOT_VALID_PROJECT_TYPE),
     },
-    projectAdmins: {
-        type: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: UserUtils.MODEL_NAME,
-                required: [true, ERROR_PROJECT_ADMIN_MISSING],
-                validate: getForeignKeyValidator.call(this, UserUtils.MODEL_NAME, ERROR_PROJECT_ADMIN_MISSING),
-            },
-        ],
-        required: [true, ERROR_PROJECT_ADMIN_MISSING],
-    },
-    projectManagers: {
-        type: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: UserUtils.MODEL_NAME,
-                validate: getForeignKeyValidator.call(this, UserUtils.MODEL_NAME, ERROR_PROJECT_MANAGER_MISSING),
-            },
-        ],
-        default: [],
-    },
     teams: {
         type: [
             {
@@ -144,4 +115,27 @@ export const ProjectSchemaDefinition = {
 };
 
 export const ProjectSchema = new Schema(ProjectSchemaDefinition, { versionKey: false });
+
+// Hooks
+ProjectSchema.post<Project & mongoose.Document>("save", async function (doc: Project, next: HookNextFunction) {
+    const projectCompanyMatches = await ProjectContributorCompanyMatchModel.find({
+        project: mongoose.Types.ObjectId(doc._id),
+    });
+    // Project company match does not exist in match table. Add the companyId with this projectId to that table
+    if (
+        !_.some(
+            projectCompanyMatches,
+            (projectCompanyMatch: ProjectContributorCompanyMatch) =>
+                projectCompanyMatch.contributorCompany !== doc.company
+        )
+    ) {
+        const model = new ProjectContributorCompanyMatchModel({
+            contributorCompany: doc.company,
+            project: doc._id,
+        });
+        await model.save().catch(() => new ExpectationFailed(ERROR_PROJECT_MATCH_NOT_CREATED));
+    }
+    next();
+});
+
 export const ProjectModel = mongoose.model(ProjectUtils.MODEL_NAME, ProjectSchema);

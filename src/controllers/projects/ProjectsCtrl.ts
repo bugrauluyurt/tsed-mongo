@@ -58,7 +58,7 @@ export class ProjectsCtrl {
         type: Project,
         collectionType: Project,
     })
-    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN] })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async addProject(req: Req): Promise<Project> {
         return this.projectsService.addProject(req.body as Project);
     }
@@ -70,7 +70,7 @@ export class ProjectsCtrl {
         type: Project,
         collectionType: Project,
     })
-    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN] })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async updateProject(
         @BodyParams() payload: Partial<Project>,
         @PathParams("projectId") projectId: string
@@ -83,7 +83,7 @@ export class ProjectsCtrl {
     @Status(200, {
         description: "Success",
     })
-    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN] })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async removeProject(@PathParams("projectId") projectId: string): Promise<Project> {
         return this.projectsService.removeProject(projectId);
     }
@@ -93,7 +93,7 @@ export class ProjectsCtrl {
     @Status(200, {
         description: "Success",
     })
-    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN, UserRole.PROJECT_MANAGER] })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async updateTeams(
         @PathParams("projectId") projectId: string,
         @Required() @BodyParams("teamIds") teamIds: string[]
@@ -106,7 +106,7 @@ export class ProjectsCtrl {
     @Status(200, {
         description: "Success",
     })
-    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.PROJECT_ADMIN, UserRole.PROJECT_MANAGER] })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async updateProjectSections(
         @PathParams("projectId") projectId: string,
         @Required() @BodyParams("projectSectionIds") projectSectionIds: string[] = []

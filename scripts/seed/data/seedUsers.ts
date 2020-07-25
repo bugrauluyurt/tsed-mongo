@@ -6,6 +6,7 @@ import { createDefaultPassword, getRandomUniqueSeedItems } from "../seedUtils";
 import { CompanyUtils } from "../../../src/models/companies/Company.utils";
 import { UserRole } from "../../../src/models/users/UserRole";
 import { UserModel } from "../../../src/models/users/User";
+import { UserCompanyRole } from "../../../src/models/users/UserCompanyRole";
 
 const createUserDocumentTemplate = (hashedPassword: string, randomCompanyIds: string[] = []): IUser => {
     const userCard = faker.helpers.userCard();
@@ -16,13 +17,14 @@ const createUserDocumentTemplate = (hashedPassword: string, randomCompanyIds: st
         phone: userCard.phone,
         address: `${userCard.address.street} ${userCard.address.suite} ${userCard.address.city} ${userCard.address.zipcode}`,
         companies: randomCompanyIds,
-        roles: [UserRole.BASIC],
+        roles: [UserRole.GENERAL],
+        companyRoles: [UserCompanyRole.COMPANY_MEMBER],
     } as IUser;
 };
 
 module.exports = {
     createTemplate: createUserDocumentTemplate,
-    seed: new Seed<IUser>(UserModel, UserUtils.COLLECTION_NAME, { documentCount: 20 })
+    seed: new Seed<IUser>(UserModel, UserUtils.COLLECTION_NAME, { documentCount: 100 })
         .beforeEach([(): Promise<string> => createDefaultPassword()])
         .insertMany((beforeEachResponse: string[], index: number, seedState: SeedState, preSeedResponse) => {
             // INFO

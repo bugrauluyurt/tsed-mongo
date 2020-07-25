@@ -4,7 +4,6 @@ import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
 import { UserRole, UserRolesAll } from "../../models/users/UserRole";
 import { MilestonesService } from "../../services/milestones/MilestonesService";
 import { Milestone } from "../../models/milestones/Milestone";
-import * as _ from "lodash";
 
 @Controller("/milestones")
 export class MilestonesCtrl {
@@ -30,7 +29,7 @@ export class MilestonesCtrl {
         type: Milestone,
         collectionType: Milestone,
     })
-    @UseAuth(AuthMiddleware, { roles: _.omit(UserRolesAll, [UserRole.BASIC]) })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async addMilestone(req: Req): Promise<Milestone> {
         return this.milestonesServices.addMilestone(req.body as Milestone);
     }
@@ -42,9 +41,7 @@ export class MilestonesCtrl {
         type: Milestone,
         collectionType: Milestone,
     })
-    @UseAuth(AuthMiddleware, {
-        roles: _.omit(UserRolesAll, [UserRole.BASIC]),
-    })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async updateProjectSection(
         @BodyParams() payload: Partial<Milestone>,
         @PathParams("milestoneId") milestoneId: string

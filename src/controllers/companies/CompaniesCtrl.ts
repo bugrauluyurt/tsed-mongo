@@ -30,7 +30,7 @@ export class CompaniesCtrl {
         type: Company,
         collectionType: Array,
     })
-    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.SERVER] })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async getCompanies(@QueryParams() queryParams: Partial<CompanyQueryParams>): Promise<Company[]> {
         return this.companiesService.findCompanies(queryParams);
     }
@@ -42,7 +42,7 @@ export class CompaniesCtrl {
         type: Company,
         collectionType: Company,
     })
-    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.SERVER] })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async addCompany(req: Req): Promise<Company | Error> {
         return this.companiesService.addCompany(req.body as Company);
     }
@@ -66,7 +66,7 @@ export class CompaniesCtrl {
         type: Company,
         collectionType: Company,
     })
-    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.SERVER, UserRole.PROJECT_ADMIN] })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async updateCompany(
         @Required() @PathParams("companyId") companyId: string,
         @BodyParams() reqBody
@@ -81,7 +81,7 @@ export class CompaniesCtrl {
         type: Company,
         collectionType: Company,
     })
-    @UseAuth(AuthMiddleware, { roles: [UserRole.ADMIN, UserRole.SERVER, UserRole.PROJECT_ADMIN] })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async removeCompany(@Required() @PathParams("companyId") companyId: string): Promise<Company> {
         return this.companiesService.removeCompany(companyId);
     }

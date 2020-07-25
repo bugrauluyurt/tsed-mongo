@@ -1,4 +1,5 @@
 import { UserRole } from "../../models/users/UserRole";
+import { UserCompanyRole } from "../../models/users/UserCompanyRole";
 
 export interface IUser {
     _id?: string;
@@ -9,4 +10,5 @@ export interface IUser {
     address?: string;
     companies: string[];
     roles: UserRole[];
+    companyRoles: UserCompanyRole[];
 }
