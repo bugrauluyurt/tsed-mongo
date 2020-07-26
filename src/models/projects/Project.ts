@@ -2,11 +2,9 @@ import { Indexed, MongooseSchema, ObjectID, Ref } from "@tsed/mongoose";
 import { Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { Company } from "../companies/Company";
-import { Team } from "../teams/Team";
 import * as mongoose from "mongoose";
 import { Schema, HookNextFunction } from "mongoose";
 import { CompanyUtils } from "../companies/Company.utils";
-import { TeamUtils } from "../teams/Team.utils";
 import { ProjectTypeUtils } from "../projectTypes/ProjectType.utils";
 import { ProjectSection } from "../projectSections/ProjectSection";
 import { ProjectSectionsUtils } from "../projectSections/ProjectSection.utils";
@@ -20,7 +18,6 @@ import {
     ERROR_PROJECT_NAME_MISSING,
     ERROR_PROJECT_TYPE_MISSING,
     ERROR_NOT_VALID_PROJECT_TYPE,
-    ERROR_TEAM_MISSING,
     ERROR_NOT_VALID_PROJECT_SECTION,
 } from "../../errors/ProjectsError";
 import { ActiveStatus } from "../../enums/ActiveStatus";
@@ -55,11 +52,6 @@ export class Project {
     @Ref(ProjectType)
     @Description("Project's type")
     projectType: Ref<ProjectType>; // should be populated, not-expensive
-
-    @Property()
-    @Ref(Team)
-    @Description("Teams associated with this project")
-    teams: Ref<Team>[] = [];
 
     @Property()
     @Description("Active status indicator")
@@ -100,16 +92,6 @@ export const ProjectSchemaDefinition = {
         ref: ProjectTypeUtils.MODEL_NAME,
         required: [true, ERROR_PROJECT_TYPE_MISSING],
         validate: getForeignKeyValidator.call(this, ProjectTypeUtils.MODEL_NAME, ERROR_NOT_VALID_PROJECT_TYPE),
-    },
-    teams: {
-        type: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: TeamUtils.MODEL_NAME,
-                validate: getForeignKeyValidator.call(this, TeamUtils.MODEL_NAME, ERROR_TEAM_MISSING),
-            },
-        ],
-        default: [],
     },
     active: { type: Number, default: ActiveStatus.ACTIVE },
 };

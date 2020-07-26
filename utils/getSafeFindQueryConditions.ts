@@ -1,6 +1,6 @@
 import * as _ from "lodash";
-import { isMongoId } from "class-validator";
 import * as mongoose from "mongoose";
+import validator from "validator";
 
 // Ex: [["_id", "milestoneIds"], ["projectSectionName"]]
 export const getSafeFindQueryConditions = <T>(
@@ -18,7 +18,7 @@ export const getSafeFindQueryConditions = <T>(
                   $in: _.reduce(
                       _.split(conditions[conditionsKey], ","),
                       (acc, id) => {
-                          if (!isMongoId(id)) {
+                          if (!validator.isMongoId(id)) {
                               return acc;
                           }
                           return acc.concat([mongoose.Types.ObjectId(id)]);

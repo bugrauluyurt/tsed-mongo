@@ -28,7 +28,7 @@ const createProjects = (
             projectType: _.get(randomProjectType, "0._id"),
             active: ActiveStatus.ACTIVE,
         };
-        return new ProjectModel(projectTemplate).save({ validateBeforeSave: false });
+        return new ProjectModel(projectTemplate).save({ validateBeforeSave: true });
     };
     while (count) {
         projectsPromiseBatch.push(createRandomProject());

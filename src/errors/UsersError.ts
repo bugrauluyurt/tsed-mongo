@@ -1,5 +1,6 @@
 import { UserUtils } from "../models/users/User.utils";
 
+export const ERROR_INVALID_USER_ID = "User id is invalid.";
 export const ERROR_USER_MISSING = "User with given id does not exist.";
 export const ERROR_USER_NAME_MIN_LENGTH = `User name should be at least ${UserUtils.USER_NAME_MIN_LENGTH} characters long.`;
 export const ERROR_USER_NAME_MAX_LENGTH = `User name should be max ${UserUtils.USER_NAME_MAX_LENGTH} characters long.`;

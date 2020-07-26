@@ -13,7 +13,6 @@ const seeds = [
     require("./data/seedTaskStatuses").seed,
     require("./data/seedCompanies").seed,
     require("./data/seedUsers").seed,
-    require("./data/seedTeams").seed,
 ];
 
 const seedPartials = (partialIndex, seedState: SeedState) => {

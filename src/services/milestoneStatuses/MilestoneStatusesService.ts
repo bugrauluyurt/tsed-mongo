@@ -2,11 +2,11 @@ import { Service } from "@tsed/common";
 import { MongooseModel } from "../../types/MongooseModel";
 import { BadRequest } from "ts-httpexceptions";
 import * as _ from "lodash";
-import { isMongoId } from "class-validator";
 import * as mongoose from "mongoose";
 import { MilestoneStatus, MilestoneStatusModel } from "../../models/milestoneStatuses/MilestoneStatus";
 import { ERROR_MILESTONE_STATUS_ID_MISSING } from "../../errors/MilestoneStatusError";
 import { MilestoneStatusUtils } from "../../models/milestoneStatuses/MilestoneStatus.utils";
+import validator from "validator";
 
 @Service()
 export class MilestoneStatusesService {
@@ -20,7 +20,7 @@ export class MilestoneStatusesService {
         const condition = _.reduce(
             milestoneIds || [],
             (acc, milestoneId) => {
-                if (isMongoId(milestoneId)) {
+                if (validator.isMongoId(milestoneId)) {
                     if (!acc["_id"]) {
                         acc["_id"] = [];
                     }
@@ -37,7 +37,7 @@ export class MilestoneStatusesService {
     }
 
     async findMilestoneStatusById(milestoneStatusId: string): Promise<MilestoneStatus> {
-        if (!isMongoId(milestoneStatusId)) {
+        if (!validator.isMongoId(milestoneStatusId)) {
             throw new BadRequest(ERROR_MILESTONE_STATUS_ID_MISSING);
         }
         return await this.MilestoneStatus.findById(milestoneStatusId).exec();

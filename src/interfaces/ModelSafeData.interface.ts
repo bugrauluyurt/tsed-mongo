@@ -1,6 +1,6 @@
 import { IPaginationQueryParams } from "./PaginationQueryParams.interface";
 
 export interface ModelSafeData<T> {
-    modelSafeData: Partial<T>;
+    modelSafeData: T | Partial<T>;
     otherData: {} & IPaginationQueryParams;
 }

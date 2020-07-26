@@ -5,13 +5,13 @@ import { sanitizeModelBody } from "../../../utils/sanitizeModelBody";
 import { BadRequest } from "ts-httpexceptions";
 import { ERROR_NO_COMPANY_ID, ERROR_NO_COMPANY, ERROR_NOT_VALID_COMPANY } from "../../errors/CompaniesError";
 import { mongooseUpdateOptions } from "../../../utils/mongooseUpdateOptions";
-import { isMongoId } from "class-validator";
 import { CompanyQueryParams } from "../../models/companies/CompanyQueryParams";
 import { getModelSafeData } from "../../../utils/getModelSafeData";
 import { getSafeFindQueryConditions } from "../../../utils/getSafeFindQueryConditions";
 import * as _ from "lodash";
 import { IntegrityCompany, IntegrityCompanyModel } from "../../models/integrity/IntegrityCompany";
 import { ERROR_NO_DATE } from "../../errors/DateError";
+import validator from "validator";
 
 @Service()
 export class CompaniesService {
@@ -45,7 +45,7 @@ export class CompaniesService {
     }
 
     async updateCompany(companyId: string, companyPartial: Partial<Company>): Promise<Company> {
-        if (!isMongoId(companyId)) {
+        if (!validator.isMongoId(companyId)) {
             throw new BadRequest(ERROR_NO_COMPANY_ID);
         }
         const { modelSafeData } = getModelSafeData(companyPartial, new Company());
@@ -60,7 +60,7 @@ export class CompaniesService {
     }
 
     async removeCompany(companyId: string): Promise<any> {
-        if (!isMongoId(companyId)) {
+        if (!validator.isMongoId(companyId)) {
             throw new BadRequest(ERROR_NO_COMPANY_ID);
         }
         const company = await this.Company.findById(companyId);

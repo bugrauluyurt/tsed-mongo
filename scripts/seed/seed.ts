@@ -68,7 +68,7 @@ export class Seed<IModel> {
             .then((beforeEachItems: any[]) => {
                 const template = this.iteratorFn(beforeEachItems, documentIndex, seedState, preSeedResponse);
                 const model = new this.model(template);
-                return model.save();
+                return model.save({ validateBeforeSave: true });
             })
             .then((createdDocument) => {
                 return this.afterEachExec(documentIndex, createdDocument, seedState).then(() => createdDocument);

@@ -1,17 +1,15 @@
 import * as faker from "faker";
-import { Seed, SeedState } from "../seed";
 import { Team, TeamModel } from "../../../src/models/teams/Team";
 import { TeamUtils } from "../../../src/models/teams/Team.utils";
+import * as _ from "lodash";
+import { Project } from "../../../src/models/projects/Project";
 
-module.exports = {
-    seed: new Seed<Team>(TeamModel, TeamUtils.COLLECTION_NAME, { documentCount: 5 }).insertMany(
-        (beforeEachResponse: string[], index: number, seedState: SeedState, preSeedResponse) => {
-            // INFO
-            // Previous seeded collections can be reached at each document level by using seedState instance.
-            // seedState.getState() OR seedState.getCollection(collectionName)
-            return {
-                teamName: `${TeamUtils.MODEL_NAME}_${faker.fake("{{name.jobArea}}")}`,
-            } as Team;
-        }
-    ),
+export const createTeams = (projects: Project[]): Promise<Team[]> => {
+    const teams: Promise<Team>[] = _.map(projects, (project) => {
+        return new TeamModel({
+            projectId: project._id,
+            teamName: `${TeamUtils.MODEL_NAME}_${project.projectName}`,
+        }).save({ validateBeforeSave: true });
+    });
+    return Promise.all(teams);
 };

@@ -16,6 +16,7 @@ import { UserCompanyRole } from "../../../src/models/users/UserCompanyRole";
 
 const seedUsers = require("./seedUsers");
 const seedProjects = require("./seedProjects");
+const seedTeams = require("./seedTeams");
 
 const domainDefaultCharCount = 16;
 
@@ -66,14 +67,15 @@ module.exports = {
                     .then((projectAdmin: User) => {
                         logWithColor(
                             "[SEED]",
-                            `Seeding [${ProjectUtils.COLLECTION_NAME}] for [Company] -> ${createdCompany.companyName}] into database...`,
+                            `Seeding [${ProjectUtils.COLLECTION_NAME}] for [Company] -> ${createdCompany.companyName} into database...`,
                             false
                         );
                         return projectAdmin;
                     })
                     .then((projectAdmin) =>
                         seedProjects.createProjects(projectAdmin, createdCompany, seedState, projectTypes)
-                    );
+                    )
+                    .then((projects) => seedTeams.createTeams(projects));
             },
         ]),
 };

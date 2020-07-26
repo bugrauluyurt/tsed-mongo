@@ -18,6 +18,7 @@ import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
 import { TeamQueryParams } from "../../models/teams/TeamQueryParams";
 import { Team } from "../../models/teams/Team";
 import { TeamsService } from "../../services/teams/TeamsService";
+import { TeamMember } from "../../models/teams/TeamMember";
 
 @Controller("/team")
 export class TeamsCtrl {
@@ -81,5 +82,48 @@ export class TeamsCtrl {
     @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async removeTeam(@Required() @PathParams("companyId") companyId: string): Promise<Team> {
         return this.teamsService.removeTeam(companyId);
+    }
+
+    @Post("/:teamId/teammember")
+    @Summary("Adds a new team member")
+    @Status(200, {
+        description: "Success",
+        type: TeamMember,
+        collectionType: TeamMember,
+    })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
+    async addTeamMember(req: Req, @Required() @PathParams("teamId") teamId: string): Promise<TeamMember> {
+        return this.teamsService.addTeamMember(teamId, req.body as TeamMember);
+    }
+
+    @Delete("/:teamId/teammember/:teamMemberId")
+    @Summary("Removes a new team member")
+    @Status(200, {
+        description: "Success",
+        type: TeamMember,
+        collectionType: TeamMember,
+    })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
+    async removeTeamMember(
+        @Required() @PathParams("teamId") teamId: string,
+        @Required() @PathParams("teamMemberId") teamMemberId: string
+    ): Promise<TeamMember> {
+        return this.teamsService.removeTeamMember(teamId, teamMemberId);
+    }
+
+    @Post("/:teamId/teammember/:teamMemberId/updaterole")
+    @Summary("Removes a new team member")
+    @Status(200, {
+        description: "Success",
+        type: TeamMember,
+        collectionType: TeamMember,
+    })
+    @UseAuth(AuthMiddleware, { roles: UserRolesAll })
+    async updateTeamMemberRole(
+        @Required() @PathParams("teamId") teamId: string,
+        @Required() @PathParams("teamMemberId") teamMemberId: string,
+        req: Req
+    ): Promise<TeamMember> {
+        return this.teamsService.updateTeamMemberRole(teamId, teamMemberId, req?.body?.teamRole);
     }
 }
