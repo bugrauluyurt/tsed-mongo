@@ -19,6 +19,7 @@ import { TeamQueryParams } from "../../models/teams/TeamQueryParams";
 import { Team } from "../../models/teams/Team";
 import { TeamsService } from "../../services/teams/TeamsService";
 import { TeamMember } from "../../models/teams/TeamMember";
+import { TeamRole } from "../../enums/TeamRole";
 
 @Controller("/team")
 export class TeamsCtrl {
@@ -92,8 +93,8 @@ export class TeamsCtrl {
         collectionType: TeamMember,
     })
     @UseAuth(AuthMiddleware, { roles: UserRolesAll })
-    async addTeamMember(req: Req, @Required() @PathParams("teamId") teamId: string): Promise<TeamMember> {
-        return this.teamsService.addTeamMember(teamId, req.body as TeamMember);
+    async addTeamMember(@Required() @PathParams("teamId") teamId: string, @BodyParams() reqBody): Promise<TeamMember> {
+        return this.teamsService.addTeamMember(teamId, reqBody as TeamMember);
     }
 
     @Delete("/:teamId/teammember/:teamMemberId")
@@ -122,8 +123,8 @@ export class TeamsCtrl {
     async updateTeamMemberRole(
         @Required() @PathParams("teamId") teamId: string,
         @Required() @PathParams("teamMemberId") teamMemberId: string,
-        req: Req
+        @BodyParams("teamRole") teamRole: TeamRole
     ): Promise<TeamMember> {
-        return this.teamsService.updateTeamMemberRole(teamId, teamMemberId, req?.body?.teamRole);
+        return this.teamsService.updateTeamMemberRole(teamId, teamMemberId, teamRole);
     }
 }
