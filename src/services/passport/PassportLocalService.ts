@@ -3,7 +3,7 @@ import * as bcrypt from "bcrypt";
 import { Strategy as LocalStrategy } from "passport-local";
 import * as Passport from "passport/lib";
 import { BadRequest, NotFound } from "ts-httpexceptions";
-import { logWithColor } from "../../../utils/default";
+import { logWithColor } from "../../utils/default";
 import { User } from "../../models/users/User";
 import { UsersService } from "../users/UsersService";
 

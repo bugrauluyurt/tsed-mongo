@@ -4,7 +4,7 @@ import { Description } from "@tsed/swagger";
 import { ProjectSection } from "../projectSections/ProjectSection";
 import * as mongoose from "mongoose";
 import { HookNextFunction } from "mongoose";
-import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
+import { getForeignKeyValidator } from "../../utils/foreignKeyHelper";
 import { ProjectSectionsUtils } from "../projectSections/ProjectSection.utils";
 import { ERROR_PROJECT_SECTION_MISSING } from "../../errors/ProjectSectionsError";
 import * as _ from "lodash";
@@ -20,7 +20,6 @@ import {
 } from "../../errors/MilestonesError";
 import { ERROR_MILESTONE_STATUS_NAME_MISSING } from "../../errors/MilestoneStatusError";
 import { MilestoneStatusUtils } from "../milestoneStatuses/MilestoneStatus.utils";
-import { CompanySchemaDefinition } from "../companies/Company";
 
 @MongooseSchema()
 export class Milestone {
@@ -32,36 +31,36 @@ export class Milestone {
     @Ref(ProjectSection)
     @Indexed()
     @Description("Reference to projectSection where this milestone belongs to.")
-    projectSection: Ref<ProjectSection>;
+    projectSection: Ref<ProjectSection> = null;
 
     @Required()
     @MinLength(MilestoneUtils.MILESTONE_NAME_MIN_LENGTH)
     @MaxLength(MilestoneUtils.MILESTONE_NAME_MAX_LENGTH)
     @Description("Name of the milestone.")
-    milestoneName: string;
+    milestoneName: string = null;
 
     @Required()
     @MinLength(MilestoneUtils.MILESTONE_BODY_MIN_LENGTH)
     @MaxLength(MilestoneUtils.MILESTONE_BODY_MAX_LENGTH)
     @Description("Body of the milestone.")
-    milestoneBody: string;
+    milestoneBody: string = null;
 
     @Description("Start date of the milestone.")
-    startDate: Date;
+    startDate: Date = null;
 
     @Description("End date of the milestone.")
-    endDate: Date;
+    endDate: Date = null;
 
     @Ref(MilestoneStatus)
     @Description("Status of the milestone.")
-    status: Ref<MilestoneStatus>;
+    status: Ref<MilestoneStatus> = null;
 
     @Description("Custom tags that user can enter to filter the milestones.")
     tags: string[] = [MilestoneTags.DEFAULT];
 
     @Enum(Priority)
     @Description("Priority of a milestone. Supported priorities are Low | Medium | High.")
-    priority: Priority;
+    priority: Priority = Priority.MEDIUM;
 
     @Description("Sequence of a milestone. Sent by the client so that milestones can be sorted by sequence if desired.")
     sequence = 0;

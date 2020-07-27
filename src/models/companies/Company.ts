@@ -22,12 +22,12 @@ export class Company {
     @MaxLength(CompanyUtils.MAX_NAME)
     @Required()
     @Description("Name of the company")
-    companyName: string;
+    companyName: string = null;
 
     @MinLength(CompanyUtils.MIN_DOMAIN_NAME)
     @MaxLength(CompanyUtils.MAX_DOMAIN_NAME)
     @Description("Domain of the company")
-    domain: string;
+    domain: string = null;
 
     @Property()
     @Default(true)

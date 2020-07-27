@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { serializeObject, serializeArray } from "../../utils/serializeData";
+import { serializeObject, serializeArray } from "../utils/serializeData";
 
 class MiddlewareFactory {
     private middlewareStore: { [key: string]: Function } = {};

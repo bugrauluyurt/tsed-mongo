@@ -1,5 +1,5 @@
 import * as mongoose from "mongoose";
-import { ForeignKeyValidator } from "../src/types/ForeignKeyValidator";
+import { ForeignKeyValidator } from "../types/ForeignKeyValidator";
 import { BadRequest } from "ts-httpexceptions";
 
 export const foreignKeyHelper = (model, id): Promise<boolean> => {

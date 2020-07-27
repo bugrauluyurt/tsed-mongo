@@ -1,5 +1,5 @@
-import { PageSizes } from "../src/enums/PageSizes";
-import { IPaginationQueryParams } from "../src/interfaces/PaginationQueryParams.interface";
+import { PageSizes } from "../enums/PageSizes";
+import { IPaginationQueryParams } from "../interfaces/PaginationQueryParams.interface";
 import * as _ from "lodash";
 
 export const getSanitizedPaginationParams = <T>(queryParams: IPaginationQueryParams & T): IPaginationQueryParams => {

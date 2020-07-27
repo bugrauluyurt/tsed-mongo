@@ -3,7 +3,7 @@ import { Service } from "@tsed/di";
 import { ProjectSection, ProjectSectionModel } from "../../models/projectSections/ProjectSection";
 import { BadRequest, NotFound } from "ts-httpexceptions";
 import { ERROR_PROJECT_SECTION_MISSING } from "../../errors/ProjectSectionsError";
-import { getSanitizedPaginationParams } from "../../../utils/paginationHelper";
+import { getSanitizedPaginationParams } from "../../utils/paginationHelper";
 import { IProjectSectionQueryParams } from "../../interfaces/ProjectSection/ProjectSectionQueryParams.interface";
 import * as _ from "lodash";
 import { ERROR_NO_PROJECT_ID, ERROR_NO_PROJECT_SECTION_ID } from "../../errors/ProjectsError";

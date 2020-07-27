@@ -6,7 +6,7 @@ import { ActiveStatus } from "../../enums/ActiveStatus";
 import { ERROR_NO_PROJECT, ERROR_NO_PROJECT_ID } from "../../errors/ProjectsError";
 import * as mongoose from "mongoose";
 import { ProjectSectionsUtils } from "./ProjectSection.utils";
-import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
+import { getForeignKeyValidator } from "../../utils/foreignKeyHelper";
 import { ProjectUtils } from "../projects/Project.utils";
 import {
     ERROR_NO_PROJECT_SECTION_NAME,

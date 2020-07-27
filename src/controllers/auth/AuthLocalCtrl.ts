@@ -2,8 +2,8 @@ import { BodyParams, Controller, Get, Post, Req, Required, UseAfter } from "@tse
 import * as Express from "express";
 import * as Passport from "passport";
 import { BadRequest } from "ts-httpexceptions";
-import { checkEmail } from "../../../utils/checkEmail";
-import { checkPassword } from "../../../utils/checkPassword";
+import { checkEmail } from "../../utils/checkEmail";
+import { checkPassword } from "../../utils/checkPassword";
 import { IUser } from "../../interfaces/User/User.interface";
 
 function passportAuthenticate(event: string) {

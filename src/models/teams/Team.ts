@@ -1,5 +1,5 @@
 import { MongooseSchema, ObjectID, Ref } from "@tsed/mongoose";
-import { MaxLength, MinLength, Property, Required } from "@tsed/common";
+import { MaxLength, MinLength, Property, Required, Default } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { User, UserModel } from "../users/User";
 import * as mongoose from "mongoose";
@@ -10,7 +10,7 @@ import {
     ERROR_TEAM_NAME_MAX_LENGTH,
 } from "../../errors/TeamsError";
 import { TeamUtils } from "./Team.utils";
-import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
+import { getForeignKeyValidator } from "../../utils/foreignKeyHelper";
 import { ERROR_USER_MISSING, ERROR_INVALID_USER_ID } from "../../errors/UsersError";
 import { ERROR_NO_PROJECT, ERROR_NOT_VALID_PROJECT_ID } from "../../errors/ProjectsError";
 import { NotFound, BadRequest } from "ts-httpexceptions";
@@ -24,19 +24,21 @@ import { Schema } from "mongoose";
 @MongooseSchema()
 export class Team {
     @ObjectID("id")
-    _id: string;
+    _id: string = null;
 
     @Required()
     @Description("ProjectId of the project where this team belongs to")
-    projectId: string;
+    projectId: string = null;
 
     @Property()
     @Required()
     @MinLength(TeamUtils.MIN_TEAM_NAME)
     @MaxLength(TeamUtils.MAX_TEAM_NAME)
     @Description("Team name")
-    teamName: string;
+    teamName: string = null;
 
+    @Property()
+    @Default([])
     @Description("Array of TeamMembers which belong to this team")
     teamMembers: TeamMember[] = [];
 }
@@ -48,6 +50,7 @@ export const TeamSchemaDefinition = {
         required: [true, ERROR_NO_PROJECT],
         validate: {
             validator: function (projectId: string): Promise<boolean> {
+                // @FIXME: Validator does not work
                 if (!validator.isMongoId(projectId) || _.isUndefined(projectId)) {
                     return Promise.reject(new NotFound(ERROR_NOT_VALID_PROJECT_ID));
                 }
@@ -73,6 +76,7 @@ export const TeamSchemaDefinition = {
         type: [
             {
                 type: Schema.Types.Mixed,
+                // @FIXME: Validator does not work
                 validator: function (teamMember: TeamMember): Promise<boolean> {
                     // Check if user exists
                     if (!validator.isMongoId(teamMember?.userId)) {
@@ -92,12 +96,16 @@ export const TeamSchemaDefinition = {
         validate: {
             validator: function (teamMembers: TeamMember[]): Promise<boolean> {
                 // Check for duplicated teamMember and their objectID integrity
+                // @FIXME: Validator does not work
                 return new Promise((resolve, reject) => {
                     _.reduce(
                         teamMembers,
                         (acc, teamMember) => {
                             if (acc[teamMember?.userId]) {
                                 return reject(new BadRequest(ERROR_TEAM_MEMBERS_DUPLICATE));
+                            }
+                            if (!validator.isMongoId(teamMember?.userId)) {
+                                return Promise.reject(new BadRequest(ERROR_INVALID_USER_ID));
                             }
                             return { ...acc, [teamMember?.userId]: teamMember };
                         },

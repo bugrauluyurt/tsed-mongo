@@ -9,7 +9,7 @@ import { ProjectTypeUtils } from "../projectTypes/ProjectType.utils";
 import { ProjectSection } from "../projectSections/ProjectSection";
 import { ProjectSectionsUtils } from "../projectSections/ProjectSection.utils";
 import { ProjectType } from "../projectTypes/ProjectType";
-import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
+import { getForeignKeyValidator } from "../../utils/foreignKeyHelper";
 import { ProjectUtils } from "./Project.utils";
 import {
     ERROR_COMPANY_MISSING,

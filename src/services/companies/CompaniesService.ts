@@ -1,13 +1,18 @@
 import { Service } from "@tsed/common";
 import { MongooseModel } from "../../types/MongooseModel";
 import { Company, CompanyModel } from "../../models/companies/Company";
-import { sanitizeModelBody } from "../../../utils/sanitizeModelBody";
+import { sanitizeModelBody } from "../../utils/sanitizeModelBody";
 import { BadRequest } from "ts-httpexceptions";
-import { ERROR_NO_COMPANY_ID, ERROR_NO_COMPANY, ERROR_NOT_VALID_COMPANY } from "../../errors/CompaniesError";
-import { mongooseUpdateOptions } from "../../../utils/mongooseUpdateOptions";
+import {
+    ERROR_NO_COMPANY_ID,
+    ERROR_NO_COMPANY,
+    ERROR_NOT_VALID_COMPANY,
+    ERROR_NOT_VALID_COMPANY_ID,
+} from "../../errors/CompaniesError";
+import { mongooseUpdateOptions } from "../../utils/mongooseUpdateOptions";
 import { CompanyQueryParams } from "../../models/companies/CompanyQueryParams";
-import { getModelSafeData } from "../../../utils/getModelSafeData";
-import { getSafeFindQueryConditions } from "../../../utils/getSafeFindQueryConditions";
+import { getModelSafeData } from "../../utils/getModelSafeData";
+import { getSafeFindQueryConditions } from "../../utils/getSafeFindQueryConditions";
 import * as _ from "lodash";
 import { IntegrityCompany, IntegrityCompanyModel } from "../../models/integrity/IntegrityCompany";
 import { ERROR_NO_DATE } from "../../errors/DateError";
@@ -36,6 +41,9 @@ export class CompaniesService {
     }
 
     async findCompanyById(companyId: string): Promise<Company> {
+        if (!validator.isMongoId(companyId)) {
+            throw new BadRequest(ERROR_NOT_VALID_COMPANY_ID);
+        }
         return this.Company.findById(companyId);
     }
 

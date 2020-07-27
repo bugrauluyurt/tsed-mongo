@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { GenericDocumentTypes } from "../src/enums/GenericDocumentTypes";
+import { GenericDocumentTypes } from "../enums/GenericDocumentTypes";
 
 const excelExtensions = [
     "xlsm",

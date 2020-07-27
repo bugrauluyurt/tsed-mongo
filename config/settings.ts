@@ -5,7 +5,7 @@ import * as fs from "fs";
 import { Connection } from "mongoose";
 import * as path from "path";
 import { User } from "../src/models/users/User";
-import { logObject, logWithColor } from "../utils/default";
+import { logObject, logWithColor } from "../src/utils/default";
 import { getMongoConnectionOptions } from "./connection";
 import { getMongoUrl, getSecret } from "./env";
 

@@ -1,5 +1,5 @@
 import { TeamRole } from "../../enums/TeamRole";
 export class TeamMember {
-    userId: string;
+    userId: string = null;
     teamRole: TeamRole = TeamRole.GUEST;
 }

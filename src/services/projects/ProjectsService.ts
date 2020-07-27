@@ -1,6 +1,6 @@
 import { Service } from "@tsed/common";
 import { Project, ProjectModel } from "../../models/projects/Project";
-import { getFieldNameFromClassName } from "../../../utils/populateByName";
+import { getFieldNameFromClassName } from "../../utils/populateByName";
 import { ProjectTypeUtils } from "../../models/projectTypes/ProjectType.utils";
 import * as _ from "lodash";
 import { BadRequest, NotFound } from "ts-httpexceptions";

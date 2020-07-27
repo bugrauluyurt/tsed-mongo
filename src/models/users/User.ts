@@ -15,7 +15,7 @@ import {
     ERROR_USER_PASSWORD_MISSING,
     ERROR_USER_COMPANY_MISSING,
 } from "../../errors/UsersError";
-import { getForeignKeyValidator } from "../../../utils/foreignKeyHelper";
+import { getForeignKeyValidator } from "../../utils/foreignKeyHelper";
 import { IUser } from "../../interfaces/User/User.interface";
 import { UserCompanyRole, UserCompanyRolesAll } from "./UserCompanyRole";
 

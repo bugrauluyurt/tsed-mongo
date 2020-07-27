@@ -1,8 +1,8 @@
 import { getMongoUrl } from "./env";
-import { logWithColor } from "../utils/default";
 import * as chalk from "chalk";
 import * as mongoose from "mongoose";
 import { ConnectionOptions, Mongoose } from "mongoose";
+import { logWithColor } from "../src/utils/default";
 
 export const getMongoConnectionOptions = (): ConnectionOptions => {
     return { useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true };

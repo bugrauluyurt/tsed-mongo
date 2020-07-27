@@ -1,6 +1,6 @@
 import * as _ from "lodash";
-import { PageSizes } from "../src/enums/PageSizes";
-import { ModelSafeData } from "../src/interfaces/ModelSafeData.interface";
+import { PageSizes } from "../enums/PageSizes";
+import { ModelSafeData } from "../interfaces/ModelSafeData.interface";
 
 const forbiddenQueryParams = ["id", "_id", "page", "pageSize"];
 export const getModelSafeData = <T>(dirtyData = {}, modelInstance: T, omittedKeys: string[] = []): ModelSafeData<T> => {
@@ -12,7 +12,7 @@ export const getModelSafeData = <T>(dirtyData = {}, modelInstance: T, omittedKey
         Object.keys(dirtyData),
         (acc, dirtyDataKey) => {
             if (
-                _.includes(Object.keys(modelInstance), dirtyDataKey) ||
+                !_.includes(Object.keys(modelInstance), dirtyDataKey) ||
                 !dirtyData[dirtyDataKey] ||
                 dirtyData[dirtyDataKey] === "undefined" ||
                 _.includes(toBeDeletedKeys, dirtyDataKey) ||

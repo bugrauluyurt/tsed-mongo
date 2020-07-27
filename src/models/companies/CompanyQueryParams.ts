@@ -5,7 +5,7 @@ import { PageSizes } from "../../enums/PageSizes";
 
 export class CompanyQueryParams extends Company implements IPaginationQueryParams {
     active: ActiveStatus = ActiveStatus.ACTIVE;
-    companyIds?: string;
+    companyIds: string = null;
     page = 0;
     pageSize = PageSizes.TWENTY;
 }

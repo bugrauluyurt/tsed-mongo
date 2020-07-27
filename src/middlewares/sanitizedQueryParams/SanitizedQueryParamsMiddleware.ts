@@ -1,5 +1,5 @@
 import { Middleware, Req, QueryParams, Next } from "@tsed/common";
-import { getSanitizedQueryParams } from "../../../utils/getSanitizedQueryParams";
+import { getSanitizedQueryParams } from "../../utils/getSanitizedQueryParams";
 
 @Middleware()
 export class SanitizedQueryParamsMiddleware {
