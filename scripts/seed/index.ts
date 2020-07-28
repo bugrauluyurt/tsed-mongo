@@ -1,6 +1,6 @@
 import { Seed, SeedState } from "./seed";
-import { logWithColor } from "../../utils/default";
 import { getMongoConnection } from "../../config/connection";
+import { logWithColor } from "../../src/utils/default";
 
 // Register env
 require("../../config/env").registerDotEnvFiles();
