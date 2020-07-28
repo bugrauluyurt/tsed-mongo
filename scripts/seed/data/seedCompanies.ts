@@ -13,6 +13,7 @@ import { logWithColor } from "../../../src/utils/default";
 import { ProjectUtils } from "../../../src/models/projects/Project.utils";
 import { ProjectModel } from "../../../src/models/projects/Project";
 import { UserCompanyRole } from "../../../src/models/users/UserCompanyRole";
+import { TeamModel } from "../../../src/models/teams/Team";
 
 const seedUsers = require("./seedUsers");
 const seedProjects = require("./seedProjects");
@@ -48,7 +49,7 @@ const createCompanyAdmin = (documentIndex: number, company: Company): Promise<mo
 
 module.exports = {
     seed: new Seed<Company>(CompanyModel, CompanyUtils.COLLECTION_NAME, { documentCount: 20 })
-        .preSeed(ProjectModel.deleteMany({}).exec())
+        .preSeed(Promise.all([ProjectModel.deleteMany({}).exec(), TeamModel.deleteMany({}).exec()]))
         .insertMany((beforeEachResponse: string[], index: number, seedState: SeedState, preSeedResponse) => {
             // INFO
             // Previous seeded collections can be reached at each document level by using seedState instance.
