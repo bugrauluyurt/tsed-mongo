@@ -42,7 +42,9 @@ export class TeamsService {
     async addTeam(team: Team): Promise<Team | Error> {
         const { modelSafeData } = getModelSafeData<Team>(team, new Team());
         const model = new this.Team(modelSafeData);
-        return await model.save({ validateBeforeSave: true });
+        return await model.save().catch((err) => {
+            throw new BadRequest(err);
+        });
     }
 
     async updateTeam(teamId: string, teamPartial: Partial<Team>): Promise<Team> {

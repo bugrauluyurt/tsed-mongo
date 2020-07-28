@@ -5,7 +5,7 @@ import { ModelSafeData } from "../interfaces/ModelSafeData.interface";
 const forbiddenQueryParams = ["id", "_id", "page", "pageSize"];
 export const getModelSafeData = <T>(dirtyData = {}, modelInstance: T, omittedKeys: string[] = []): ModelSafeData<T> => {
     if (!modelInstance || _.isEmpty(dirtyData)) {
-        return { modelSafeData: {}, otherData: {} };
+        return { modelSafeData: {}, otherData: {} } as ModelSafeData<T>;
     }
     const toBeDeletedKeys = forbiddenQueryParams.concat(omittedKeys);
     const modelSafeData = _.reduce(
@@ -24,7 +24,7 @@ export const getModelSafeData = <T>(dirtyData = {}, modelInstance: T, omittedKey
         },
         {}
     );
-    const response = { modelSafeData, otherData: {} };
+    const response = { modelSafeData, otherData: {} } as ModelSafeData<T>;
     if (dirtyData["pageSize"]) {
         let pageSize = Math.round(_.get(dirtyData, "pageSize", PageSizes.TWENTY));
         if (pageSize > PageSizes.HUNDRED) {

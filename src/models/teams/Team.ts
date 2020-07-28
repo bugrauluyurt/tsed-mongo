@@ -1,16 +1,14 @@
-import { MongooseSchema, ObjectID, Ref } from "@tsed/mongoose";
+import { MongooseSchema, ObjectID } from "@tsed/mongoose";
 import { MaxLength, MinLength, Property, Required, Default } from "@tsed/common";
 import { Description } from "@tsed/swagger";
-import { User, UserModel } from "../users/User";
+import { UserModel } from "../users/User";
 import * as mongoose from "mongoose";
-import { UserUtils } from "../users/User.utils";
 import {
     ERROR_TEAM_NAME_MISSING,
     ERROR_TEAM_NAME_MIN_LENGTH,
     ERROR_TEAM_NAME_MAX_LENGTH,
 } from "../../errors/TeamsError";
 import { TeamUtils } from "./Team.utils";
-import { getForeignKeyValidator } from "../../utils/foreignKeyHelper";
 import { ERROR_USER_MISSING, ERROR_INVALID_USER_ID } from "../../errors/UsersError";
 import { ERROR_NO_PROJECT, ERROR_NOT_VALID_PROJECT_ID } from "../../errors/ProjectsError";
 import { NotFound, BadRequest } from "ts-httpexceptions";
@@ -18,8 +16,14 @@ import { ProjectModel } from "../projects/Project";
 import * as _ from "lodash";
 import validator from "validator";
 import { TeamMember } from "./TeamMember";
-import { ERROR_TEAM_MEMBERS_NOT_VALID, ERROR_TEAM_MEMBERS_DUPLICATE } from "../../errors/TeamMemberError";
-import { Schema } from "mongoose";
+import {
+    ERROR_TEAM_MEMBERS_NOT_VALID,
+    ERROR_TEAM_MEMBERS_DUPLICATE,
+    ERROR_TEAM_MEMBER_ROLE_INVALID,
+} from "../../errors/TeamMemberError";
+import { Schema, HookNextFunction } from "mongoose";
+import { getModelSafeData } from "../../utils/getModelSafeData";
+import { TeamRole } from "../../enums/TeamRole";
 
 @MongooseSchema()
 export class Team {
@@ -50,11 +54,10 @@ export const TeamSchemaDefinition = {
         required: [true, ERROR_NO_PROJECT],
         validate: {
             validator: function (projectId: string): Promise<boolean> {
-                // @FIXME: Validator does not work
-                if (!validator.isMongoId(projectId) || _.isUndefined(projectId)) {
-                    return Promise.reject(new NotFound(ERROR_NOT_VALID_PROJECT_ID));
-                }
                 return new Promise(function (resolve, reject) {
+                    if (!validator.isMongoId(projectId) || _.isUndefined(projectId)) {
+                        return reject(new NotFound(ERROR_NOT_VALID_PROJECT_ID));
+                    }
                     ProjectModel.findById(projectId).exec((err) => {
                         if (err) {
                             reject(new NotFound(ERROR_NO_PROJECT));
@@ -76,16 +79,14 @@ export const TeamSchemaDefinition = {
         type: [
             {
                 type: Schema.Types.Mixed,
-                // @FIXME: Validator does not work
                 validator: function (teamMember: TeamMember): Promise<boolean> {
-                    // Check if user exists
-                    if (!validator.isMongoId(teamMember?.userId)) {
-                        return Promise.reject(new BadRequest(ERROR_INVALID_USER_ID));
-                    }
                     return new Promise((resolve, reject) => {
+                        if (!validator.isMongoId(teamMember?.userId)) {
+                            return reject(new BadRequest(ERROR_INVALID_USER_ID));
+                        }
                         UserModel.findById(teamMember?.userId).exec((err) => {
                             if (err) {
-                                reject(new NotFound(ERROR_USER_MISSING));
+                                reject(new BadRequest(ERROR_USER_MISSING));
                             }
                             resolve(true);
                         });
@@ -96,7 +97,6 @@ export const TeamSchemaDefinition = {
         validate: {
             validator: function (teamMembers: TeamMember[]): Promise<boolean> {
                 // Check for duplicated teamMember and their objectID integrity
-                // @FIXME: Validator does not work
                 return new Promise((resolve, reject) => {
                     _.reduce(
                         teamMembers,
@@ -105,7 +105,7 @@ export const TeamSchemaDefinition = {
                                 return reject(new BadRequest(ERROR_TEAM_MEMBERS_DUPLICATE));
                             }
                             if (!validator.isMongoId(teamMember?.userId)) {
-                                return Promise.reject(new BadRequest(ERROR_INVALID_USER_ID));
+                                return reject(new BadRequest(ERROR_INVALID_USER_ID));
                             }
                             return { ...acc, [teamMember?.userId]: teamMember };
                         },
@@ -121,4 +121,24 @@ export const TeamSchemaDefinition = {
 };
 
 export const TeamSchema = new mongoose.Schema(TeamSchemaDefinition, { versionKey: false });
+
+// Hooks
+TeamSchema.pre<Team & mongoose.Document>("save", async function (next: HookNextFunction) {
+    this.teamMembers = _.map(this.teamMembers, (teamMember) => {
+        const { modelSafeData } = getModelSafeData<TeamMember>(teamMember, new TeamMember());
+        if (_.isEmpty(modelSafeData)) {
+            throw new BadRequest(ERROR_TEAM_MEMBERS_NOT_VALID);
+        }
+        if (modelSafeData?.teamRole) {
+            if (!_.includes(_.values(TeamRole), teamMember?.teamRole)) {
+                throw new BadRequest(ERROR_TEAM_MEMBER_ROLE_INVALID);
+            }
+            return modelSafeData;
+        }
+        modelSafeData.teamRole = TeamRole.GUEST;
+        return modelSafeData;
+    });
+    next();
+});
+
 export const TeamModel = mongoose.model<Team & mongoose.Document>(TeamUtils.MODEL_NAME, TeamSchema);
