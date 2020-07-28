@@ -2,7 +2,7 @@ import * as mongoose from "mongoose";
 import * as Bluebird from "bluebird";
 import { Model } from "mongoose";
 import * as chalk from "chalk";
-import { logWithColor } from "../../utils/default";
+import { logWithColor } from "../../src/utils/default";
 import * as _ from "lodash";
 
 export interface SeedOptions {

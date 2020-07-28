@@ -1,5 +1,5 @@
 import * as _ from "lodash";
-import { logWithColor } from "../../utils/default";
+import { logWithColor } from "../../src/utils/default";
 import chalk = require("chalk");
 import * as bcrypt from "bcrypt";
 

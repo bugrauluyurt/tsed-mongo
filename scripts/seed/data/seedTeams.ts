@@ -1,4 +1,3 @@
-import * as faker from "faker";
 import { Team, TeamModel } from "../../../src/models/teams/Team";
 import { TeamUtils } from "../../../src/models/teams/Team.utils";
 import * as _ from "lodash";

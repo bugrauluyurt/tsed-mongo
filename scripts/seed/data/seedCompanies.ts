@@ -9,7 +9,7 @@ import { UserRole } from "../../../src/models/users/UserRole";
 import { ADMIN_USER_NAME, createAdminPassword } from "../seedUtils";
 import { User, UserModel } from "../../../src/models/users/User";
 import { ProjectTypeUtils } from "../../../src/models/projectTypes/ProjectType.utils";
-import { logWithColor } from "../../../utils/default";
+import { logWithColor } from "../../../src/utils/default";
 import { ProjectUtils } from "../../../src/models/projects/Project.utils";
 import { ProjectModel } from "../../../src/models/projects/Project";
 import { UserCompanyRole } from "../../../src/models/users/UserCompanyRole";
