@@ -17,6 +17,7 @@ import * as _ from "lodash";
 import { IntegrityCompany, IntegrityCompanyModel } from "../../models/integrity/IntegrityCompany";
 import { ERROR_NO_DATE } from "../../errors/DateError";
 import validator from "validator";
+import { isValidMongoId } from "../../utils/isValidMongoId";
 
 @Service()
 export class CompaniesService {
@@ -41,7 +42,7 @@ export class CompaniesService {
     }
 
     async findCompanyById(companyId: string): Promise<Company> {
-        if (!validator.isMongoId(companyId)) {
+        if (!isValidMongoId(companyId)) {
             throw new BadRequest(ERROR_NOT_VALID_COMPANY_ID);
         }
         return this.Company.findById(companyId);
@@ -53,7 +54,7 @@ export class CompaniesService {
     }
 
     async updateCompany(companyId: string, companyPartial: Partial<Company>): Promise<Company> {
-        if (!validator.isMongoId(companyId)) {
+        if (!isValidMongoId(companyId)) {
             throw new BadRequest(ERROR_NO_COMPANY_ID);
         }
         const { modelSafeData } = getModelSafeData(companyPartial, new Company());
@@ -68,7 +69,7 @@ export class CompaniesService {
     }
 
     async removeCompany(companyId: string): Promise<any> {
-        if (!validator.isMongoId(companyId)) {
+        if (!isValidMongoId(companyId)) {
             throw new BadRequest(ERROR_NO_COMPANY_ID);
         }
         const company = await this.Company.findById(companyId);

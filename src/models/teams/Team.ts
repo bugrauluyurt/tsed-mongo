@@ -9,21 +9,16 @@ import {
     ERROR_TEAM_NAME_MAX_LENGTH,
 } from "../../errors/TeamsError";
 import { TeamUtils } from "./Team.utils";
-import { ERROR_USER_MISSING, ERROR_INVALID_USER_ID } from "../../errors/UsersError";
 import { ERROR_NO_PROJECT, ERROR_NOT_VALID_PROJECT_ID } from "../../errors/ProjectsError";
 import { NotFound, BadRequest } from "ts-httpexceptions";
 import { ProjectModel } from "../projects/Project";
 import * as _ from "lodash";
-import validator from "validator";
 import { TeamMember } from "./TeamMember";
-import {
-    ERROR_TEAM_MEMBERS_NOT_VALID,
-    ERROR_TEAM_MEMBERS_DUPLICATE,
-    ERROR_TEAM_MEMBER_ROLE_INVALID,
-} from "../../errors/TeamMemberError";
+import { ERROR_TEAM_MEMBERS_NOT_VALID, ERROR_TEAM_MEMBER_ROLE_INVALID } from "../../errors/TeamMemberError";
 import { Schema, HookNextFunction } from "mongoose";
 import { getModelSafeData } from "../../utils/getModelSafeData";
 import { TeamRole } from "../../enums/TeamRole";
+import { isValidMongoId } from "../../utils/isValidMongoId";
 
 @MongooseSchema()
 export class Team {
@@ -55,7 +50,7 @@ export const TeamSchemaDefinition = {
         validate: {
             validator: function (projectId: string): Promise<boolean> {
                 return new Promise(function (resolve, reject) {
-                    if (!validator.isMongoId(projectId) || _.isUndefined(projectId)) {
+                    if (!isValidMongoId(projectId)) {
                         return reject(new NotFound(ERROR_NOT_VALID_PROJECT_ID));
                     }
                     ProjectModel.findById(projectId).exec((err) => {
@@ -76,43 +71,24 @@ export const TeamSchemaDefinition = {
         maxLength: [TeamUtils.MAX_TEAM_NAME, ERROR_TEAM_NAME_MAX_LENGTH],
     },
     teamMembers: {
-        type: [
-            {
-                type: Schema.Types.Mixed,
-                validator: function (teamMember: TeamMember): Promise<boolean> {
-                    return new Promise((resolve, reject) => {
-                        if (!validator.isMongoId(teamMember?.userId)) {
-                            return reject(new BadRequest(ERROR_INVALID_USER_ID));
-                        }
-                        UserModel.findById(teamMember?.userId).exec((err) => {
-                            if (err) {
-                                reject(new BadRequest(ERROR_USER_MISSING));
-                            }
-                            resolve(true);
-                        });
-                    });
-                },
-            },
-        ],
+        type: Schema.Types.Array,
         validate: {
             validator: function (teamMembers: TeamMember[]): Promise<boolean> {
                 // Check for duplicated teamMember and their objectID integrity
-                return new Promise((resolve, reject) => {
-                    _.reduce(
-                        teamMembers,
-                        (acc, teamMember) => {
-                            if (acc[teamMember?.userId]) {
-                                return reject(new BadRequest(ERROR_TEAM_MEMBERS_DUPLICATE));
-                            }
-                            if (!validator.isMongoId(teamMember?.userId)) {
-                                return reject(new BadRequest(ERROR_INVALID_USER_ID));
-                            }
-                            return { ...acc, [teamMember?.userId]: teamMember };
-                        },
-                        {}
-                    );
-                    resolve(true);
-                });
+                // Check if each userId exists
+                const userIdBatch = _.chain(teamMembers)
+                    .uniqWith(_.isEqual)
+                    .filter((teamMember) => isValidMongoId(teamMember?.userId))
+                    .map((teamMember) => UserModel.findById(teamMember?.userId).exec())
+                    .value();
+                if (_.isEmpty(userIdBatch)) {
+                    throw new BadRequest(ERROR_TEAM_MEMBERS_NOT_VALID);
+                }
+                return Promise.all(userIdBatch)
+                    .then(() => true)
+                    .catch(() => {
+                        throw new BadRequest(ERROR_TEAM_MEMBERS_NOT_VALID);
+                    });
             },
             message: ERROR_TEAM_MEMBERS_NOT_VALID,
         },

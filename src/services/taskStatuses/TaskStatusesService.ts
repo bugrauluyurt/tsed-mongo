@@ -7,6 +7,7 @@ import { ERROR_TASK_STATUS_ID_MISSING } from "../../errors/TaskStatusError";
 import * as mongoose from "mongoose";
 import { TaskStatusUtils } from "../../models/taskStatuses/TaskStatus.utils";
 import validator from "validator";
+import { isValidMongoId } from "../../utils/isValidMongoId";
 
 @Service()
 export class TaskStatusesService {
@@ -20,7 +21,7 @@ export class TaskStatusesService {
         const condition = _.reduce(
             taskStatusIds || [],
             (acc, taskStatusId) => {
-                if (validator.isMongoId(taskStatusId)) {
+                if (isValidMongoId(taskStatusId)) {
                     if (!acc["_id"]) {
                         acc["_id"] = [];
                     }
@@ -37,7 +38,7 @@ export class TaskStatusesService {
     }
 
     async findTaskStatusById(taskStatusId: string): Promise<TaskStatus> {
-        if (!taskStatusId || !validator.isMongoId(taskStatusId)) {
+        if (!taskStatusId || !isValidMongoId(taskStatusId)) {
             throw new BadRequest(ERROR_TASK_STATUS_ID_MISSING);
         }
         return await this.TaskStatus.findById(taskStatusId).exec();

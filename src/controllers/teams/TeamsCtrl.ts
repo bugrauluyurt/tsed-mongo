@@ -81,8 +81,8 @@ export class TeamsCtrl {
         collectionType: Team,
     })
     @UseAuth(AuthMiddleware, { roles: UserRolesAll })
-    async removeTeam(@Required() @PathParams("companyId") companyId: string): Promise<Team> {
-        return this.teamsService.removeTeam(companyId);
+    async removeTeam(@Required() @PathParams("teamId") teamId: string): Promise<void> {
+        return this.teamsService.removeTeam(teamId);
     }
 
     @Post("/:teamId/teammember")
@@ -112,7 +112,7 @@ export class TeamsCtrl {
         return this.teamsService.removeTeamMember(teamId, teamMemberId);
     }
 
-    @Post("/:teamId/teammember/:teamMemberId/updaterole")
+    @Patch("/:teamId/teammember/:teamMemberId/updaterole")
     @Summary("Removes a new team member")
     @Status(200, {
         description: "Success",

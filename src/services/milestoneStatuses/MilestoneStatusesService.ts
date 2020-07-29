@@ -7,6 +7,7 @@ import { MilestoneStatus, MilestoneStatusModel } from "../../models/milestoneSta
 import { ERROR_MILESTONE_STATUS_ID_MISSING } from "../../errors/MilestoneStatusError";
 import { MilestoneStatusUtils } from "../../models/milestoneStatuses/MilestoneStatus.utils";
 import validator from "validator";
+import { isValidMongoId } from "../../utils/isValidMongoId";
 
 @Service()
 export class MilestoneStatusesService {
@@ -20,7 +21,7 @@ export class MilestoneStatusesService {
         const condition = _.reduce(
             milestoneIds || [],
             (acc, milestoneId) => {
-                if (validator.isMongoId(milestoneId)) {
+                if (isValidMongoId(milestoneId)) {
                     if (!acc["_id"]) {
                         acc["_id"] = [];
                     }
@@ -37,7 +38,7 @@ export class MilestoneStatusesService {
     }
 
     async findMilestoneStatusById(milestoneStatusId: string): Promise<MilestoneStatus> {
-        if (!validator.isMongoId(milestoneStatusId)) {
+        if (!isValidMongoId(milestoneStatusId)) {
             throw new BadRequest(ERROR_MILESTONE_STATUS_ID_MISSING);
         }
         return await this.MilestoneStatus.findById(milestoneStatusId).exec();

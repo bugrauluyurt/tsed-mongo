@@ -15,6 +15,7 @@ import { ERROR_INVALID_USER_ID } from "../../errors/UsersError";
 import { TeamRole } from "../../enums/TeamRole";
 import { ERROR_INVALID_TEAM_ROLE } from "../../errors/TeamMemberError";
 import { PageSizes } from "../../enums/PageSizes";
+import { isValidMongoId } from "../../utils/isValidMongoId";
 
 @Service()
 export class TeamsService {
@@ -33,7 +34,7 @@ export class TeamsService {
     }
 
     async findTeamById(teamId: string): Promise<Team> {
-        if (!validator.isMongoId(teamId)) {
+        if (!isValidMongoId(teamId)) {
             throw new BadRequest(ERROR_NO_TEAM_ID);
         }
         return await this.Team.findById(teamId);
@@ -48,28 +49,32 @@ export class TeamsService {
     }
 
     async updateTeam(teamId: string, teamPartial: Partial<Team>): Promise<Team> {
-        if (!validator.isMongoId(teamId)) {
+        if (!isValidMongoId(teamId)) {
             throw new BadRequest(ERROR_NO_TEAM_ID);
         }
         const { modelSafeData } = getModelSafeData(teamPartial, new Team());
         if (_.isEmpty(modelSafeData)) {
             throw new BadRequest(ERROR_NOT_A_VALID_TEAM);
         }
-        return await this.Team.findByIdAndUpdate(teamId, modelSafeData, mongooseUpdateOptions).exec();
+        return await this.Team.findByIdAndUpdate(teamId, modelSafeData, mongooseUpdateOptions)
+            .exec()
+            .catch((err) => {
+                throw new BadRequest(err);
+            });
     }
 
     async removeTeam(teamId: string): Promise<any> {
-        if (!validator.isMongoId(teamId)) {
+        if (!isValidMongoId(teamId)) {
             throw new BadRequest(ERROR_NO_TEAM_ID);
         }
         return await this.Team.findByIdAndDelete(teamId).exec();
     }
 
     async addTeamMember(teamId: string, teamMember: TeamMember): Promise<TeamMember> {
-        if (!validator.isMongoId(teamMember?.userId)) {
+        if (!isValidMongoId(teamMember?.userId)) {
             throw new BadRequest(ERROR_INVALID_USER_ID);
         }
-        if (!validator.isMongoId(teamId)) {
+        if (!isValidMongoId(teamId)) {
             throw new BadRequest(ERROR_INVALID_TEAM_ID);
         }
         const { modelSafeData } = getModelSafeData<TeamMember>(teamMember, new TeamMember());
@@ -78,34 +83,35 @@ export class TeamsService {
         }
         return await this.Team.update(
             { _id: teamId },
-            { $addToSet: { teamMembers: modelSafeData as TeamMember } },
+            { $addToSet: { teamMembers: modelSafeData } },
             { runValidators: true }
         );
     }
 
     async removeTeamMember(teamId: string, userId: string): Promise<TeamMember> {
-        if (!validator.isMongoId(userId)) {
+        if (!isValidMongoId(userId)) {
             throw new BadRequest(ERROR_INVALID_USER_ID);
         }
-        if (!validator.isMongoId(teamId)) {
+        if (!isValidMongoId(teamId)) {
             throw new BadRequest(ERROR_INVALID_TEAM_ID);
         }
-        return await this.Team.update({ _id: teamId }, { $pull: { teamMembers: { userId } } });
+        return await this.Team.update({ _id: teamId }, { $pull: { teamMembers: { userId } } }, { runValidators: true });
     }
 
     async updateTeamMemberRole(teamId: string, userId: string, teamRole: TeamRole): Promise<TeamMember> {
-        if (!validator.isMongoId(userId)) {
+        if (!isValidMongoId(userId)) {
             throw new BadRequest(ERROR_INVALID_USER_ID);
         }
-        if (!validator.isMongoId(teamId)) {
+        if (!isValidMongoId(teamId)) {
             throw new BadRequest(ERROR_INVALID_TEAM_ID);
         }
-        if (!_.some(_.values(teamRole), (role) => role === teamRole)) {
+        if (!_.some(_.values(TeamRole), (role) => role === teamRole)) {
             throw new BadRequest(ERROR_INVALID_TEAM_ROLE);
         }
         return await this.Team.update(
             { _id: teamId, "teamMembers.userId": userId },
-            { $set: { "teamMembers.$.teamRole": teamRole } }
+            { $set: { "teamMembers.$.teamRole": teamRole } },
+            { runValidators: true }
         );
     }
 }
