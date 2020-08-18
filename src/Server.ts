@@ -13,9 +13,6 @@ import { getServerSettings, getSessionSettings } from "../config/settings";
 import { UserAgentMiddleware } from "./middlewares/userAgent/UserAgentMiddleware";
 import { SanitizedQueryParamsMiddleware } from "./middlewares/sanitizedQueryParams/SanitizedQueryParamsMiddleware";
 
-// INFO
-// Imported Lib for Validation => https://github.com/validatorjs/validator.js
-
 registerDotEnvFiles();
 const rootDir = path.resolve(__dirname);
 const { server: serverSettings } = getServerSettings(rootDir);
