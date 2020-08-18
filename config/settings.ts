@@ -80,7 +80,10 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
             swagger: {
                 path: "/api-docs",
             },
-            socketIO: {},
+            socketIO: {
+                origins: process.env.DOMAIN_CLIENT,
+                // @TODO: Add redis as socketIO adapter. Use socketio/socket.io-redis and 'socket.io-emitter'
+            },
         },
         morgan: process.env.MORGAN_CONFIG,
     } as { [key: string]: any };
