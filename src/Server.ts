@@ -3,6 +3,7 @@ import "@tsed/ajv";
 import { GlobalAcceptMimesMiddleware, ServerLoader, Configuration, PlatformApplication, Inject } from "@tsed/common";
 import "@tsed/mongoose";
 import "@tsed/passport";
+import "@tsed/socketio";
 import "@tsed/swagger";
 import "reflect-metadata";
 import { MongoStoreFactory } from "connect-mongo";
