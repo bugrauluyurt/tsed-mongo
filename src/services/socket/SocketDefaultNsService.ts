@@ -18,6 +18,10 @@ import { SocketLoggerMiddleware } from "../../middlewares/socket/SocketLoggerMid
 import { SockerErrorMiddleware } from "../../middlewares/socket/SocketErrorMiddleware";
 import { SocketAuthMiddleware } from "../../middlewares/socket/SocketAuthMiddleware";
 
+// @TODO: 1. Another thing to consider here is to separate the socket to another node app and share the session via mongo.
+// For now let's keep this as is.
+// @TODO: 2. Load balancing should be done correctly while passing events between the nodes are correctly done. Redis can be used for this
+// See https://socket.io/docs/using-multiple-nodes/#Sticky-load-balancing.
 @SocketService("/socket-message-ns")
 @SocketUseBefore(SocketLoggerMiddleware)
 @SocketUseBefore(SocketAuthMiddleware)
