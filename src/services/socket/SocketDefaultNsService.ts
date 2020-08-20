@@ -1,11 +1,27 @@
-import { IO, Nsp, Socket, SocketService, SocketSession, SocketUseBefore } from "@tsed/socketio";
+import {
+    IO,
+    Nsp,
+    Socket,
+    SocketService,
+    SocketSession,
+    SocketUseBefore,
+    Namespace,
+    Args,
+    Input,
+    SocketUseAfter,
+} from "@tsed/socketio";
 import * as SocketIO from "socket.io";
-import { SocketMiddlewareLogger } from "../../middlewares/socketLogger/SocketLoggerMiddleware";
+import { SocketMessage } from "../../models/socket/SocketMessage";
+import { $log } from "ts-log-debug";
+import { SocketDefaultClientEvents } from "./events/default";
+import { SocketLoggerMiddleware } from "../../middlewares/socket/SocketLoggerMiddleware";
+import { SockerErrorMiddleware } from "../../middlewares/socket/SocketErrorMiddleware";
+import { SocketAuthMiddleware } from "../../middlewares/socket/SocketAuthMiddleware";
 
-// @TODO: Add passport middleware to take the user session in for authentication purposes.
-// @TODO Put an error handler middleware.
-@SocketService("/socket-default-ns")
-@SocketUseBefore(SocketMiddlewareLogger)
+@SocketService("/socket-message-ns")
+@SocketUseBefore(SocketLoggerMiddleware)
+@SocketUseBefore(SocketAuthMiddleware)
+@SocketUseAfter(SockerErrorMiddleware)
 export class MySocketService {
     @Nsp nsp: SocketIO.Namespace;
 
@@ -28,4 +44,9 @@ export class MySocketService {
      * Triggered when a client disconnects from the Namespace.
      */
     $onDisconnect(@Socket socket: SocketIO.Socket): void {}
+
+    @Input(SocketDefaultClientEvents.EVENT_MESSAGE)
+    myMethod(@Args(0) eventBody: SocketMessage, @Socket socket: Socket, @Namespace nsp: Namespace): void {
+        $log.debug(SocketDefaultClientEvents.EVENT_MESSAGE, eventBody);
+    }
 }

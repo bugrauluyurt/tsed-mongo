@@ -6,13 +6,16 @@ import { BadRequest, NotFound } from "ts-httpexceptions";
 import { logWithColor } from "../../utils/default";
 import { User } from "../../models/users/User";
 import { UsersService } from "../users/UsersService";
+import { IO } from "@tsed/socketio";
+import { socketMiddlewareWrapper } from "../../utils/socketMiddlewareWrapper";
 
 @Service()
 export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
     constructor(
         private usersService: UsersService,
         @Configuration() private configuration: Configuration,
-        @Inject(ExpressApplication) private expressApplication: ExpressApplication
+        @Inject(ExpressApplication) private expressApplication: ExpressApplication,
+        @IO private io: SocketIO.Server
     ) {
         // used to serialize the user for the session
         Passport.serializeUser(PassportLocalService.serialize);
@@ -28,8 +31,15 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
         const options: any = this.configuration.get("passport") || ({} as any);
         const { userProperty, pauseStream } = options;
 
-        this.expressApplication.use(Passport.initialize({ userProperty }));
-        this.expressApplication.use(Passport.session({ pauseStream }));
+        const passportInitializeHandler = Passport.initialize({ userProperty });
+        const passportSessionHandler = Passport.session({ pauseStream });
+
+        this.expressApplication.use(passportInitializeHandler);
+        this.expressApplication.use(passportSessionHandler);
+
+        // Register socket.io handlers
+        this.io.use(socketMiddlewareWrapper(passportInitializeHandler));
+        this.io.use(socketMiddlewareWrapper(passportSessionHandler));
     }
 
     $afterRoutesInit() {

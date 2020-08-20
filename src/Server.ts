@@ -13,6 +13,8 @@ import { isProd, registerDotEnvFiles } from "../config/env";
 import { getServerSettings, getSessionSettings } from "../config/settings";
 import { UserAgentMiddleware } from "./middlewares/userAgent/UserAgentMiddleware";
 import { SanitizedQueryParamsMiddleware } from "./middlewares/sanitizedQueryParams/SanitizedQueryParamsMiddleware";
+import { IO } from "@tsed/socketio";
+import { socketMiddlewareWrapper } from "./utils/socketMiddlewareWrapper";
 
 registerDotEnvFiles();
 const rootDir = path.resolve(__dirname);
@@ -41,12 +43,14 @@ export class Server extends ServerLoader {
             helmet = require("helmet"),
             morgan = require("morgan");
 
+        const sessionSettings = getSessionSettings(mongoStore, mongoose.connection);
+        const sessionMiddleware = session(sessionSettings);
+
         // create a rotating write stream for logging
         const accessLogStream = rfs.createStream("access.log", {
             interval: "1d", // rotate daily
             path: path.resolve(__dirname, "../logs"),
         });
-        const sessionSettings = getSessionSettings(mongoStore, mongoose.connection);
 
         if (isProd()) {
             this.app.raw.set("trust proxy", 1); // trust first proxy
@@ -68,7 +72,7 @@ export class Server extends ServerLoader {
                 })
             )
             .use(bodyParser.json())
-            .use(session(sessionSettings));
+            .use(sessionMiddleware);
 
         return Promise.resolve();
     }
