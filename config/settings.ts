@@ -81,7 +81,7 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
                 path: "/api-docs",
             },
             socketIO: {
-                origins: process.env.DOMAIN_CLIENT,
+                origins: `https://${process.env.DOMAIN_CLIENT}:* http://localhost:*`,
                 // @TODO: Add redis as socketIO adapter. Use socketio/socket.io-redis and 'socket.io-emitter'
             },
         },
