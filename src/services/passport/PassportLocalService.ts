@@ -1,4 +1,12 @@
-import { AfterRoutesInit, BeforeRoutesInit, Configuration, ExpressApplication, Inject, Service } from "@tsed/common";
+import {
+    AfterRoutesInit,
+    BeforeRoutesInit,
+    Configuration,
+    ExpressApplication,
+    Inject,
+    Service,
+    Session,
+} from "@tsed/common";
 import * as bcrypt from "bcrypt";
 import { Strategy as LocalStrategy } from "passport-local";
 import * as Passport from "passport/lib";
@@ -8,9 +16,13 @@ import { User } from "../../models/users/User";
 import { UsersService } from "../users/UsersService";
 import { IO } from "@tsed/socketio";
 import { socketMiddlewareWrapper } from "../../utils/socketMiddlewareWrapper";
+import SessionMiddlewareHelper from "../../middlewares/session/SessionMiddlewareHelper";
 
 @Service()
 export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
+    private passportInitializeHandler;
+    private passportSessionHandler;
+
     constructor(
         private usersService: UsersService,
         @Configuration() private configuration: Configuration,
@@ -31,21 +43,28 @@ export class PassportLocalService implements BeforeRoutesInit, AfterRoutesInit {
         const options: any = this.configuration.get("passport") || ({} as any);
         const { userProperty, pauseStream } = options;
 
-        const passportInitializeHandler = Passport.initialize({ userProperty });
-        const passportSessionHandler = Passport.session({ pauseStream });
+        this.passportInitializeHandler = Passport.initialize({ userProperty });
+        this.passportSessionHandler = Passport.session({ pauseStream });
 
-        this.expressApplication.use(passportInitializeHandler);
-        this.expressApplication.use(passportSessionHandler);
-
-        // Register socket.io handlers
-        this.io.use(socketMiddlewareWrapper(passportInitializeHandler));
-        this.io.use(socketMiddlewareWrapper(passportSessionHandler));
+        this.expressApplication.use(this.passportInitializeHandler);
+        this.expressApplication.use(this.passportSessionHandler);
     }
 
     $afterRoutesInit() {
         logWithColor("PassportLocalService", "Initialized afterRoutesInit");
         this.initializeSignup();
         this.initializeLogin();
+    }
+
+    $afterListen() {
+        this.io.use(socketMiddlewareWrapper(SessionMiddlewareHelper.getMiddleware()));
+        this.initializeSocketIoPassportHandler();
+    }
+
+    private initializeSocketIoPassportHandler(): void {
+        // Register socket.io handlers
+        this.io.use(socketMiddlewareWrapper(this.passportInitializeHandler));
+        this.io.use(socketMiddlewareWrapper(this.passportSessionHandler));
     }
 
     public async deserialize(id, done) {

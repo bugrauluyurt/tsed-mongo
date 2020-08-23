@@ -1,21 +1,15 @@
-import { Args, SocketMiddleware, Socket } from "@tsed/socketio";
-import { $log } from "@tsed/logger";
-import { Locals, Next } from "@tsed/common";
-import { isDev } from "../../../config/env";
-import { UserAgents } from "../../enums/UserAgents";
-import * as _ from "lodash";
-import { SocketMessage } from "../../models/socket/SocketMessage";
-import { SocketAuthMiddlewareErrorKeys } from "./errors/SocketAuthMiddlewareErrors";
+import { Args, SocketMiddleware, Socket, SocketEventName, SocketErr } from "@tsed/socketio";
+import { Unauthorized } from "ts-httpexceptions";
+import { AuthMiddlewareErrorKeys, AuthMiddlewareErrorMessages } from "../auth/errors/AuthMiddlewareErrors";
+import { createCustomErrorBody } from "../../models/customErrors/CustomErrorBody";
 
 @SocketMiddleware()
 export class SocketAuthMiddleware {
-    async use(@Args() args: any[], @Locals() locals: any, @Next() next: Next, @Socket socket: Socket) {
-        if (isDev() && _.includes(locals.ua, UserAgents.POSTMAN)) {
-            return next();
+    async use(@Args() args: any, @SocketEventName eventName: string, @SocketErr err: any, @Socket socket: Socket) {
+        if (!socket.request.isAuthenticated()) {
+            const error = new Unauthorized(AuthMiddlewareErrorMessages[AuthMiddlewareErrorKeys.UNAUTHORIZED]);
+            error.body = createCustomErrorBody(AuthMiddlewareErrorKeys.UNAUTHORIZED, AuthMiddlewareErrorMessages);
+            throw error;
         }
-        if (!socket?.request?.isAuthenticated()) {
-            return next(new SocketMessage(undefined, SocketAuthMiddlewareErrorKeys.UNAUTHORIZED));
-        }
-        return next();
     }
 }

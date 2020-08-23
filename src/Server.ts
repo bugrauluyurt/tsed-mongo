@@ -13,8 +13,7 @@ import { isProd, registerDotEnvFiles } from "../config/env";
 import { getServerSettings, getSessionSettings } from "../config/settings";
 import { UserAgentMiddleware } from "./middlewares/userAgent/UserAgentMiddleware";
 import { SanitizedQueryParamsMiddleware } from "./middlewares/sanitizedQueryParams/SanitizedQueryParamsMiddleware";
-import { IO } from "@tsed/socketio";
-import { socketMiddlewareWrapper } from "./utils/socketMiddlewareWrapper";
+import SessionMiddlewareHelper from "./middlewares/session/SessionMiddlewareHelper";
 
 registerDotEnvFiles();
 const rootDir = path.resolve(__dirname);
@@ -45,6 +44,9 @@ export class Server extends ServerLoader {
 
         const sessionSettings = getSessionSettings(mongoStore, mongoose.connection);
         const sessionMiddleware = session(sessionSettings);
+
+        // Set middleware to use at other places inside the app
+        SessionMiddlewareHelper.setSessionMiddleware(sessionMiddleware);
 
         // create a rotating write stream for logging
         const accessLogStream = rfs.createStream("access.log", {

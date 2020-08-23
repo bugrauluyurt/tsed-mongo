@@ -1,3 +1,3 @@
 export class SocketMessage {
-    constructor(public message?: string, public errorKey?: string) {}
+    constructor(private message: any, private isError = false, private createdAt = Date.now()) {}
 }

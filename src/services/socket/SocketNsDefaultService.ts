@@ -11,22 +11,21 @@ import {
     SocketUseAfter,
 } from "@tsed/socketio";
 import * as SocketIO from "socket.io";
-import { SocketMessage } from "../../models/socket/SocketMessage";
-import { $log } from "ts-log-debug";
-import { SocketDefaultClientEvents } from "./events/default";
 import { SocketLoggerMiddleware } from "../../middlewares/socket/SocketLoggerMiddleware";
-import { SockerErrorMiddleware } from "../../middlewares/socket/SocketErrorMiddleware";
+import { SocketErrorMiddleware } from "../../middlewares/socket/SocketErrorMiddleware";
 import { SocketAuthMiddleware } from "../../middlewares/socket/SocketAuthMiddleware";
+import { SocketMessage } from "../../models/socket/SocketMessage";
+import { SOCKET_NS_DEFAULT_EVENTS } from "./events/ns-default";
 
 // @TODO: 1. Another thing to consider here is to separate the socket to another node app and share the session via mongo.
 // For now let's keep this as is.
 // @TODO: 2. Load balancing should be done correctly while passing events between the nodes are correctly done. Redis can be used for this
 // See https://socket.io/docs/using-multiple-nodes/#Sticky-load-balancing.
-@SocketService("/socket-message-ns")
+@SocketService("/socket-ns-default")
 @SocketUseBefore(SocketLoggerMiddleware)
 @SocketUseBefore(SocketAuthMiddleware)
-@SocketUseAfter(SockerErrorMiddleware)
-export class MySocketService {
+@SocketUseAfter(SocketErrorMiddleware)
+export class SocketNsDefaultService {
     @Nsp nsp: SocketIO.Namespace;
 
     // @Nsp("/socket-other-ns")
@@ -49,8 +48,8 @@ export class MySocketService {
      */
     $onDisconnect(@Socket socket: SocketIO.Socket): void {}
 
-    @Input(SocketDefaultClientEvents.EVENT_MESSAGE)
-    myMethod(@Args(0) eventBody: SocketMessage, @Socket socket: Socket, @Namespace nsp: Namespace): void {
-        $log.debug(SocketDefaultClientEvents.EVENT_MESSAGE, eventBody);
+    @Input(SOCKET_NS_DEFAULT_EVENTS.CLIENT.FIRST_MESSAGE)
+    handleDefaultMessage(@Args(0) eventBody: string, @Socket socket: Socket, @Namespace nsp: Namespace): void {
+        socket.emit(SOCKET_NS_DEFAULT_EVENTS.SERVER.FIRST_MESSAGE_SUCCESS, new SocketMessage("Hello client!"));
     }
 }

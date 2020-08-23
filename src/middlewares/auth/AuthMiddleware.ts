@@ -6,6 +6,7 @@ import { AuthMiddlewareErrorKeys, AuthMiddlewareErrorMessages } from "./errors/A
 import { isDev } from "../../../config/env";
 import { UserAgents } from "../../enums/UserAgents";
 import { User } from "../../models/users/User";
+
 @Middleware()
 export class AuthMiddleware implements IMiddleware {
     public use(
