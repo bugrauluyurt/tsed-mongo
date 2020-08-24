@@ -24,7 +24,7 @@ import { ActiveStatus } from "../../enums/ActiveStatus";
 import {
     ProjectContributorCompanyMatchModel,
     ProjectContributorCompanyMatch,
-} from "../ProjectContributerCompanyMatch/ProjectContributorCompanyMatch";
+} from "../projectContributerCompanyMatch/projectContributorCompanyMatch";
 import * as _ from "lodash";
 import { ExpectationFailed } from "ts-httpexceptions";
 import { ERROR_PROJECT_MATCH_NOT_CREATED } from "../../errors/ProjectContributorCompanyMatch";

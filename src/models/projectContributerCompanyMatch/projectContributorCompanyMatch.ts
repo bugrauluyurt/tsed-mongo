@@ -9,7 +9,7 @@ import { CompanyUtils } from "../companies/Company.utils";
 import { ERROR_COMPANY_MISSING, ERROR_NO_PROJECT } from "../../errors/ProjectsError";
 import { getForeignKeyValidator } from "../../utils/foreignKeyHelper";
 import { ProjectUtils } from "../projects/Project.utils";
-import { ProjectContributorCompanyMatchUtils } from "./ProjectContributorCompanyMatch.utils";
+import { ProjectContributorCompanyMatchUtils } from "./projectContributorCompanyMatch.utils";
 
 @MongooseSchema()
 export class ProjectContributorCompanyMatch {
