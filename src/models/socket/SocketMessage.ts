@@ -1,3 +1,4 @@
 export class SocketMessage {
-    constructor(private message: any, private isError = false, private createdAt = Date.now()) {}
+    type = "message";
+    constructor(public data: any, public isError = false, private createdAt = Date.now()) {}
 }

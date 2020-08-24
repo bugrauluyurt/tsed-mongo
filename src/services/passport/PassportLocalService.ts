@@ -1,12 +1,4 @@
-import {
-    AfterRoutesInit,
-    BeforeRoutesInit,
-    Configuration,
-    ExpressApplication,
-    Inject,
-    Service,
-    Session,
-} from "@tsed/common";
+import { AfterRoutesInit, BeforeRoutesInit, Configuration, ExpressApplication, Inject, Service } from "@tsed/common";
 import * as bcrypt from "bcrypt";
 import { Strategy as LocalStrategy } from "passport-local";
 import * as Passport from "passport/lib";
