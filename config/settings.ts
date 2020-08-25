@@ -65,7 +65,11 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
             mount: {
                 "/rest": `${rootDir}/controllers/**/**.ts`,
             },
-            componentsScan: [`${rootDir}/services/**/**.ts`, `${rootDir}/middlewares/**/**.ts`],
+            componentsScan: [
+                `${rootDir}/services/**/**.ts`,
+                `${rootDir}/middlewares/**/**.ts`,
+                `${rootDir}/graphql/**/*.ts`, // add this pattern to scan resolvers or datasources from graphql
+            ],
             mongoose: {
                 urls: {
                     default: {
@@ -83,6 +87,18 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
             socketIO: {
                 origins: `https://${process.env.DOMAIN_CLIENT}:* http://localhost:*`,
                 // @TODO: Add redis as socketIO adapter. Use socketio/socket.io-redis and 'socket.io-emitter'
+            },
+            graphql: {
+                server1: {
+                    // GraphQL server configuration
+                    engine: {
+                        apiKey: process.env.APOLLO_KEY,
+                        graphVariant: process.env.NODE_ENV,
+                        reportSchema: true,
+                        variant: "current",
+                    },
+                    cors: true,
+                },
             },
         },
         morgan: process.env.MORGAN_CONFIG,
