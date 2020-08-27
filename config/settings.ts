@@ -8,6 +8,7 @@ import { User } from "../src/models/users/User";
 import { logObject, logWithColor } from "../src/utils/default";
 import { getMongoConnectionOptions } from "./connection";
 import { getMongoUrl, getSecret } from "./env";
+import { GraphQLSettings } from "@tsed/graphql";
 
 const logSettings = ({ server, morgan }: { [key: string]: any }): void => {
     const boundaryLine = "----------------------------------------";
@@ -89,6 +90,7 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
                 // @TODO: Add redis as socketIO adapter. Use socketio/socket.io-redis and 'socket.io-emitter'
             },
             graphql: {
+                path: "/graphql",
                 server1: {
                     // GraphQL server configuration
                     engine: {
@@ -98,8 +100,9 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
                         variant: "current",
                     },
                     cors: true,
+                    playground: process.env.NODE_ENV === "development",
                 },
-            },
+            } as GraphQLSettings,
         },
         morgan: process.env.MORGAN_CONFIG,
     } as { [key: string]: any };

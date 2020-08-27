@@ -28,33 +28,40 @@ import {
 import * as _ from "lodash";
 import { ExpectationFailed } from "ts-httpexceptions";
 import { ERROR_PROJECT_MATCH_NOT_CREATED } from "../../errors/ProjectContributorCompanyMatch";
+import { ObjectType, Field, ID, Int } from "type-graphql";
 
 @MongooseSchema()
+@ObjectType()
 export class Project {
     @ObjectID("id")
+    @Field((type) => ID)
     _id: string;
 
     @Indexed()
     @Required()
-    @Ref(Company)
     @Description("Company which project belongs to")
-    company: Ref<Company>;
+    @Field()
+    company: string;
 
     @Property()
     @Required()
+    @Field()
     projectName: string;
 
     @Ref(ProjectSection)
     @Description("List of project sections. ProjectSection model")
-    projectSections: Ref<ProjectSection>[] = []; // should be populated, not-expensive
+    @Field((type) => [String])
+    projectSections: string[] = []; // should be populated, not-expensive
 
     @Required()
     @Ref(ProjectType)
     @Description("Project's type")
-    projectType: Ref<ProjectType>; // should be populated, not-expensive
+    @Field()
+    projectType: string; // should be populated, not-expensive
 
     @Property()
     @Description("Active status indicator")
+    @Field((type) => Int)
     active = 1;
 }
 
