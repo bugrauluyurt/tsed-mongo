@@ -69,7 +69,7 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
             componentsScan: [
                 `${rootDir}/services/**/**.ts`,
                 `${rootDir}/middlewares/**/**.ts`,
-                `${rootDir}/graphql/**/*.ts`, // add this pattern to scan resolvers or datasources from graphql
+                //`${rootDir}/graphql/**/*.ts`, // add this pattern to scan resolvers or datasources from graphql
             ],
             mongoose: {
                 urls: {
