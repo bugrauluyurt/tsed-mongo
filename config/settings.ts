@@ -9,6 +9,7 @@ import { logObject, logWithColor } from "../src/utils/default";
 import { getMongoConnectionOptions } from "./connection";
 import { getMongoUrl, getSecret } from "./env";
 import { GraphQLSettings } from "@tsed/graphql";
+import { ProjectResolver } from "../src/services/projects/ProjectResolver";
 
 const logSettings = ({ server, morgan }: { [key: string]: any }): void => {
     const boundaryLine = "----------------------------------------";
@@ -89,10 +90,10 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
                 origins: `https://${process.env.DOMAIN_CLIENT}:* http://localhost:*`,
                 // @TODO: Add redis as socketIO adapter. Use socketio/socket.io-redis and 'socket.io-emitter'
             },
-            graphql: {
+            graphqlSettings: {
                 path: "/graphql",
                 server1: {
-                    // GraphQL server configuration
+                    // Apollo server configuration
                     engine: {
                         apiKey: process.env.APOLLO_KEY,
                         graphVariant: process.env.NODE_ENV,

@@ -29,11 +29,13 @@ import * as _ from "lodash";
 import { ExpectationFailed } from "ts-httpexceptions";
 import { ERROR_PROJECT_MATCH_NOT_CREATED } from "../../errors/ProjectContributorCompanyMatch";
 import { ObjectType, Field, ID, Int } from "type-graphql";
+import { IsMongoId } from "class-validator";
 
 @MongooseSchema()
 @ObjectType()
 export class Project {
     @ObjectID("id")
+    @IsMongoId()
     @Field((type) => ID)
     _id: string;
 

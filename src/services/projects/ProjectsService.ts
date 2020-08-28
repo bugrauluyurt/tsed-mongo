@@ -13,6 +13,8 @@ import {
 import { MongooseModel } from "../../types/MongooseModel";
 import { ProjectSection, ProjectSectionModel } from "../../models/projectSections/ProjectSection";
 import * as mongoose from "mongoose";
+import { isValidMongoId } from "../../utils/isValidMongoId";
+import { ERROR_NOT_VALID_PROJECT_ID } from "../../errors/ProjectsError";
 
 @Service()
 export class ProjectsService {
@@ -31,6 +33,9 @@ export class ProjectsService {
     }
 
     async findProjectById(projectId: string): Promise<Project> {
+        if (!isValidMongoId(projectId)) {
+            throw new BadRequest(ERROR_NOT_VALID_PROJECT_ID);
+        }
         const project = await this.Project.findById(projectId).exec();
         if (!project) {
             throw new NotFound(ERROR_NO_PROJECT);
