@@ -48,12 +48,12 @@ export class CompaniesService {
         return this.Company.findById(companyId);
     }
 
-    async addCompany(company: Company): Promise<Company | Error> {
-        const model = new this.Company(sanitizeModelBody<Company>(company));
+    async addCompany(company: Partial<Company>): Promise<Company | Error> {
+        const model = new this.Company(sanitizeModelBody<Partial<Company>>(company));
         return await model.save().catch(() => new BadRequest(ERROR_NOT_VALID_COMPANY));
     }
 
-    async updateCompany(companyId: string, companyPartial: Partial<Company>): Promise<Company> {
+    async patchCompany(companyId: string, companyPartial: Partial<Company>): Promise<Company> {
         if (!isValidMongoId(companyId)) {
             throw new BadRequest(ERROR_NO_COMPANY_ID);
         }
@@ -80,6 +80,6 @@ export class CompaniesService {
         return await Promise.all([
             this.Company.findByIdAndDelete(companyId).exec(),
             integrityCompanyModel.save().catch(() => new BadRequest(ERROR_NO_DATE)),
-        ]);
+        ]).then(() => company);
     }
 }

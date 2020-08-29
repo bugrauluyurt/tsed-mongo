@@ -27,7 +27,7 @@ import {
 import * as _ from "lodash";
 import { ExpectationFailed } from "ts-httpexceptions";
 import { ERROR_PROJECT_MATCH_NOT_CREATED } from "../../errors/ProjectContributorCompanyMatch";
-import { ObjectType, Field, ID, Int } from "type-graphql";
+import { ObjectType, Field, ID } from "type-graphql";
 
 @MongooseSchema()
 @ObjectType()
@@ -39,7 +39,7 @@ export class Project {
     @Indexed()
     @Required()
     @Description("Company which project belongs to")
-    @Field()
+    @Field((type) => ID)
     company: string;
 
     @Property()
@@ -60,8 +60,8 @@ export class Project {
 
     @Property()
     @Description("Active status indicator")
-    @Field((type) => Int)
-    active = 1;
+    @Field((type) => ActiveStatus, { defaultValue: ActiveStatus.ACTIVE })
+    active = ActiveStatus.ACTIVE;
 }
 
 // Schema Definition

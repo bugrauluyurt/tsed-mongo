@@ -71,7 +71,7 @@ export class CompaniesCtrl {
         @Required() @PathParams("companyId") companyId: string,
         @BodyParams() reqBody
     ): Promise<Company> {
-        return this.companiesService.updateCompany(companyId, reqBody as Company);
+        return this.companiesService.patchCompany(companyId, reqBody as Company);
     }
 
     @Delete("/:companyId")

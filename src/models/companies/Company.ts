@@ -12,8 +12,10 @@ import {
 } from "../../errors/CompaniesError";
 import { Schema } from "mongoose";
 import * as mongoose from "mongoose";
+import { Field, ObjectType } from "type-graphql";
 
 @MongooseSchema()
+@ObjectType()
 export class Company {
     @ObjectID("id")
     _id: string;
@@ -22,16 +24,19 @@ export class Company {
     @MaxLength(CompanyUtils.MAX_NAME)
     @Required()
     @Description("Name of the company")
+    @Field()
     companyName: string = null;
 
     @MinLength(CompanyUtils.MIN_DOMAIN_NAME)
     @MaxLength(CompanyUtils.MAX_DOMAIN_NAME)
     @Description("Domain of the company")
+    @Field(() => String, { nullable: true })
     domain: string = null;
 
     @Property()
     @Default(true)
     @Description("Shows if the company is active or not")
+    @Field(() => ActiveStatus, { defaultValue: ActiveStatus.ACTIVE })
     active: number = ActiveStatus.ACTIVE;
 }
 
