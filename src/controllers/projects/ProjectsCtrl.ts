@@ -14,7 +14,7 @@ import {
 } from "@tsed/common";
 import { ProjectsService } from "../../services/projects/ProjectsService";
 import { Summary } from "@tsed/swagger";
-import { UserRole, UserRolesAll } from "../../models/users/UserRole";
+import { UserRolesAll } from "../../models/users/UserRole";
 import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
 import { Project } from "../../models/projects/Project";
 import { UseRequiredParams } from "../../decorators";

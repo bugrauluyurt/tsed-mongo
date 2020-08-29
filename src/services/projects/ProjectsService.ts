@@ -43,7 +43,7 @@ export class ProjectsService {
         return project;
     }
 
-    async addProject(project: Project): Promise<Project> {
+    async addProject(project: Partial<Project>): Promise<Project> {
         if (!_.get(project, "company")) {
             throw new BadRequest(ERROR_NO_COMPANY_ID);
         }
@@ -55,9 +55,21 @@ export class ProjectsService {
         if (_.isEmpty(projectId)) {
             throw new BadRequest(ERROR_NO_PROJECT_ID);
         }
-        return await this.Project.findByIdAndUpdate(
-            projectId,
-            _.omit(projectPartial, ["company", "projectAdmins", "projectManagers"]),
+        return await this.Project.findByIdAndUpdate(projectId, projectPartial, {
+            omitUndefined: true,
+            new: true,
+            runValidators: true,
+        }).exec();
+    }
+
+    async patchProject(projectId: string, projectPartial: Partial<Project>): Promise<Project> {
+        if (_.isEmpty(projectId)) {
+            throw new BadRequest(ERROR_NO_PROJECT_ID);
+        }
+        const newFields = _.omit(projectPartial, ["company", "_id", "id"]);
+        return await this.Project.findOneAndUpdate(
+            { _id: projectId },
+            { $set: newFields },
             {
                 omitUndefined: true,
                 new: true,
@@ -69,6 +81,9 @@ export class ProjectsService {
     async removeProject(projectId: string): Promise<Project> {
         if (_.isEmpty(projectId)) {
             throw new BadRequest(ERROR_NO_PROJECT_ID);
+        }
+        if (!isValidMongoId(projectId)) {
+            throw new BadRequest(ERROR_NOT_VALID_PROJECT_ID);
         }
         const project = await this.Project.findById(projectId);
         if (!project) {

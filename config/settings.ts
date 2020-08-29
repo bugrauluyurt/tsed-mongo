@@ -9,7 +9,6 @@ import { logObject, logWithColor } from "../src/utils/default";
 import { getMongoConnectionOptions } from "./connection";
 import { getMongoUrl, getSecret } from "./env";
 import { GraphQLSettings } from "@tsed/graphql";
-import { ProjectResolver } from "../src/services/projects/ProjectResolver";
 
 const logSettings = ({ server, morgan }: { [key: string]: any }): void => {
     const boundaryLine = "----------------------------------------";
@@ -90,6 +89,7 @@ export const getServerSettings = (rootDir: string): { [key: string]: any } => {
                 origins: `https://${process.env.DOMAIN_CLIENT}:* http://localhost:*`,
                 // @TODO: Add redis as socketIO adapter. Use socketio/socket.io-redis and 'socket.io-emitter'
             },
+            // Do not name this as 'graphql'! If named like that, tsed.io directly initializes graphql without any control
             graphqlSettings: {
                 path: "/graphql",
                 server1: {
