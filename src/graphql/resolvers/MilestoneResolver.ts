@@ -113,6 +113,11 @@ export class MilestoneResolver {
     }
 
     @Mutation(() => Milestone)
+    async addMilestone(@Arg("data") milestone: AddMilestoneInput): Promise<Milestone> {
+        return this.milestonesService.addMilestone(milestone);
+    }
+
+    @Mutation(() => Milestone)
     async patchMilestone(@Arg("data") milestone: PatchMilestoneInput): Promise<Milestone> {
         return this.milestonesService.patchMilestone(milestone._id, milestone);
     }
