@@ -1,7 +1,7 @@
 import { Controller, Post, Req, Status, UseAuth, Get, QueryParams, BodyParams, PathParams, Patch } from "@tsed/common";
 import { Summary } from "@tsed/swagger";
 import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";
-import { UserRole, UserRolesAll } from "../../models/users/UserRole";
+import { UserRolesAll } from "../../models/users/UserRole";
 import { MilestonesService } from "../../services/milestones/MilestonesService";
 import { Milestone } from "../../models/milestones/Milestone";
 
@@ -42,10 +42,10 @@ export class MilestonesCtrl {
         collectionType: Milestone,
     })
     @UseAuth(AuthMiddleware, { roles: UserRolesAll })
-    async updateProjectSection(
+    async patchMilestone(
         @BodyParams() payload: Partial<Milestone>,
         @PathParams("milestoneId") milestoneId: string
     ): Promise<Milestone> {
-        return this.milestonesServices.updateMilestone(milestoneId, payload as Partial<Milestone>);
+        return this.milestonesServices.patchMilestone(milestoneId, payload as Partial<Milestone>);
     }
 }

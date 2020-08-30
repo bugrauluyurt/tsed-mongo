@@ -1,3 +1,9 @@
+import { registerEnumType } from "type-graphql";
+
 export enum MilestoneTags {
-    DEFAULT = "default",
+    GENERIC = "generic",
 }
+
+registerEnumType(MilestoneTags, {
+    name: "MilestoneTags",
+});

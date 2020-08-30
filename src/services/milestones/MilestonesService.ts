@@ -37,12 +37,12 @@ export class MilestonesService {
         ).exec();
     }
 
-    async addMilestone(milestone: Milestone): Promise<Milestone> {
-        const model = new this.Milestone(sanitizeModelBody<Milestone>(milestone));
+    async addMilestone(milestone: Partial<Milestone>): Promise<Milestone> {
+        const model = new this.Milestone(sanitizeModelBody<Partial<Milestone>>(milestone));
         return await this.Milestone.create(model);
     }
 
-    async updateMilestone(milestoneId: string, milestonePartial: Partial<Milestone>): Promise<Milestone> {
+    async patchMilestone(milestoneId: string, milestonePartial: Partial<Milestone>): Promise<Milestone> {
         if (_.isEmpty(milestoneId)) {
             throw new BadRequest(ERROR_MILESTONE_ID_MISSING);
         }
