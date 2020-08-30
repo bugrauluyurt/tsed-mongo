@@ -4,16 +4,20 @@ import { Description } from "@tsed/swagger";
 import { MilestoneStatusUtils } from "./MilestoneStatus.utils";
 import * as mongoose from "mongoose";
 import { ERROR_MILESTONE_STATUS_NAME_MISSING } from "../../errors/MilestoneStatusError";
+import { ID, Field, ObjectType } from "type-graphql";
 
 @MongooseSchema()
+@ObjectType()
 export class MilestoneStatus {
     @ObjectID("id")
+    @Field(() => ID)
     _id: string;
 
     @Required()
     @Enum(MilestoneStatusUtils.STATUS)
+    @Field()
     @Description("Status of the milestone, one of ready | working | stuck | done | introCall | negotiation")
-    name: MilestoneStatusUtils.STATUS;
+    name: string;
 }
 
 // Schema Definition

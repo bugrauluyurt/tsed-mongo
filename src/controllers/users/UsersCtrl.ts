@@ -1,16 +1,4 @@
-import {
-    BodyParams,
-    Controller,
-    Delete,
-    Get,
-    PathParams,
-    Post,
-    Put,
-    Required,
-    Status,
-    UseAuth,
-    Session,
-} from "@tsed/common";
+import { Controller, Get, Status, UseAuth, Session } from "@tsed/common";
 import { Summary } from "@tsed/swagger";
 import { NotFound } from "ts-httpexceptions";
 import { AuthMiddleware } from "../../middlewares/auth/AuthMiddleware";

@@ -18,7 +18,7 @@ export class ReferenceCtrl {
     })
     @UseAuth(AuthMiddleware, { roles: UserRolesAll })
     async getMilestoneStatuses(
-        @QueryParams("milestoneStatusIds") milestoneStatusIds: string[],
+        @QueryParams("milestoneStatusIds") milestoneStatusIds: string,
         @QueryParams("name") milestoneName: string
     ): Promise<MilestoneStatus[]> {
         return this.milestoneStatusService.findMilestoneStatus(milestoneStatusIds, milestoneName);

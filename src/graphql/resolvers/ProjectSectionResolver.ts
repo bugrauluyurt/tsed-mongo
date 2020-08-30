@@ -79,16 +79,16 @@ export class ProjectSectionResolver {
 
     @Mutation(() => ProjectSection)
     async addProjectSection(@Arg("data") projectSection: AddProjectSectionInput): Promise<ProjectSection> {
-        return this.projectSectionsService.addProjectSection(projectSection);
+        return await this.projectSectionsService.addProjectSection(projectSection);
     }
 
     @Mutation(() => ProjectSection)
     async patchProjectSection(@Arg("data") projectSection: PatchProjectSectionInput): Promise<ProjectSection> {
-        return this.projectSectionsService.updateProjectSection(projectSection?._id, projectSection);
+        return await this.projectSectionsService.updateProjectSection(projectSection?._id, projectSection);
     }
 
     @Mutation(() => Boolean)
     async removeProjectSection(@Arg("projectSectionId") projectSectionId: string): Promise<boolean> {
-        return this.projectSectionsService.removeProjectSection(projectSectionId);
+        return await this.projectSectionsService.removeProjectSection(projectSectionId);
     }
 }

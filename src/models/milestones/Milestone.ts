@@ -26,7 +26,7 @@ import {
 } from "../../errors/MilestonesError";
 import { ERROR_MILESTONE_STATUS_NAME_MISSING } from "../../errors/MilestoneStatusError";
 import { MilestoneStatusUtils } from "../milestoneStatuses/MilestoneStatus.utils";
-import { ObjectType, Field, ID, Int, InputType } from "type-graphql";
+import { ObjectType, Field, ID, Int } from "type-graphql";
 import { Max, Min, MinLength, MaxLength } from "class-validator";
 
 @MongooseSchema()

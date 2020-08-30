@@ -6,7 +6,6 @@ import * as mongoose from "mongoose";
 import { MilestoneStatus, MilestoneStatusModel } from "../../models/milestoneStatuses/MilestoneStatus";
 import { ERROR_MILESTONE_STATUS_ID_MISSING } from "../../errors/MilestoneStatusError";
 import { MilestoneStatusUtils } from "../../models/milestoneStatuses/MilestoneStatus.utils";
-import validator from "validator";
 import { isValidMongoId } from "../../utils/isValidMongoId";
 
 @Service()
@@ -17,15 +16,16 @@ export class MilestoneStatusesService {
         this.MilestoneStatus = MilestoneStatusModel as MongooseModel<MilestoneStatus>;
     }
 
-    async findMilestoneStatus(milestoneIds?: string[], milestoneStatusName?: string): Promise<MilestoneStatus[]> {
+    async findMilestoneStatus(milestoneStatusIds?: string, milestoneStatusName?: string): Promise<MilestoneStatus[]> {
+        const ids = _.split(milestoneStatusIds, ",");
         const condition = _.reduce(
-            milestoneIds || [],
-            (acc, milestoneId) => {
-                if (isValidMongoId(milestoneId)) {
+            ids || [],
+            (acc, id) => {
+                if (isValidMongoId(id)) {
                     if (!acc["_id"]) {
                         acc["_id"] = [];
                     }
-                    acc["_id"].push(mongoose.Types.ObjectId(milestoneId));
+                    acc["_id"].push(mongoose.Types.ObjectId(id));
                 }
                 return acc;
             },
