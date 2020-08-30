@@ -23,6 +23,7 @@ class GetMilestonesArgs {
     milestoneIds: string;
 }
 
+// InputTypes
 @InputType({ description: "Milestone generic input" })
 class MilestoneInput implements Partial<Milestone> {
     @Field(() => ID)

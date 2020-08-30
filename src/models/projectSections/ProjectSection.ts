@@ -1,5 +1,5 @@
 import { Indexed, MongooseSchema, ObjectID } from "@tsed/mongoose";
-import { MaxLength, MinLength, Property, Required } from "@tsed/common";
+import { Property, Required } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { Schema } from "mongoose";
 import { ActiveStatus } from "../../enums/ActiveStatus";
@@ -13,28 +13,34 @@ import {
     ERROR_PROJECT_SECTION_NAME_MIN_LENGTH,
     ERROR_PROJECT_SECTION_NAME_MAX_LENGTH,
 } from "../../errors/ProjectSectionsError";
-import { CompanySchemaDefinition } from "../companies/Company";
+import { ObjectType, ID, Field } from "type-graphql";
+import { MinLength, MaxLength } from "class-validator";
 
 @MongooseSchema()
+@ObjectType()
 export class ProjectSection {
     @ObjectID("id")
+    @Field(() => ID)
     _id: string;
 
     @Indexed()
     @Required()
     @Description("Project parent of this section")
+    @Field(() => String)
     projectId: string;
 
     @Property()
     @Required()
     @MinLength(ProjectSectionsUtils.MIN_PROJECT_SECTION_NAME)
     @MaxLength(ProjectSectionsUtils.MAX_PROJECT_SECTION_NAME)
+    @Field(() => String)
     @Description("Project section's name. Required to create a section")
     projectSectionName: string;
 
     @Property()
     @Description("Active status indicator")
-    active: number = ActiveStatus.ACTIVE;
+    @Field(() => ActiveStatus, { defaultValue: ActiveStatus.ACTIVE })
+    active: ActiveStatus = ActiveStatus.ACTIVE;
 }
 
 // Schema Definition

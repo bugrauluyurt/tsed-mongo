@@ -6,7 +6,12 @@ import { ERROR_PROJECT_SECTION_MISSING } from "../../errors/ProjectSectionsError
 import { getSanitizedPaginationParams } from "../../utils/paginationHelper";
 import { IProjectSectionQueryParams } from "../../interfaces/ProjectSection/ProjectSectionQueryParams.interface";
 import * as _ from "lodash";
-import { ERROR_NO_PROJECT_ID, ERROR_NO_PROJECT_SECTION_ID } from "../../errors/ProjectsError";
+import {
+    ERROR_NO_PROJECT_ID,
+    ERROR_NO_PROJECT_SECTION_ID,
+    ERROR_NOT_VALID_PROJECT_SECTION,
+} from "../../errors/ProjectsError";
+import { isValidMongoId } from "../../utils/isValidMongoId";
 
 @Service()
 export class ProjectSectionsService {
@@ -70,6 +75,9 @@ export class ProjectSectionsService {
     async removeProjectSection(projectSectionId: string): Promise<boolean> {
         if (_.isEmpty(projectSectionId)) {
             throw new BadRequest(ERROR_NO_PROJECT_SECTION_ID);
+        }
+        if (!isValidMongoId(projectSectionId)) {
+            throw new BadRequest(ERROR_NOT_VALID_PROJECT_SECTION);
         }
         return await this.ProjectSection.findByIdAndDelete(projectSectionId)
             .exec()
