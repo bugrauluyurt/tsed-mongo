@@ -4,6 +4,9 @@ import { $log } from "ts-log-debug";
 import { isDev } from "../../../config/env";
 import { User, UserModel } from "../../models/users/User";
 import { MongooseModel } from "../../types/MongooseModel";
+import { isValidMongoId } from "../../utils/isValidMongoId";
+import { BadRequest } from "ts-httpexceptions";
+import { ERROR_INVALID_USER_ID } from "../../errors/UsersError";
 
 @Service()
 export class UsersService {
@@ -26,6 +29,23 @@ export class UsersService {
             const promises = require("../../../resources/users.json").map((user) => this.save(user));
             await Promise.all(promises);
         }
+    }
+
+    async findByIds(userIds = ""): Promise<User[]> {
+        const ids = (_.split(userIds, ",") || []).reduce((acc, id) => {
+            if (!isValidMongoId(id)) {
+                return acc;
+            }
+            return acc.concat([id]);
+        }, []);
+        if (_.isEmpty(ids)) {
+            throw new BadRequest(ERROR_INVALID_USER_ID);
+        }
+        return await this.User.find({
+            _id: {
+                $in: ids,
+            },
+        });
     }
 
     async findById(id: string): Promise<User> {

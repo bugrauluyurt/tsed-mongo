@@ -9,27 +9,33 @@ import { ERROR_NO_TEAM_ID, ERROR_INVALID_TEAM_ID } from "../../errors/ProjectsEr
 import { ERROR_NOT_A_VALID_TEAM } from "../../errors/TeamsError";
 import { mongooseUpdateOptions } from "../../utils/mongooseUpdateOptions";
 import * as _ from "lodash";
-import validator from "validator";
 import { TeamMember } from "../../models/teams/TeamMember";
 import { ERROR_INVALID_USER_ID } from "../../errors/UsersError";
 import { TeamRole } from "../../enums/TeamRole";
 import { ERROR_INVALID_TEAM_ROLE } from "../../errors/TeamMemberError";
 import { PageSizes } from "../../enums/PageSizes";
 import { isValidMongoId } from "../../utils/isValidMongoId";
+import { User, UserModel } from "../../models/users/User";
+import { UsersService } from "../users/UsersService";
+import { UserUtils } from "../../models/users/User.utils";
+import { ProjectUtils } from "../../models/projects/Project.utils";
 
 @Service()
 export class TeamsService {
     private Team: MongooseModel<Team>;
+    private User: MongooseModel<User>;
 
-    constructor() {
+    constructor(private usersService: UsersService) {
         this.Team = TeamModel as MongooseModel<Team>;
+        this.User = UserModel as MongooseModel<User>;
     }
 
     async findTeams(queryParams: Partial<TeamQueryParams>): Promise<Team[]> {
         const { modelSafeData } = getModelSafeData<TeamQueryParams>(queryParams, new TeamQueryParams(), [
             "teamMembers",
         ]);
-        const conditions = getSafeFindQueryConditions(modelSafeData, [["_id", "companyIds"]]);
+        // @TODO: Normalize users if requested (Ex: return the actual user object instead of userId)
+        const conditions = getSafeFindQueryConditions(modelSafeData, [["_id"]]);
         return await this.Team.find(conditions).limit(PageSizes.HUNDRED).exec();
     }
 

@@ -1,5 +1,5 @@
 import { MongooseSchema, ObjectID } from "@tsed/mongoose";
-import { MaxLength, MinLength, Property, Required, Default } from "@tsed/common";
+import { Property, Required, Default } from "@tsed/common";
 import { Description } from "@tsed/swagger";
 import { UserModel } from "../users/User";
 import * as mongoose from "mongoose";
@@ -19,13 +19,18 @@ import { Schema, HookNextFunction } from "mongoose";
 import { getModelSafeData } from "../../utils/getModelSafeData";
 import { TeamRole } from "../../enums/TeamRole";
 import { isValidMongoId } from "../../utils/isValidMongoId";
+import { ID, Field, ObjectType } from "type-graphql";
+import { MinLength, MaxLength } from "class-validator";
 
 @MongooseSchema()
+@ObjectType()
 export class Team {
     @ObjectID("id")
+    @Field(() => ID)
     _id: string = null;
 
     @Required()
+    @Field(() => ID)
     @Description("ProjectId of the project where this team belongs to")
     projectId: string = null;
 
@@ -33,11 +38,13 @@ export class Team {
     @Required()
     @MinLength(TeamUtils.MIN_TEAM_NAME)
     @MaxLength(TeamUtils.MAX_TEAM_NAME)
+    @Field()
     @Description("Team name")
     teamName: string = null;
 
     @Property()
     @Default([])
+    @Field(() => [TeamMember], { defaultValue: [] })
     @Description("Array of TeamMembers which belong to this team")
     teamMembers: TeamMember[] = [];
 }

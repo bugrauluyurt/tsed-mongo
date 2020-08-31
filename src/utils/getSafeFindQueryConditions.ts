@@ -2,7 +2,7 @@ import * as _ from "lodash";
 import * as mongoose from "mongoose";
 import { isValidMongoId } from "./isValidMongoId";
 
-// Ex: [["_id", "milestoneIds"], ["projectSectionName"]]
+// Ex: [["_id", "milestoneIds"]]
 export const getSafeFindQueryConditions = <T>(
     conditions: T | any = {},
     objectIdsIdentifiers: Array<string[]>
@@ -28,12 +28,8 @@ export const getSafeFindQueryConditions = <T>(
               },
           }
         : {};
-    const returnValue = {
+    return {
         ...generatedConditions,
         ..._.omit(conditions, [conditionsKey]),
-    } as Partial<T>;
-    if (_.size(objectIdsIdentifiers) === 1) {
-        return returnValue;
-    }
-    return getSafeFindQueryConditions(conditions, _.slice(objectIdsIdentifiers, 1));
+    };
 };
