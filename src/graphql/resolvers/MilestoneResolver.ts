@@ -122,4 +122,6 @@ export class MilestoneResolver {
     async patchMilestone(@Arg("data") milestone: PatchMilestoneInput): Promise<Milestone> {
         return await this.milestonesService.patchMilestone(milestone._id, milestone);
     }
+
+    // @TODO: Milestone removal should be written
 }

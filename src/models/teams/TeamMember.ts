@@ -3,7 +3,7 @@ import { ObjectType, Field, ID } from "type-graphql";
 
 @ObjectType()
 export class TeamMember {
-    @Field(() => ID)
+    @Field()
     userId: string = null;
 
     @Field(() => TeamRole, { defaultValue: TeamRole.GUEST })

@@ -93,7 +93,7 @@ export class TeamsCtrl {
         collectionType: TeamMember,
     })
     @UseAuth(AuthMiddleware, { roles: UserRolesAll })
-    async addTeamMember(@Required() @PathParams("teamId") teamId: string, @BodyParams() reqBody): Promise<TeamMember> {
+    async addTeamMember(@Required() @PathParams("teamId") teamId: string, @BodyParams() reqBody): Promise<Team> {
         return this.teamsService.addTeamMember(teamId, reqBody as TeamMember);
     }
 
@@ -108,7 +108,7 @@ export class TeamsCtrl {
     async removeTeamMember(
         @Required() @PathParams("teamId") teamId: string,
         @Required() @PathParams("teamMemberId") teamMemberId: string
-    ): Promise<TeamMember> {
+    ): Promise<Team> {
         return this.teamsService.removeTeamMember(teamId, teamMemberId);
     }
 
@@ -124,7 +124,7 @@ export class TeamsCtrl {
         @Required() @PathParams("teamId") teamId: string,
         @Required() @PathParams("teamMemberId") teamMemberId: string,
         @BodyParams("teamRole") teamRole: TeamRole
-    ): Promise<TeamMember> {
+    ): Promise<Team> {
         return this.teamsService.updateTeamMemberRole(teamId, teamMemberId, teamRole);
     }
 }

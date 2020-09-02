@@ -13,12 +13,9 @@ import { TeamMember } from "../../models/teams/TeamMember";
 import { ERROR_INVALID_USER_ID } from "../../errors/UsersError";
 import { TeamRole } from "../../enums/TeamRole";
 import { ERROR_INVALID_TEAM_ROLE } from "../../errors/TeamMemberError";
-import { PageSizes } from "../../enums/PageSizes";
 import { isValidMongoId } from "../../utils/isValidMongoId";
 import { User, UserModel } from "../../models/users/User";
 import { UsersService } from "../users/UsersService";
-import { UserUtils } from "../../models/users/User.utils";
-import { ProjectUtils } from "../../models/projects/Project.utils";
 
 @Service()
 export class TeamsService {
@@ -36,7 +33,7 @@ export class TeamsService {
         ]);
         // @TODO: Normalize users if requested (Ex: return the actual user object instead of userId)
         const conditions = getSafeFindQueryConditions(modelSafeData, [["_id"]]);
-        return await this.Team.find(conditions).limit(PageSizes.HUNDRED).exec();
+        return await this.Team.aggregate([{ $match: conditions }]).exec();
     }
 
     async findTeamById(teamId: string): Promise<Team> {
@@ -46,7 +43,7 @@ export class TeamsService {
         return await this.Team.findById(teamId);
     }
 
-    async addTeam(team: Team): Promise<Team | Error> {
+    async addTeam(team: Partial<Team>): Promise<Team> {
         const { modelSafeData } = getModelSafeData<Team>(team, new Team());
         const model = new this.Team(modelSafeData);
         return await model.save().catch((err) => {
@@ -73,10 +70,13 @@ export class TeamsService {
         if (!isValidMongoId(teamId)) {
             throw new BadRequest(ERROR_NO_TEAM_ID);
         }
-        return await this.Team.findByIdAndDelete(teamId).exec();
+        return await this.Team.findByIdAndDelete(teamId)
+            .exec()
+            .then(() => true)
+            .catch(() => false);
     }
 
-    async addTeamMember(teamId: string, teamMember: TeamMember): Promise<TeamMember> {
+    async addTeamMember(teamId: string, teamMember: TeamMember): Promise<Team> {
         if (!isValidMongoId(teamMember?.userId)) {
             throw new BadRequest(ERROR_INVALID_USER_ID);
         }
@@ -94,7 +94,7 @@ export class TeamsService {
         );
     }
 
-    async removeTeamMember(teamId: string, userId: string): Promise<TeamMember> {
+    async removeTeamMember(teamId: string, userId: string): Promise<Team> {
         if (!isValidMongoId(userId)) {
             throw new BadRequest(ERROR_INVALID_USER_ID);
         }
@@ -104,7 +104,7 @@ export class TeamsService {
         return await this.Team.update({ _id: teamId }, { $pull: { teamMembers: { userId } } }, { runValidators: true });
     }
 
-    async updateTeamMemberRole(teamId: string, userId: string, teamRole: TeamRole): Promise<TeamMember> {
+    async updateTeamMemberRole(teamId: string, userId: string, teamRole: TeamRole): Promise<Team> {
         if (!isValidMongoId(userId)) {
             throw new BadRequest(ERROR_INVALID_USER_ID);
         }

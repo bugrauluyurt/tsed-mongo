@@ -48,4 +48,6 @@ export class MilestonesCtrl {
     ): Promise<Milestone> {
         return this.milestonesServices.patchMilestone(milestoneId, payload as Partial<Milestone>);
     }
+
+    // @TODO: Milestone removal should be written
 }

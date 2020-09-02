@@ -83,6 +83,9 @@ export const TeamSchemaDefinition = {
             validator: function (teamMembers: TeamMember[]): Promise<boolean> {
                 // Check for duplicated teamMember and their objectID integrity
                 // Check if each userId exists
+                if (Array.isArray(teamMembers) && !teamMembers.length) {
+                    return Promise.resolve(true);
+                }
                 const userIdBatch = _.chain(teamMembers)
                     .uniqWith(_.isEqual)
                     .filter((teamMember) => isValidMongoId(teamMember?.userId))
@@ -107,6 +110,12 @@ export const TeamSchema = new mongoose.Schema(TeamSchemaDefinition, { versionKey
 
 // Hooks
 TeamSchema.pre<Team & mongoose.Document>("save", async function (next: HookNextFunction) {
+    if (!this.teamMembers) {
+        this.teamMembers = [];
+    }
+    if (_.isEmpty(this.teamMembers)) {
+        next();
+    }
     this.teamMembers = _.map(this.teamMembers, (teamMember) => {
         const { modelSafeData } = getModelSafeData<TeamMember>(teamMember, new TeamMember());
         if (_.isEmpty(modelSafeData)) {
